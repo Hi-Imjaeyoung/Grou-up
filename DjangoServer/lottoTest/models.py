@@ -115,9 +115,8 @@ class Margin(models.Model):
     mar_clicks = models.BigIntegerField()  # 클릭 수
     mar_ad_conversion_sales = models.BigIntegerField()  # 광고 전환 판매 수
     mar_actual_sales = models.BigIntegerField()  # 실제 판매 수
-    mar_ad_merge_count = models.BigIntegerField()  # 광고 머지 수
+    mar_ad_margin = models.BigIntegerField()  # 광고 머지 수
     mar_net_profit = models.FloatField()  # 순이익
-
     def __str__(self):
         return f"Margin ID: {self.id}"
     class Meta:

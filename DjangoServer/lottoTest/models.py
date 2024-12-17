@@ -37,6 +37,7 @@ class Execution(models.Model):
     execution_id = models.CharField(max_length=255, primary_key=True)
     exe_product_name = models.CharField(max_length=255)
     exe_detail_category = models.CharField(max_length=255)
+
     campaign_id = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):
@@ -46,7 +47,7 @@ class Execution(models.Model):
         db_table = 'execution'
 # 키워드 테이블
 class Keyword(models.Model):
-    keyword_id = models.AutoField(primary_key=True)  # 기본 키로 설정
+    id = models.AutoField(primary_key=True)  # 기본 키로 설정
     key_keyword = models.CharField(max_length=255)  # 키워드
     key_impressions = models.BigIntegerField()  # 노출수
     key_clicks = models.BigIntegerField()  # 클릭수
@@ -58,12 +59,13 @@ class Keyword(models.Model):
     key_adsales = models.FloatField()  # 광고매출
     key_roas = models.FloatField()  # ROAS
     key_date = models.DateField()  # 날짜
+    key_search_type = models.CharField(max_length=255)  # 검색 비검색
     key_exclude_flag = models.BooleanField(default=False)  # 제외여부
 
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaignId')
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):
-        return f"Keyword ID: {self.keyword_id}, Keyword: {self.key_keyword}"
+        return f"Keyword ID: {self.id}, Keyword: {self.key_keyword}"
 
     class Meta:
         db_table = 'keyword'
@@ -82,7 +84,7 @@ class CampaignOptionDetails(models.Model):
     cop_cvr = models.FloatField()  # 전환율
     cop_search_type = models.CharField(max_length=255)  # 검색 비검색
 
-    execution = models.ForeignKey(Execution, on_delete=models.CASCADE, db_column='executionId')
+    execution = models.ForeignKey(Execution, on_delete=models.CASCADE, db_column='execution_id')
 
     def __str__(self):
         return f"Campaign Option Detail ID: {self.id}"
@@ -95,7 +97,7 @@ class Memo(models.Model):
     mem_date = models.DateField()  # 날짜 (시간은 필요 없음)
     mem_content = models.TextField()  # 메모 내용
 
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaignId')
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):
         return f"Memo ID: {self.id}"
@@ -117,6 +119,7 @@ class Margin(models.Model):
     mar_actual_sales = models.BigIntegerField()  # 실제 판매 수
     mar_ad_margin = models.BigIntegerField()  # 광고 머지 수
     mar_net_profit = models.FloatField()  # 순이익
+
     def __str__(self):
         return f"Margin ID: {self.id}"
     class Meta:

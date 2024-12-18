@@ -1,3 +1,4 @@
+from csv import excel
 from datetime import datetime
 import time
 
@@ -5,7 +6,7 @@ import pandas as pd
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword
+from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -24,6 +25,43 @@ def upload_excel(request):
         form = ExcelFileForm()
     return render(request, 'upload_excel.html', {'form': form})
 
+@csrf_exempt
+def upload_category(request):
+    print("upload_category upload start")
+    if request.method == 'POST':
+        form = ExcelFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            return handle_category_upload(request, form)
+    else:
+        form = ExcelFileForm()
+    return "success"
+
+def handle_category_upload(request, form):
+
+    start_time = time.time() * 100
+    form = ExcelFileForm(request.POST, request.FILES)
+
+    category_excel = pd.read_excel(request.FILES['file'], skiprows=2)
+    if form.is_valid():
+        with transaction.atomic():
+            for index, row in category_excel.iterrows():
+                cat_option_id = row["옵션 ID"]  # tuple로 감싸지 않도록 수정
+                cat_ad_product_name = row["업체 등록 상품명"]
+                cat_detail = row["등록 옵션명"]
+                if pd.isna(cat_option_id):
+                    continue
+                # 중복 체크
+                if not Category.objects.filter(cat_option_id=cat_option_id).exists():
+                    # 중복이 없으면 데이터 저장
+                    Category.objects.create(
+                        cat_option_id=cat_option_id,
+                        cat_ad_product_name=cat_ad_product_name,
+                        cat_detail=cat_detail
+                    )
+    end_time = time.time() * 1000
+    time_taken = end_time - start_time
+    print(f"Time taken: {time_taken} milliseconds")
+    return render(request, 'upload_excel.html', {'form': form, 'data': end_time})
 
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위

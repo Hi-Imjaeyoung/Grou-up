@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from DjangoServer.lottoTest.views import upload_excel
+from DjangoServer.lottoTest.views import upload_excel, upload_category
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('upload_excel/', upload_excel, name='upload_excel'),
-
+    path('upload_category/', upload_category, name='upload_category'),
 ]

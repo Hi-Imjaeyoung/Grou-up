@@ -125,3 +125,12 @@ class Margin(models.Model):
     class Meta:
         db_table = 'margin'
 
+class Category(models.Model):
+    cat_option_id = models.BigIntegerField(max_length=255,primary_key=True)
+    cat_ad_product_name = models.CharField(max_length=255)
+    cat_detail = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"Category ID: {self.id}"
+    class Meta:
+        db_table = 'category'

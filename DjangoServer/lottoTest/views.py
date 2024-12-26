@@ -93,22 +93,34 @@ def handle_excel_upload(request, form):
 
     excel = pd.read_excel(request.FILES['file'], dtype={'날짜': str})
     aggregated_data, keyword_data = aggregate_data(excel, member)
-
     with transaction.atomic():  # 트랜잭션 시작
         save_campaign_option_details(aggregated_data)
-        save_keywords(keyword_data)
+        insert_count, duplicate_count = save_keywords(keyword_data)
 
     end_time = time.time() * 1000
     time_taken = end_time - start_time
+
+    total_count = excel.shape[0]
+    print(f"엑셀 총 row = {total_count}")
+    print(f"합쳐저서 들어간 총 데이터 = {insert_count}")
+    print(f"중복 데이터 = {duplicate_count}")
+
+
     print(f"Time taken: {time_taken} milliseconds")
 
-    return render(request, 'upload_excel.html', {'form': form, 'data': excel.to_html()})
+    return render(request, 'upload_excel.html',
+                  {'form': form,
+                   'data': excel.to_html(),
+                   'summary': {
+                       'total_count': total_count,
+                       'insert_count': insert_count,
+                       'duplicate_count': duplicate_count,
+                   }})
 
 
 def aggregate_data(excel, member):
     aggregated_data = {}
     keyword_data = {}
-
     for index, row in excel.iterrows():
         campaign = get_or_create_campaign(row, member)
         execution = get_or_create_execution(row, campaign)
@@ -120,6 +132,11 @@ def aggregate_data(excel, member):
         update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type)
 
         key_keyword = row['키워드']
+        if pd.isna(key_keyword):
+            key_keyword = ""
+        else:
+            # 공백 제거 및 띄어쓰기 없이 처리
+            key_keyword = str(key_keyword).replace(" ", "")
         keyword_key = (cop_date, campaign.campaign_id, key_keyword)
         update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date,key_keyword, cop_search_type)
 
@@ -202,6 +219,8 @@ def save_campaign_option_details(aggregated_data):
 
 def save_keywords(keyword_data):
     buffer = []
+    insert_count = 0
+    duplicate_count = 0
     for key, data in keyword_data.items():
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
@@ -227,9 +246,12 @@ def save_keywords(keyword_data):
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign']
-
             ))
+            insert_count += 1 # 들어간 값
+        else:
+            duplicate_count += 1 # 안 들어간 값
     Keyword.objects.bulk_create(buffer)
+    return insert_count, duplicate_count
 
 
 def get_or_create_campaign(row, member):

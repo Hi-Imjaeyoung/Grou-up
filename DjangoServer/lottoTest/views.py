@@ -128,7 +128,7 @@ def aggregate_data(excel, member):
         cop_date = datetime.strptime(str(row['날짜']), '%Y%m%d').date()
         cop_search_type = row['광고 노출 지면']
 
-        detail_key = (cop_date, execution.execution_id, cop_search_type)
+        detail_key = (cop_date, execution.exe_id, cop_search_type)
         update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type)
 
         key_keyword = row['키워드']
@@ -197,7 +197,7 @@ def save_campaign_option_details(aggregated_data):
     buffer = []
     for key, data in aggregated_data.items():
         if not CampaignOptionDetails.objects.filter(
-                execution=data['execution'],
+                execution__exe_id=data['execution'].exe_id,  # exe_id를 기준으로 필터링
                 cop_date=data['cop_date'],
                 cop_search_type=data['cop_search_type']
         ).exists():
@@ -212,9 +212,10 @@ def save_campaign_option_details(aggregated_data):
                 cop_cvr=round((data['cop_sales'] / data['cop_clicks']) * 100, 2) if data['cop_clicks'] > 0 else 0,
                 cop_click_rate=(data['cop_clicks'] / data['cop_impressions']) * 100 if data['cop_impressions'] > 0 else 0,
                 cop_search_type=data['cop_search_type'],
-                execution=data['execution']
+                execution=data['execution']  # execution 객체 그대로 사용
             ))
     CampaignOptionDetails.objects.bulk_create(buffer)
+
 
 
 def save_keywords(keyword_data):
@@ -250,6 +251,7 @@ def save_keywords(keyword_data):
             insert_count += 1 # 들어간 값
         else:
             duplicate_count += 1 # 안 들어간 값
+    print(buffer)
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
 
@@ -270,7 +272,8 @@ def get_or_create_campaign(row, member):
 def get_or_create_execution(row, campaign):
     execution_id = row['광고집행 옵션ID']
     execution, created = Execution.objects.get_or_create(
-        execution_id=execution_id,
+        exe_id=execution_id,
+        campaign_id=campaign,
         defaults={
             'exe_product_name': row['광고집행 상품명'],
             'exe_detail_category': "",
@@ -278,7 +281,6 @@ def get_or_create_execution(row, campaign):
         }
     )
     return execution
-
 
 def some_protected_view(request):
     auth_header = request.headers.get('Authorization', None)

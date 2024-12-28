@@ -32,16 +32,17 @@ class Campaign(models.Model):
 
     class Meta:
         db_table = 'campaign'
-# 광고 실행 ㅌ[ㅇ;ㅂ,ㄹ
+# 광고 실행 테이블
 class Execution(models.Model):
-    execution_id = models.CharField(max_length=255, primary_key=True)
+    execution_id = models.AutoField(primary_key=True)  # 새로운 고유 PK
+    exe_id = models.CharField(max_length=255)  # 기존 `exeId` 필드
     exe_product_name = models.CharField(max_length=255)
     exe_detail_category = models.CharField(max_length=255)
 
     campaign_id = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):
-        return f"Execution ID: {self.execution_id}, Product: {self.exe_product_name}"
+        return f"Execution ID: {self.exe_id}, Product: {self.exe_product_name}"
 
     class Meta:
         db_table = 'execution'

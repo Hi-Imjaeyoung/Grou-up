@@ -92,6 +92,21 @@ class CampaignOptionDetails(models.Model):
     class Meta:
         db_table = 'campaign_option_details'
 
+# 키워드 디테일 테이블
+class KeywordDetail(models.Model):
+    id = models.AutoField(primary_key=True)
+    kde_date = models.DateField()  # 날짜
+    kde_keyword = models.CharField(max_length=255) # 키워드
+    kde_exe_id = models.BigIntegerField() # 옵션 아이디
+    kde_quantity_sold = models.BigIntegerField() # 판매 수량
+    kde_sales_revenue = models.BigIntegerField() # 판매 매출
+
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
+
+    def __str__(self):
+        return f"Keyword Detail ID: {self.id}"
+    class Meta:
+        db_table = 'keyword_detail'
 # 메모 테이블
 class Memo(models.Model):
     id = models.AutoField(primary_key=True)  # 기본 키로 설정

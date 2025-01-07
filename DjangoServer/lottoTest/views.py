@@ -6,7 +6,7 @@ import pandas as pd
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile
+from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -25,6 +25,7 @@ def upload_excel(request):
         form = ExcelFileForm()
     return render(request, 'upload_excel.html', {'form': form})
 
+
 @csrf_exempt
 def upload_category(request):
     print("upload_category upload start")
@@ -36,8 +37,8 @@ def upload_category(request):
         form = ExcelFileForm()
     return "success"
 
-def handle_category_upload(request, form):
 
+def handle_category_upload(request, form):
     start_time = time.time() * 100
     form = ExcelFileForm(request.POST, request.FILES)
 
@@ -84,6 +85,7 @@ def handle_category_upload(request, form):
     print(f"time_taken :{time_taken} ")
     return render(request, 'upload_excel.html', {'form': form, 'data': end_time})
 
+
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위
 
@@ -92,10 +94,11 @@ def handle_excel_upload(request, form):
     logger.info(f"Member Info: Email={member.email}")
 
     excel = pd.read_excel(request.FILES['file'], dtype={'날짜': str})
-    aggregated_data, keyword_data = aggregate_data(excel, member)
+    aggregated_data, keyword_data, keyword_details_data = aggregate_data(excel, member)
     with transaction.atomic():  # 트랜잭션 시작
         save_campaign_option_details(aggregated_data)
         insert_count, duplicate_count = save_keywords(keyword_data)
+        save_keyword_details(keyword_details_data)
 
     end_time = time.time() * 1000
     time_taken = end_time - start_time
@@ -104,7 +107,6 @@ def handle_excel_upload(request, form):
     print(f"엑셀 총 row = {total_count}")
     print(f"합쳐저서 들어간 총 데이터 = {insert_count}")
     print(f"중복 데이터 = {duplicate_count}")
-
 
     print(f"Time taken: {time_taken} milliseconds")
 
@@ -121,6 +123,7 @@ def handle_excel_upload(request, form):
 def aggregate_data(excel, member):
     aggregated_data = {}
     keyword_data = {}
+    keyword_details_data = {}
     for index, row in excel.iterrows():
         campaign = get_or_create_campaign(row, member)
         execution = get_or_create_execution(row, campaign)
@@ -132,15 +135,23 @@ def aggregate_data(excel, member):
         update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type)
 
         key_keyword = row['키워드']
+        cv_option_id= row['광고전환매출발생 옵션ID']
+        orders = row['총 주문수(1일)']
         if pd.isna(key_keyword):
             key_keyword = ""
         else:
             # 공백 제거 및 띄어쓰기 없이 처리
             key_keyword = str(key_keyword).replace(" ", "")
-        keyword_key = (cop_date, campaign.campaign_id, key_keyword)
-        update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date,key_keyword, cop_search_type)
+        # 캠 + 날짜 + 키워드 + 옵션아이디
+        if key_keyword != "" and orders != 0 :
+            keyword_details_key = (cop_date, key_keyword, campaign.campaign_id, cv_option_id)
+            update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date,
+                                        cv_option_id, row)
 
-    return aggregated_data, keyword_data
+        keyword_key = (cop_date, campaign.campaign_id, key_keyword)
+        update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type)
+
+    return aggregated_data, keyword_data, keyword_details_data
 
 
 def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type):
@@ -166,7 +177,22 @@ def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date
     aggregated_data[detail_key]['cop_adsales'] += row['총 전환매출액(1일)']
 
 
-def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date,key_keyword,cop_search_type):
+def update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date, cv_option_id,
+                                row):
+    if keyword_details_key not in keyword_details_data:
+        keyword_details_data[keyword_details_key] = {
+            'kde_date': cop_date,
+            'kde_keyword': key_keyword,
+            'kde_exe_id': cv_option_id,
+            'kde_quantity_sold': 0,
+            'kde_sales_revenue': 0,
+            'campaign': campaign
+        }
+    keyword_details_data[keyword_details_key]['kde_quantity_sold'] += row['총 판매수량(1일)']
+    keyword_details_data[keyword_details_key]['kde_sales_revenue'] += row['총 전환매출액(1일)']
+
+
+def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type):
     key_exclude_flag = row.get('제외여부', False)
     if keyword_key not in keyword_data:
         keyword_data[keyword_key] = {
@@ -210,12 +236,32 @@ def save_campaign_option_details(aggregated_data):
                 cop_roas=(data['cop_adsales'] / data['cop_adcost']) * 100 if data['cop_adcost'] > 0 else 0,
                 cop_clicks=data['cop_clicks'],
                 cop_cvr=round((data['cop_sales'] / data['cop_clicks']) * 100, 2) if data['cop_clicks'] > 0 else 0,
-                cop_click_rate=(data['cop_clicks'] / data['cop_impressions']) * 100 if data['cop_impressions'] > 0 else 0,
+                cop_click_rate=(data['cop_clicks'] / data['cop_impressions']) * 100 if data[
+                                                                                           'cop_impressions'] > 0 else 0,
                 cop_search_type=data['cop_search_type'],
                 execution=data['execution']  # execution 객체 그대로 사용
             ))
     CampaignOptionDetails.objects.bulk_create(buffer)
 
+
+def save_keyword_details(keyword_details_data):
+    buffer = []
+    for key, data in keyword_details_data.items():
+        if not KeywordDetail.objects.filter(
+                kde_date=data['kde_date'],
+                kde_keyword=data['kde_keyword'],
+                kde_exe_id=data['kde_exe_id'],
+                campaign=data['campaign'],
+        ).exists():
+            buffer.append(KeywordDetail(
+                kde_date=data['kde_date'],
+                kde_keyword=data['kde_keyword'],
+                kde_exe_id=data['kde_exe_id'],
+                kde_quantity_sold=data['kde_quantity_sold'],
+                kde_sales_revenue=data['kde_sales_revenue'],
+                campaign=data['campaign'],  # Campaign 객체 추가
+            ))
+    KeywordDetail.objects.bulk_create(buffer)
 
 
 def save_keywords(keyword_data):
@@ -248,10 +294,9 @@ def save_keywords(keyword_data):
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign']
             ))
-            insert_count += 1 # 들어간 값
+            insert_count += 1  # 들어간 값
         else:
-            duplicate_count += 1 # 안 들어간 값
-    print(buffer)
+            duplicate_count += 1  # 안 들어간 값
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
 
@@ -281,6 +326,7 @@ def get_or_create_execution(row, campaign):
         }
     )
     return execution
+
 
 def some_protected_view(request):
     auth_header = request.headers.get('Authorization', None)

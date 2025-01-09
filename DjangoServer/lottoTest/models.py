@@ -125,19 +125,21 @@ class Memo(models.Model):
 
 class Margin(models.Model):
     id = models.AutoField(primary_key=True)  # 기본 키
-    mar_campaign_id = models.CharField(max_length=255)  # 캠페인 ID
     mar_date = models.DateField()  # 날짜
-    mar_target_efficiency = models.FloatField()  # 목표 효율성
-    mar_ad_revenue = models.FloatField()  # 광고 수익
     mar_ad_budget = models.FloatField()  # 광고 예산
-    mar_ad_cost_ratio = models.FloatField()  # 광고비 비율
-    mar_cpc_unit_cost = models.FloatField()  # CPC 단가
     mar_impressions = models.BigIntegerField()  # 노출 수
     mar_clicks = models.BigIntegerField()  # 클릭 수
     mar_ad_conversion_sales = models.BigIntegerField()  # 광고 전환 판매 수
-    mar_actual_sales = models.BigIntegerField()  # 실제 판매 수
-    mar_ad_margin = models.BigIntegerField()  # 광고 머지 수
+    mar_ad_cost = models.BigIntegerField()  # 광고 비
+
+    mar_ad_margin = models.BigIntegerField()  # 광고 마진 수
     mar_net_profit = models.FloatField()  # 순이익
+
+    mar_target_efficiency = models.FloatField()  # 목표 효율성
+
+    mar_actual_sales = models.BigIntegerField()  # 실제 판매 수
+
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):
         return f"Margin ID: {self.id}"

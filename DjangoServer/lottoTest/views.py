@@ -94,11 +94,11 @@ def handle_excel_upload(request, form):
     logger.info(f"Member Info: Email={member.email}")
 
     excel = pd.read_excel(request.FILES['file'], dtype={'날짜': str})
-    aggregated_data, keyword_data, keyword_details_data = aggregate_data(excel, member)
+    aggregated_data, keyword_data = aggregate_data(excel, member)
     with transaction.atomic():  # 트랜잭션 시작
         save_campaign_option_details(aggregated_data)
         insert_count, duplicate_count = save_keywords(keyword_data)
-        save_keyword_details(keyword_details_data)
+        # save_keyword_details(keyword_details_data)
 
     end_time = time.time() * 1000
     time_taken = end_time - start_time
@@ -123,7 +123,7 @@ def handle_excel_upload(request, form):
 def aggregate_data(excel, member):
     aggregated_data = {}
     keyword_data = {}
-    keyword_details_data = {}
+    # keyword_details_data = {}
     for index, row in excel.iterrows():
         campaign = get_or_create_campaign(row, member)
         execution = get_or_create_execution(row, campaign)
@@ -135,23 +135,23 @@ def aggregate_data(excel, member):
         update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type)
 
         key_keyword = row['키워드']
-        cv_option_id= row['광고전환매출발생 옵션ID']
-        orders = row['총 주문수(1일)']
+        # cv_option_id= row['광고전환매출발생 옵션ID']
+        # orders = row['총 주문수(1일)']
         if pd.isna(key_keyword):
             key_keyword = ""
         else:
             # 공백 제거 및 띄어쓰기 없이 처리
             key_keyword = str(key_keyword).replace(" ", "")
         # 캠 + 날짜 + 키워드 + 옵션아이디
-        if key_keyword != "" and orders != 0 :
-            keyword_details_key = (cop_date, key_keyword, campaign.campaign_id, cv_option_id)
-            update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date,
-                                        cv_option_id, row)
+        # if key_keyword != "" and orders != 0 :
+        #     keyword_details_key = (cop_date, key_keyword, campaign.campaign_id, cv_option_id)
+        #     update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date,
+        #                                 cv_option_id, row)
 
         keyword_key = (cop_date, campaign.campaign_id, key_keyword)
         update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type)
 
-    return aggregated_data, keyword_data, keyword_details_data
+    return aggregated_data, keyword_data
 
 
 def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date, cop_search_type):
@@ -177,23 +177,25 @@ def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date
     aggregated_data[detail_key]['cop_adsales'] += row['총 전환매출액(1일)']
 
 
-def update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date, cv_option_id,
-                                row):
-    if keyword_details_key not in keyword_details_data:
-        keyword_details_data[keyword_details_key] = {
-            'kde_date': cop_date,
-            'kde_keyword': key_keyword,
-            'kde_exe_id': cv_option_id,
-            'kde_quantity_sold': 0,
-            'kde_sales_revenue': 0,
-            'campaign': campaign
-        }
-    keyword_details_data[keyword_details_key]['kde_quantity_sold'] += row['총 판매수량(1일)']
-    keyword_details_data[keyword_details_key]['kde_sales_revenue'] += row['총 전환매출액(1일)']
+# def update_keyword_details_data(keyword_details_data, keyword_details_key, campaign, key_keyword, cop_date, cv_option_id,
+#                                 row):
+#     if keyword_details_key not in keyword_details_data:
+#         keyword_details_data[keyword_details_key] = {
+#             'kde_date': cop_date,
+#             'kde_keyword': key_keyword,
+#             'kde_exe_id': cv_option_id,
+#             'kde_quantity_sold': 0,
+#             'kde_sales_revenue': 0,
+#             'campaign': campaign
+#         }
+#     keyword_details_data[keyword_details_key]['kde_quantity_sold'] += row['총 판매수량(1일)']
+#     keyword_details_data[keyword_details_key]['kde_sales_revenue'] += row['총 전환매출액(1일)']
 
 
 def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type):
     key_exclude_flag = row.get('제외여부', False)
+    cv_option_id = row['광고전환매출발생 옵션ID']  # 전환발생매출ID
+    orders = row['총 판매수량(1일)']  # 판매 수량
     if keyword_key not in keyword_data:
         keyword_data[keyword_key] = {
             'campaign': campaign,
@@ -210,6 +212,7 @@ def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_
             'key_date': cop_date,
             'key_exclude_flag': key_exclude_flag,
             'key_search_type': cop_search_type,
+            'key_product_sales': {},
         }
 
     keyword_data[keyword_key]['key_impressions'] += row['노출수']
@@ -217,6 +220,12 @@ def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_
     keyword_data[keyword_key]['key_adcost'] += row['광고비']
     keyword_data[keyword_key]['key_total_sales'] += row['총 판매수량(1일)']
     keyword_data[keyword_key]['key_adsales'] += row['총 전환매출액(1일)']
+
+    # 전환발생매출ID로 keyProductSales 필드 업데이트
+    if orders >= 1:
+        if cv_option_id not in keyword_data[keyword_key]['key_product_sales']:
+            keyword_data[keyword_key]['key_product_sales'][cv_option_id] = 0
+        keyword_data[keyword_key]['key_product_sales'][cv_option_id] += orders
 
 
 def save_campaign_option_details(aggregated_data):
@@ -269,6 +278,7 @@ def save_keywords(keyword_data):
     insert_count = 0
     duplicate_count = 0
     for key, data in keyword_data.items():
+        print(data['key_product_sales'])
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
                 key_date=data['key_date'],
@@ -292,7 +302,8 @@ def save_keywords(keyword_data):
                 key_date=data['key_date'],
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
-                campaign=data['campaign']
+                campaign=data['campaign'],
+                key_product_sales=data['key_product_sales'],
             ))
             insert_count += 1  # 들어간 값
         else:

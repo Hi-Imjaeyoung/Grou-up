@@ -63,6 +63,9 @@ class Keyword(models.Model):
     key_search_type = models.CharField(max_length=255)  # 검색 비검색
     key_exclude_flag = models.BooleanField(default=False)  # 제외여부
 
+    # json 필드
+    key_product_sales = models.JSONField(null=True, blank=True)  # 상품 ID 및 판매량 저장
+
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
     def __str__(self):

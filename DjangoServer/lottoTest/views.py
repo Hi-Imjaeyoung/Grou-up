@@ -186,12 +186,14 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_net_profit': 0,
             'mar_target_efficiency': 0,
             'mar_actual_sales': 0,
+            'mar_sales': 0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
     margin_data[margin_key]['mar_clicks'] += row['클릭수']
     margin_data[margin_key]['mar_ad_cost'] += row['광고비']
     margin_data[margin_key]['mar_ad_conversion_sales'] += row['총 판매수량(1일)']
+    margin_data[margin_key]['mar_sales'] += row['총 전환매출액(1일)']
 
 
 def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type):
@@ -295,6 +297,7 @@ def save_margin(margin_data):
                 mar_net_profit=data['mar_net_profit'],
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
+                mar_sales = data['mar_sales'],
             ))
     Margin.objects.bulk_create(buffer)
 

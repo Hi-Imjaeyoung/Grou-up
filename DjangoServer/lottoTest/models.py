@@ -131,6 +131,7 @@ class Margin(models.Model):
     mar_clicks = models.BigIntegerField()  # 클릭 수
     mar_ad_conversion_sales = models.BigIntegerField()  # 광고 전환 판매 수
     mar_ad_cost = models.BigIntegerField()  # 광고 비
+    mar_sales = models.BigIntegerField()  # 엑셀기준 매출
 
     mar_ad_margin = models.BigIntegerField()  # 광고 마진 수
     mar_net_profit = models.FloatField()  # 순이익

@@ -187,6 +187,8 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_target_efficiency': 0,
             'mar_actual_sales': 0,
             'mar_sales': 0,
+            'mar_per_piece':0,
+            'mar_zero_roas':0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
@@ -298,6 +300,8 @@ def save_margin(margin_data):
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
                 mar_sales = data['mar_sales'],
+                mar_per_piece = data['mar_per_piece'],
+                mar_zero_roas = data['mar_zero_roas'],
             ))
     Margin.objects.bulk_create(buffer)
 
@@ -362,6 +366,9 @@ def get_or_create_execution(row, campaign):
             'exe_product_name': row['광고집행 상품명'],
             'exe_detail_category': "",
             'campaign_id': campaign,
+            'exe_sale_price' : 0,
+            'exe_total_price' : 0,
+            'exe_cost_price' : 0
         }
     )
     return execution

@@ -38,6 +38,9 @@ class Execution(models.Model):
     exe_id = models.CharField(max_length=255)  # 기존 `exeId` 필드
     exe_product_name = models.CharField(max_length=255)
     exe_detail_category = models.CharField(max_length=255)
+    exe_sale_price = models.CharField(max_length=255)
+    exe_total_price = models.CharField(max_length=255)
+    exe_cost_price = models.CharField(max_length=255)
 
     campaign_id = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
@@ -135,6 +138,8 @@ class Margin(models.Model):
 
     mar_ad_margin = models.BigIntegerField()  # 광고 마진 수
     mar_net_profit = models.FloatField()  # 순이익
+    mar_per_piece = models.FloatField()  # 1개당 마진
+    mar_zero_roas = models.FloatField()  # 제로Roas
 
     mar_target_efficiency = models.FloatField()  # 목표 효율성
 

@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail, \
-    Margin
+    Margin, NetSales
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -38,6 +38,78 @@ def upload_category(request):
         form = ExcelFileForm()
     return "success"
 
+
+@csrf_exempt
+def upload_margin(request):
+    print("upload_margin start")
+    if request.method == 'POST':
+        form = ExcelFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            # handle_upload_margin에서 반환된 값을 그대로 반환
+            return handle_upload_margin(request, form)
+    else:
+        form = ExcelFileForm()
+
+    return render(request, 'upload_excel.html', {'form': form})
+
+
+def handle_upload_margin(request, form):
+    uploaded_file = request.FILES['file']
+
+    # 1️⃣ 파일명에서 날짜 추출
+    file_name = uploaded_file.name
+    start_index = file_name.find('-') + 1  # '-' 다음 위치 찾기
+    date_str = file_name[start_index:start_index + 8]  # 8자리 날짜 추출
+    net_date = datetime.strptime(date_str, '%Y%m%d').date()  # LocalDate 변환
+
+    # 2️⃣ 엑셀 파일 읽기
+    df = pd.read_excel(uploaded_file)
+    df = df.iloc[:-1]
+
+    # 3️⃣ 옵션명 기준으로 순판매금액과 순판매수 합산
+    df_grouped = df.groupby('옵션명', as_index=False).agg({
+        '순 판매 금액(전체 거래 금액 - 취소 금액)': 'sum',
+        '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum'
+    })
+
+    # 4️⃣ 로그인한 유저 가져오기
+    email = some_protected_view(request)
+    member = get_object_or_404(Member, email=email)
+
+    # 5️⃣ 데이터베이스 저장 (업데이트 or 새로 생성)
+    for _, row in df_grouped.iterrows():
+        product_name = row['옵션명']
+        total_sales_amount = row['순 판매 금액(전체 거래 금액 - 취소 금액)']
+        total_sales_count = row['순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)']
+
+        if total_sales_count == 0:
+            continue
+
+        # 같은 날짜 + 옵션명이 있는지 확인
+        try:
+            net_sales = NetSales.objects.get(
+                net_product_name=product_name,
+                net_date=net_date,
+                email=member
+            )
+            # 이미 존재하는 경우 업데이트
+            net_sales.net_sales_count = total_sales_count
+            net_sales.net_sales_amount = total_sales_amount
+            net_sales.save()
+
+        except NetSales.DoesNotExist:
+            # 존재하지 않으면 새로 생성
+            net_sales = NetSales(
+                net_product_name=product_name,
+                net_sales_count=total_sales_count,
+                net_sales_amount=total_sales_amount,
+                net_date=net_date,
+                email=member
+            )
+            net_sales.save()
+
+    # 데이터를 'data'로 추가하여 render할 때 반환
+    return render(request, 'upload_excel.html', {'form': form, 'data': member})
 
 def handle_category_upload(request, form):
     start_time = time.time() * 100
@@ -169,8 +241,8 @@ def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date
     aggregated_data[detail_key]['cop_impressions'] += row['노출수']
     aggregated_data[detail_key]['cop_clicks'] += row['클릭수']
     aggregated_data[detail_key]['cop_adcost'] += row['광고비']
-    aggregated_data[detail_key]['cop_sales'] += row['총 판매수량(1일)']
-    aggregated_data[detail_key]['cop_adsales'] += row['총 전환매출액(1일)']
+    aggregated_data[detail_key]['cop_sales'] += row['총 판매수량(14일)']
+    aggregated_data[detail_key]['cop_adsales'] += row['총 전환매출액(14일)']
 
 
 def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
@@ -181,27 +253,27 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_impressions': 0,
             'mar_clicks': 0,
             'mar_ad_conversion_sales': 0,
+            'mar_ad_conversion_sales_count':0,
             'mar_ad_cost': 0,
             'mar_ad_margin': 0,
             'mar_net_profit': 0,
             'mar_target_efficiency': 0,
             'mar_actual_sales': 0,
             'mar_sales': 0,
-            'mar_per_piece':0,
-            'mar_zero_roas':0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
     margin_data[margin_key]['mar_clicks'] += row['클릭수']
     margin_data[margin_key]['mar_ad_cost'] += row['광고비']
-    margin_data[margin_key]['mar_ad_conversion_sales'] += row['총 판매수량(1일)']
-    margin_data[margin_key]['mar_sales'] += row['총 전환매출액(1일)']
+    margin_data[margin_key]['mar_ad_conversion_sales'] += row['총 판매수량(14일)']
+    margin_data[margin_key]['mar_ad_conversion_sales_count'] += row['총 주문수(14일)']
+    margin_data[margin_key]['mar_sales'] += row['총 전환매출액(14일)']
 
 
 def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type):
     key_exclude_flag = row.get('제외여부', False)
-    cv_option_id = row['광고전환매출발생 옵션ID']  # 전환발생매출ID
-    orders = row['총 판매수량(1일)']  # 판매 수량
+    cv_option_id = row['광고전환매출발생 상품명']  
+    orders = row['총 판매수량(14일)']  # 판매 수량
     if keyword_key not in keyword_data:
         keyword_data[keyword_key] = {
             'campaign': campaign,
@@ -224,8 +296,8 @@ def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_
     keyword_data[keyword_key]['key_impressions'] += row['노출수']
     keyword_data[keyword_key]['key_clicks'] += row['클릭수']
     keyword_data[keyword_key]['key_adcost'] += row['광고비']
-    keyword_data[keyword_key]['key_total_sales'] += row['총 판매수량(1일)']
-    keyword_data[keyword_key]['key_adsales'] += row['총 전환매출액(1일)']
+    keyword_data[keyword_key]['key_total_sales'] += row['총 판매수량(14일)']
+    keyword_data[keyword_key]['key_adsales'] += row['총 전환매출액(14일)']
 
     # 전환발생매출ID로 keyProductSales 필드 업데이트
     if orders >= 1:
@@ -294,14 +366,13 @@ def save_margin(margin_data):
                 mar_impressions=data['mar_impressions'],
                 mar_clicks=data['mar_clicks'],
                 mar_ad_conversion_sales=data['mar_ad_conversion_sales'],
+                mar_ad_conversion_sales_count = data['mar_ad_conversion_sales_count'],
                 mar_ad_cost=data['mar_ad_cost'],
                 mar_ad_margin=data['mar_ad_margin'],
                 mar_net_profit=data['mar_net_profit'],
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
                 mar_sales = data['mar_sales'],
-                mar_per_piece = data['mar_per_piece'],
-                mar_zero_roas = data['mar_zero_roas'],
             ))
     Margin.objects.bulk_create(buffer)
 
@@ -368,7 +439,9 @@ def get_or_create_execution(row, campaign):
             'campaign_id': campaign,
             'exe_sale_price' : 0,
             'exe_total_price' : 0,
-            'exe_cost_price' : 0
+            'exe_cost_price' : 0,
+            'exe_per_piece' : 0,
+            'exe_zero_roas' : 0,
         }
     )
     return execution

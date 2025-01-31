@@ -20,6 +20,19 @@ class Member(models.Model):
     class Meta:
         managed = False  # Django가 이 테이블을 관리하지 않도록 설정
         db_table = 'member'
+
+class NetSales(models.Model):
+    id = models.AutoField(primary_key=True)
+    net_product_name = models.CharField(max_length=255) # 상품명
+    net_sales_count = models.BigIntegerField() # 순 판매수
+    net_sales_amount = models.BigIntegerField() # 순 판매 금액
+    net_date = models.DateField()  # 날짜
+    email = models.ForeignKey(Member, on_delete=models.CASCADE, db_column='email')
+
+    def __str__(self):
+        return str(self.id)
+    class Meta:
+        db_table = 'net_sales'
 # 캠페인 테이블
 class Campaign(models.Model):
     campaign_id = models.CharField(max_length=255,primary_key=True)
@@ -41,6 +54,8 @@ class Execution(models.Model):
     exe_sale_price = models.CharField(max_length=255)
     exe_total_price = models.CharField(max_length=255)
     exe_cost_price = models.CharField(max_length=255)
+    exe_per_piece = models.FloatField()  # 1개당 마진
+    exe_zero_roas = models.FloatField()  # 제로Roas
 
     campaign_id = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
@@ -91,6 +106,8 @@ class CampaignOptionDetails(models.Model):
     cop_cvr = models.FloatField()  # 전환율
     cop_search_type = models.CharField(max_length=255)  # 검색 비검색
 
+
+
     execution = models.ForeignKey(Execution, on_delete=models.CASCADE, db_column='execution_id')
 
     def __str__(self):
@@ -133,13 +150,13 @@ class Margin(models.Model):
     mar_impressions = models.BigIntegerField()  # 노출 수
     mar_clicks = models.BigIntegerField()  # 클릭 수
     mar_ad_conversion_sales = models.BigIntegerField()  # 광고 전환 판매 수
+    mar_ad_conversion_sales_count = models.BigIntegerField() # 광고 전환 주문수
     mar_ad_cost = models.BigIntegerField()  # 광고 비
     mar_sales = models.BigIntegerField()  # 엑셀기준 매출
 
     mar_ad_margin = models.BigIntegerField()  # 광고 마진 수
     mar_net_profit = models.FloatField()  # 순이익
-    mar_per_piece = models.FloatField()  # 1개당 마진
-    mar_zero_roas = models.FloatField()  # 제로Roas
+
 
     mar_target_efficiency = models.FloatField()  # 목표 효율성
 

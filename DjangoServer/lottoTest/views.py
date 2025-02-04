@@ -23,8 +23,8 @@ def upload_excel(request):
         if form.is_valid():
             return handle_excel_upload(request, form)
     else:
-        form = ExcelFileForm()
-    return render(request, 'upload_excel.html', {'form': form})
+        return JsonResponse({'status': 'error', 'message': 'Failed to upload Excel file.'}, status=500)
+    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
 @csrf_exempt
@@ -35,22 +35,21 @@ def upload_category(request):
         if form.is_valid():
             return handle_category_upload(request, form)
     else:
-        form = ExcelFileForm()
-    return "success"
+        return JsonResponse({'status': 'error', 'message': 'Failed to upload category file.'}, status=500)
+    return JsonResponse({'status': 'success', 'message': 'Category file uploaded successfully.'}, status=200)
 
 
 @csrf_exempt
 def upload_margin(request):
-    print("upload_margin start")
     if request.method == 'POST':
         form = ExcelFileForm(request.POST, request.FILES)
         if form.is_valid():
             # handle_upload_margin에서 반환된 값을 그대로 반환
             return handle_upload_margin(request, form)
     else:
-        form = ExcelFileForm()
+        return JsonResponse({'status': 'error', 'message': 'Failed to upload margin file.'}, status=500)
 
-    return render(request, 'upload_excel.html', {'form': form})
+    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
 
 
 def handle_upload_margin(request, form):

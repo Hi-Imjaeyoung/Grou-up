@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from DjangoServer.lottoTest.views import upload_excel, upload_category, upload_margin
+from DjangoServer.views import  index
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('upload_excel/', upload_excel, name='upload_excel'),
     path('upload_category/', upload_category, name='upload_category'),
-    path('upload_margin/', upload_margin, name = 'upload_margin')
+    path('upload_margin/', upload_margin, name = 'upload_margin'),
+    path('', index, name='index'),  # / 경로 추가
 ]

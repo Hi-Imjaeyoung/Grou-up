@@ -27,16 +27,6 @@ def upload_excel(request):
     return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
-@csrf_exempt
-def upload_category(request):
-    print("upload_category upload start")
-    if request.method == 'POST':
-        form = ExcelFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            return handle_category_upload(request, form)
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Failed to upload category file.'}, status=500)
-    return JsonResponse({'status': 'success', 'message': 'Category file uploaded successfully.'}, status=200)
 
 
 @csrf_exempt
@@ -110,47 +100,6 @@ def handle_upload_margin(request, form):
     # 데이터를 'data'로 추가하여 render할 때 반환
     return render(request, 'upload_excel.html', {'form': form, 'data': member})
 
-def handle_category_upload(request, form):
-    start_time = time.time() * 100
-    form = ExcelFileForm(request.POST, request.FILES)
-
-    category_excel = pd.read_excel(request.FILES['file'], skiprows=2)
-    if form.is_valid():
-        with transaction.atomic():
-            # 중복 체크를 위한 Set 생성
-            existing_categories = set(Category.objects.values_list('cat_option_id', flat=True))
-
-            # 업데이트할 Execution 객체 리스트
-            executions_to_update = []
-
-            for index, row in category_excel.iterrows():
-                cat_option_id = row["옵션 ID"]
-                cat_ad_product_name = row["업체 등록 상품명"]
-                cat_detail = row["등록 옵션명"]
-
-                if pd.isna(cat_option_id):
-                    continue
-
-                # 중복 체크
-                if cat_option_id not in existing_categories:
-                    # 중복이 없으면 데이터 저장
-                    Category.objects.create(
-                        cat_option_id=cat_option_id,
-                        cat_ad_product_name=cat_ad_product_name,
-                        cat_detail=cat_detail
-                    )
-                    existing_categories.add(cat_option_id)  # 추가하여 중복 체크 유지
-
-                try:
-                    get_execution = Execution.objects.get(execution_id=cat_option_id)
-                    get_execution.exe_detail_category = cat_detail
-                    executions_to_update.append(get_execution)  # 업데이트할 객체를 리스트에 추가
-                except Execution.DoesNotExist:
-                    # 해당 execution_id가 존재하지 않으면 그냥 패스
-                    continue
-            # 한 번에 업데이트
-            if executions_to_update:
-                Execution.objects.bulk_update(executions_to_update, ['exe_detail_category'])
 
     end_time = time.time() * 1000
     time_taken = end_time - start_time

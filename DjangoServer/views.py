@@ -2,12 +2,12 @@ import os
 from django.http import HttpResponse
 
 def index(request):
-    db_engine = os.environ.get("DB_ENGINE", "No DB_ENGINE found")
-    db_host = os.environ.get("DB_HOST", "No DB_HOST found")
-    db_name = os.environ.get("DB_NAME", "No DB_NAME found")
-    db_user = os.environ.get("DB_USER", "No DB_USER found")
-    db_password = os.environ.get("DB_PASSWORD", "No DB_PASSWORD found")
-    db_port = os.environ.get("DB_PORT", "No DB_PORT found")
+    db_engine = os.environ["DB_ENGINE"]
+    db_host = os.environ["DB_HOST"]
+    db_name = os.environ["DB_NAME"]
+    db_user = os.environ["DB_USER"]
+    db_password = os.environ["DB_PASSWORD"]
+    db_port = os.environ["DB_PORT"]
 
     response_text = f"""
     Hello, world!

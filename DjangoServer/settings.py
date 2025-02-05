@@ -8,10 +8,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # 환경 변수 설정
 env = environ.Env(DEBUG=(bool, False))
 
-# .env 파일이 있으면 로드
-env_path = os.path.join(BASE_DIR, ".env.prod")
-if os.path.exists(env_path):
-    environ.Env.read_env(env_path)
+db_engine = os.environ["DB_ENGINE"]
+db_host = os.environ["DB_HOST"]
+db_name = os.environ["DB_NAME"]
+db_user = os.environ["DB_USER"]
+db_password = os.environ["DB_PASSWORD"]
+db_port = os.environ["DB_PORT"]
 
 # 환경 변수에서 값 가져오기 (없으면 기본값 사용)
 DEBUG = os.environ.get("DEBUG", env("DEBUG", default=False))

@@ -49,12 +49,12 @@ ROOT_URLCONF = "DjangoServer.urls"
 # 데이터베이스 설정
 DATABASES = {
     "default": {
-        "DB_ENGINE": os.environ.get("DB_ENGINE"),
-        "DB_HOST": os.environ.get("DB_HOST"),
-        "DB_NAME": os.environ.get("DB_NAME"),
-        "DB_USER": os.environ.get("DB_USER"),
-        "DB_PASSWORD": os.environ.get("DB_PASSWORD"),
-        "DB_PORT": os.environ.get("DB_PORT")
+        "ENGINE": env("DB_ENGINE", default="django.db.backends.mysql"),
+        "NAME": env("DB_NAME", default="grouup"),
+        "USER": env("DB_USER", default="grouup"),
+        "PASSWORD": env("DB_PASSWORD", default=""),
+        "HOST": env("DB_HOST", default="localhost"),
+        "PORT": env("DB_PORT", default="3306"),
     }
 }
 

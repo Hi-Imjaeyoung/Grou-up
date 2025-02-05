@@ -57,7 +57,12 @@ DATABASES = {
         "PASSWORD": env("DB_PASSWORD", default=""),
         "HOST": env("DB_HOST", default="localhost"),
         "PORT": env("DB_PORT", default="3306"),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'collation': 'utf8mb4_general_ci',
+        },
     }
+
 }
 
 TEMPLATES = [

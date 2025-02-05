@@ -31,12 +31,16 @@ jobs:
           cat <<EOF > zappa_settings.json
           {
             "production": {
+              "app_function": "myproject.wsgi.application",
               "aws_region": "ap-northeast-2",
               "profile_name": "default",
               "project_name": "djangoserver",
               "runtime": "python3.9",
               "s3_bucket": "${{ secrets.AWS_S3_BUCKET }}",
               "environment_variables": {
+                "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+                "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+                "AWS_REGION": "ap-northeast-2",
                 "DB_ENGINE": "${{ secrets.AWS_DB_ENGINE }}",
                 "DB_NAME": "${{ secrets.AWS_DB_NAME }}",
                 "DB_USER": "${{ secrets.AWS_DB_USER }}",
@@ -51,13 +55,8 @@ jobs:
       - name: Deploy to AWS Lambda
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
 
         run: |
-          zappa update production --set-env DB_ENGINE=${{ secrets.AWS_DB_ENGINE }} \
-                                   --set-env DB_NAME=${{ secrets.AWS_DB_NAME }} \
-                                   --set-env DB_USER=${{ secrets.AWS_DB_USER }} \
-                                   --set-env DB_PASSWORD=${{ secrets.AWS_DB_PASSWORD }} \
-                                   --set-env DB_HOST=${{ secrets.AWS_DB_HOST }} \
-                                   --set-env DB_PORT=${{ secrets.AWS_DB_PORT }}
+          zappa update production

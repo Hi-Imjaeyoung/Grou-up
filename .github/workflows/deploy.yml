@@ -21,6 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv venv
+          source venv/bin/activate
           venv/bin/python -m pip install --upgrade pip
           venv/bin/pip install awscli
           venv/bin/pip install mysql-connector-python
@@ -66,6 +67,7 @@ jobs:
           AWS_REGION: "ap-northeast-2"
 
         run: |
+          source venv/bin/activate
           if venv/bin/zappa status production > /dev/null 2>&1; then
             echo "Updating existing deployment..."
             venv/bin/zappa update production

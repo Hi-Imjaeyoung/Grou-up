@@ -31,12 +31,20 @@ jobs:
           cat <<EOF > zappa_settings.json
           {
             "production": {
-              "app_function": "myproject.wsgi.application",
+              "project_name": "djangoserver",
               "aws_region": "ap-northeast-2",
               "profile_name": "default",
               "project_name": "djangoserver",
               "runtime": "python3.9",
               "s3_bucket": "${{ secrets.AWS_S3_BUCKET }}",
+              "slim_handler" : true,
+              "exclude": [
+                "boto3",
+                "dateutil",
+                "botocore",
+                "s3transfer",
+                "concurrent"
+            ],
               "environment_variables": {
                 "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",

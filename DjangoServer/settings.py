@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
 
 # .env 파일이 있으면 로드
-env_path = os.path.join(BASE_DIR, ".env")
+env_path = os.path.join(BASE_DIR, ".env.prod")
 if os.path.exists(env_path):
     environ.Env.read_env(env_path)
 

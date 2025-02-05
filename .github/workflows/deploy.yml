@@ -32,19 +32,16 @@ jobs:
           {
             "production": {
               "project_name": "djangoserver",
-              "aws_region": "ap-northeast-2",
-              "profile_name": "default",
-              "project_name": "djangoserver",
               "runtime": "python3.9",
               "s3_bucket": "${{ secrets.AWS_S3_BUCKET }}",
-              "slim_handler" : true,
+              "slim_handler": true,
               "exclude": [
                 "boto3",
                 "dateutil",
                 "botocore",
                 "s3transfer",
                 "concurrent"
-            ],
+              ],
               "environment_variables": {
                 "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
@@ -67,4 +64,10 @@ jobs:
           AWS_REGION: "ap-northeast-2"
 
         run: |
-          zappa update production
+          if zappa status production > /dev/null 2>&1; then
+            echo "Updating existing deployment..."
+            zappa update production
+          else
+            echo "Deploying new Lambda function..."
+            zappa deploy production
+          fi

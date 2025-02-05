@@ -1,4 +1,6 @@
 from django.http import HttpResponse
-
+import os
 def index(request):
-    return HttpResponse("Hello, world!")
+    b =  os.environ.get("DB_HOST")
+    a=  os.environ.get("DB_USER")
+    return HttpResponse("Hello, world!", a, b)

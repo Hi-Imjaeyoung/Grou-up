@@ -16,12 +16,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m venv venv
-          source venv/bin/activate
           venv/bin/python -m pip install --upgrade pip
           venv/bin/pip install awscli
           venv/bin/pip install mysql-connector-python
@@ -34,7 +33,7 @@ jobs:
           {
             "production": {
               "project_name": "djangoserver",
-              "runtime": "python3.9",
+              "runtime": "python3.11",
               "s3_bucket": "${{ secrets.AWS_S3_BUCKET }}",
               "slim_handler": true,
               "aws_region": "ap-northeast-2",
@@ -67,7 +66,6 @@ jobs:
           AWS_REGION: "ap-northeast-2"
 
         run: |
-          source venv/bin/activate
           if venv/bin/zappa status production > /dev/null 2>&1; then
             echo "Updating existing deployment..."
             venv/bin/zappa update production

@@ -35,7 +35,6 @@ jobs:
               "runtime": "python3.9",
               "s3_bucket": "${{ secrets.AWS_S3_BUCKET }}",
               "slim_handler": true,
-              "role_name": "arn:aws:iam::533267394261:role/ZappaLambdaExecutionRole",
               "aws_region": "ap-northeast-2",
               "exclude": [
                 "boto3",

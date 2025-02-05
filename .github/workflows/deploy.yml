@@ -3,7 +3,7 @@ name: Deploy Django to AWS Lambda
 on:
   push:
     branches:
-      - main
+      - devServer
 
 jobs:
   deploy:

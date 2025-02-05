@@ -48,7 +48,6 @@ jobs:
               "environment_variables": {
                 "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
-                "AWS_REGION": "ap-northeast-2",
                 "DB_ENGINE": "${{ secrets.AWS_DB_ENGINE }}",
                 "DB_NAME": "${{ secrets.AWS_DB_NAME }}",
                 "DB_USER": "${{ secrets.AWS_DB_USER }}",

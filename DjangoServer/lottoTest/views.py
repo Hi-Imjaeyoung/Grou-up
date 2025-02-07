@@ -1,3 +1,4 @@
+import json
 from csv import excel
 from datetime import datetime
 import time
@@ -330,6 +331,7 @@ def save_keywords(keyword_data):
     insert_count = 0
     duplicate_count = 0
     for key, data in keyword_data.items():
+        key_product_sales_json = json.dumps(data['key_product_sales'], ensure_ascii=False)
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
                 key_date=data['key_date'],
@@ -354,7 +356,7 @@ def save_keywords(keyword_data):
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign'],
-                key_product_sales=data['key_product_sales'],
+                key_product_sales=key_product_sales_json,
             ))
             insert_count += 1  # 들어간 값
         else:

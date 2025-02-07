@@ -99,13 +99,8 @@ def handle_upload_margin(request, form):
             net_sales.save()
 
     # 데이터를 'data'로 추가하여 render할 때 반환
-    return render(request, 'upload_excel.html', {'form': form, 'data': member})
 
-
-    end_time = time.time() * 1000
-    time_taken = end_time - start_time
-    print(f"time_taken :{time_taken} ")
-    return render(request, 'upload_excel.html', {'form': form, 'data': end_time})
+    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
 
 
 def handle_excel_upload(request, form):
@@ -131,14 +126,7 @@ def handle_excel_upload(request, form):
 
     print(f"Time taken: {time_taken} milliseconds")
 
-    return render(request, 'upload_excel.html',
-                  {'form': form,
-                   'data': excel.to_html(),
-                   'summary': {
-                       'total_count': total_count,
-                       'insert_count': insert_count,
-                       'duplicate_count': duplicate_count,
-                   }})
+    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
 def aggregate_data(excel, member):

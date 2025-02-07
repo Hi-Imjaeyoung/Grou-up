@@ -1,5 +1,5 @@
 {
-    "production": {
+    "productiontest": {
         "aws_region": "ap-northeast-2",
         "django_settings": "DjangoServer.settings",
         "exclude": [

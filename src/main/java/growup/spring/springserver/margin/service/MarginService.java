@@ -1,7 +1,6 @@
 package growup.spring.springserver.margin.service;
 
 import growup.spring.springserver.campaign.domain.Campaign;
-import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.netsales.NetSalesNotFoundProductName;

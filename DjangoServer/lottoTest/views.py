@@ -1,4 +1,5 @@
 import json
+import traceback
 from csv import excel
 from datetime import datetime
 import time
@@ -19,14 +20,33 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def upload_excel(request):
-    if request.method == 'POST':
-        form = ExcelFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            return handle_excel_upload(request, form)
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Failed to upload Excel file.'}, status=500)
-    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
+    try:
+        if request.method == 'POST':
+            print("[DEBUG] Received a POST request to upload_excel")  # 로그 출력
 
+            form = ExcelFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                print("[DEBUG] Form is valid. Proceeding with file handling.")
+                return handle_excel_upload(request, form)
+            else:
+                print(f"[ERROR] Form validation failed: {form.errors}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid form submission.',
+                    'errors': form.errors.as_json()  # 폼 유효성 검사 실패 시 상세 오류 반환
+                }, status=400)
+
+        print("[ERROR] Received a non-POST request.")
+        return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed.'}, status=405)
+
+    except Exception as e:
+        error_trace = traceback.format_exc()
+        print(f"[EXCEPTION] {str(e)}\n{error_trace}")  # Lambda 로그에서 확인 가능
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An unexpected error occurred while uploading the Excel file.',
+            'error': str(e)
+        }, status=500)
 
 
 

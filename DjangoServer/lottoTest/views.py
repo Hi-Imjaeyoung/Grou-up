@@ -159,7 +159,7 @@ def aggregate_data(excel, member):
             key_keyword = ""
         else:
             # 공백 제거 및 띄어쓰기 없이 처리
-            key_keyword = str(key_keyword).replace(" ", "")
+            key_keyword = str(key_keyword).replace(" ", "-")
 
         keyword_key = (cop_date, campaign.campaign_id, key_keyword)
         update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type)

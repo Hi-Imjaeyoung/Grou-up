@@ -131,7 +131,7 @@ public class KeywordService {
         Map<LocalDate,KeywordResponseDto> nonSearch = new HashMap<>();
         for(Keyword keyword : data){
             //nonSearch
-            if(keyword.getKeyKeyword().isEmpty()){
+            if(keyword.getKeyKeyword().equals("-")){
                 if(nonSearch.containsKey(keyword.getKeyDate())){
                     nonSearch.get(keyword.getKeyDate()).update(keyword);
                     continue;

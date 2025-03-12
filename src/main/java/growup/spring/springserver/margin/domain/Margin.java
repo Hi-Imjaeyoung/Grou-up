@@ -26,6 +26,7 @@ public class Margin {
     private Long marClicks;  // 클릭 수 -> 클릭률 구해야함
     private Long marAdConversionSales;  // 광고 전환 판매 수
     private Long marAdConversionSalesCount ; // 광고 전환 주문수 (CVR 계산 용)
+    private Long marReturnCount; // 반품 갯수
     private Double marAdCost;
     private Double marSales;
     // 계산필요
@@ -54,7 +55,7 @@ public class Margin {
     @JoinColumn(name = "campaignId", referencedColumnName = "campaignId")
     private Campaign campaign;
 
-    public void update(long actualSales, long adMargin) {
+    public void update(long actualSales, long adMargin, long returnCount) {
         this.marAdMargin = adMargin; // 광고 마진
 
         if (this.marActualSales == 0 && this.getMarAdMargin() == 0) {
@@ -63,6 +64,7 @@ public class Margin {
             this.marNetProfit = adMargin - (this.marAdCost * 1.1) ; // 순 이익 = 광고마진 - 집행광고비1.1
         }
         this.marActualSales = actualSales; // 실제 판매수
+        this.marReturnCount=returnCount;
     }
 
     public void update(long adMargin) {
@@ -70,5 +72,10 @@ public class Margin {
         if (this.marActualSales != 0 && this.getMarAdMargin() != 0) {
             this.marNetProfit = adMargin - (this.marAdCost * 1.1);
         }
+    }
+
+    public void updateMarginData(double targetEfficiency, double adBudget) {
+        this.marAdBudget = adBudget;
+        this.marTargetEfficiency = targetEfficiency;
     }
 }

@@ -42,7 +42,10 @@ public enum ErrorCode {
     MARGIN_FOR_CAMPAIGN_FOUND(HttpStatus.BAD_REQUEST,"현재 캠페인의 있는 상품명 입니다."),
 
     // NetSales
-    NET_SALES_NOT_FOUND_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "없는 상품아이디 입니다.")
+    NET_SALES_NOT_FOUND_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "없는 상품아이디 입니다."),
+
+    // Memo
+    MEMO_NOT_FOUND(HttpStatus.BAD_REQUEST,"해당 메모가 존재하지 않습니다")
     ;
 
 

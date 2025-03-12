@@ -20,12 +20,17 @@ class Member(models.Model):
     class Meta:
         managed = False  # Django가 이 테이블을 관리하지 않도록 설정
         db_table = 'member'
+class MarginType(models.TextChoices):
+    ROCKET_GROWTH = 'ROCKET_GROWTH', '로켓그로스'
+    SELLER_DELIVERY = 'SELLER_DELIVERY', '판매자배송'
 
 class NetSales(models.Model):
     id = models.AutoField(primary_key=True)
     net_product_name = models.CharField(max_length=255) # 상품명
+    net_type =models.CharField(max_length=20)  # 마진 타입
     net_sales_count = models.BigIntegerField() # 순 판매수
     net_sales_amount = models.BigIntegerField() # 순 판매 금액
+    net_return_count = models.BigIntegerField() # 반품 수
     net_date = models.DateField()  # 날짜
     email = models.ForeignKey(Member, on_delete=models.CASCADE, db_column='email')
 
@@ -151,6 +156,7 @@ class Margin(models.Model):
     mar_clicks = models.BigIntegerField()  # 클릭 수
     mar_ad_conversion_sales = models.BigIntegerField()  # 광고 전환 판매 수
     mar_ad_conversion_sales_count = models.BigIntegerField() # 광고 전환 주문수
+    mar_return_count = models.BigIntegerField()
     mar_ad_cost = models.BigIntegerField()  # 광고 비
     mar_sales = models.BigIntegerField()  # 엑셀기준 매출
 

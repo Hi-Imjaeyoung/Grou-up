@@ -1,4 +1,4 @@
-package growup.spring.springserver.tempdomain;
+package growup.spring.springserver.memo.domain;
 
 import growup.spring.springserver.campaign.domain.Campaign;
 import jakarta.persistence.*;
@@ -6,8 +6,8 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-//
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,10 +19,23 @@ public class Memo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate memDate; // 시간은 필요없을거로 예상
-    private String memContent;
+    @Column
+    private LocalDate date;
+
+    @Column
+    private String contents;
 
     @ManyToOne
     @JoinColumn(name = "campaignId", referencedColumnName = "campaignId")
     private Campaign campaign;
+
+    public void updateContents(String contents){
+        this.contents = contents;
+//        this.date = LocalDate.now();
+    }
+
+    public String getDate(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        return this.date.format(formatter);
+    }
 }

@@ -2,6 +2,7 @@ package growup.spring.springserver.marginforcampaign.repository;
 
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
+import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,10 +18,11 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
     List<MarginForCampaign> MarginForCampaignByCampaignId(Long campaignId);
 
 
-    @Query("SELECT m FROM MarginForCampaign m JOIN m.campaign.member member WHERE member.email = :email AND m.mfcProductName = :productName AND m.campaign.campaignId <> :campaignId")
+    @Query("SELECT m FROM MarginForCampaign m JOIN m.campaign.member member WHERE member.email = :email AND m.mfcProductName = :productName AND m.mfcType = :mfcType AND m.campaign.campaignId <> :campaignId")
     Optional<MarginForCampaign> findByEmailAndMfcProductNameExcludingCampaign(@Param("email") String email,
                                                                               @Param("productName") String productName,
-                                                                              @Param("campaignId") Long campaignId);
+                                                                              @Param("campaignId") Long campaignId,
+                                                                              @Param("mfcType") MarginType mfcType);
 
 //    @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId AND m.mfcProductName = :productName")
 //    Optional<MarginForCampaign> findByCampaignAndMfcProductName(@Param("productName") String productName,
@@ -29,5 +31,6 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
     Optional<MarginForCampaign> findByCampaignAndMfcId(@Param("mfcId") Long mfcId,
                                                                 @Param("campaignId") Long campaignId);
 
-    boolean existsByCampaignAndMfcProductName(Campaign campaign, String mfcProductName);
+
+    boolean existsByCampaignAndMfcProductNameAndMfcType(Campaign campaign, String mfcProductName, MarginType mfcType);
 }

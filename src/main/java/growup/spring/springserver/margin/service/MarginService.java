@@ -1,7 +1,6 @@
 package growup.spring.springserver.margin.service;
 
 import growup.spring.springserver.campaign.domain.Campaign;
-import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.netsales.NetSalesNotFoundProductName;
@@ -13,22 +12,22 @@ import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
 import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
 import growup.spring.springserver.marginforcampaign.repository.MarginForCampaignRepository;
+import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.netsales.domain.NetSales;
 import growup.spring.springserver.netsales.repository.NetRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class MarginService {
 
     private final MarginRepository marginRepository;
@@ -116,15 +115,43 @@ public class MarginService {
      * */
     @Transactional
     public List<MarginResponseDto> getALLMargin(LocalDate start, LocalDate end, Long campaignId, String email) {
-
-        // 1번
+        // 1. 기존 마진 데이터 조회
         List<Margin> margins = byCampaignIdAndDates(start, end, campaignId);
+        Campaign myCampaign = campaignService.getMyCampaign(campaignId, email);
 
-        List<Margin> calculateMargin = calculateMargin(margins, campaignId, email);
+        // 2. 조회된 날짜를 Set으로 변환
+        Set<LocalDate> existingDates = margins.stream()
+                .map(Margin::getMarDate)
+                .collect(Collectors.toSet());
+
+        // NetSales 데이터가 있는 날짜만 필터링
+        List<LocalDate> datesWithNetSales = netRepository.findDatesWithNetSalesByEmailAndDateRange(
+                email, start, end);
+
+        List<LocalDate> newMarginDates = datesWithNetSales.stream()
+                .filter(date -> !existingDates.contains(date))
+                .toList();
+
+        // 4. 필요한 기본 Margin 생성 (NetSales 있는 날짜만)
+        List<Margin> newMargins = newMarginDates.stream()
+                .map(date -> TypeChangeMargin.createSaveDefaultMargin(myCampaign, date)) // 메서드 호출로 변경
+                .toList();
+
+        // 5. 새 Margin 데이터 저장
+        if (!newMargins.isEmpty()) {
+            marginRepository.saveAll(newMargins);
+        }
+
+        // 6. 기존 Margin + 새로 생성된 Margin 합쳐서 계산
+        List<Margin> fullMargins = new ArrayList<>(margins);
+        fullMargins.addAll(newMargins);
+
+        // 7. NetSales 데이터를 활용해 마진 업데이트
+        List<Margin> calculateMargin = calculateMargin(fullMargins, campaignId, email);
 
         return TypeChangeMargin.getMarginDto(calculateMargin, campaignId);
-
     }
+
 
 
     private List<Margin> calculateMargin(List<Margin> margins, Long campaignId, String email) {
@@ -150,20 +177,22 @@ public class MarginService {
 
         long actualSales = 0; // 순 판매 수
         long adMargin = 0; // 광고 머진
+        long returnCount = 0; // 반품 수
 
         // MarginForCampaign마다 netSales를 매칭해서 합산
         for (MarginForCampaign data : marginForCampaigns) {
             try {
-                NetSales netSales = checkNetSales(date, email, data.getMfcProductName());
+                NetSales netSales = checkNetSales(date, email, data.getMfcProductName(), data.getMfcType());
                 // netSales가 존재하면 합산
                 actualSales += netSales.getNetSalesCount();
                 adMargin += netSales.getNetSalesCount() * data.getMfcPerPiece();
+                returnCount += netSales.getNetReturnCount();
             } catch (NetSalesNotFoundProductName e) {
                 continue;
             }
         }
 
-        margin.update(actualSales, adMargin);
+        margin.update(actualSales, adMargin, returnCount);
 
         return margin;
     }
@@ -174,10 +203,9 @@ public class MarginService {
         return marginRepository.findByCampaignIdAndDates(campaignId, start, end);
     }
 
-    private NetSales checkNetSales(LocalDate date, String email, String productName) {
-        return netRepository.findByNetDateAndEmailAndNetProductName(date, email, productName).orElseThrow(
-                NetSalesNotFoundProductName::new
-        );
+    private NetSales checkNetSales(LocalDate date, String email, String productName, MarginType marginType) {
+        return netRepository.findByNetDateAndEmailAndNetProductNameAndNetMarginType(date, email, productName, marginType)
+                .orElseThrow(NetSalesNotFoundProductName::new);
     }
 
     //    기간 별 마진, 바꾸기
@@ -207,7 +235,7 @@ public class MarginService {
             for (MarginForCampaign tempData : marginForCampaigns) {
                 try {
                     // 해당 날짜 갯수 불러옴
-                    NetSales netSalesList = checkNetSales(data.getMarDate(), email, tempData.getMfcProductName());
+                    NetSales netSalesList = checkNetSales(data.getMarDate(), email, tempData.getMfcProductName(), tempData.getMfcType());
 
                     // 변경된 옵션 리스트일경우
                     long perPieceMargin = updatedProductNames.contains(tempData.getMfcProductName())
@@ -252,5 +280,41 @@ public class MarginService {
 
     private Margin getMargin(LocalDate targetDate, Campaign campaign) {
         return marginRepository.findByCampaignIdAndDate(campaign.getCampaignId(), targetDate).orElseThrow(CampaignNotFoundException::new);
+    }
+    @Transactional
+    public MarginUpdateResponseDto updateEfficiencyAndAdBudget(MarginUpdateRequestDtos requestDtos) {
+        int requestCount = requestDtos.getData().size();
+
+        // 실패 데이터를 스트림을 통해 수집
+        Map<LocalDate, Map<String, Double>> failData = requestDtos
+                .getData()
+                .stream()
+                .filter(data -> !updateIfValid(data))
+                .collect(Collectors.toMap( // 실패한 애들
+                        MarginUpdateRequestDto::getMarDate, // 키
+                        this::createFailData // 값
+                ));
+
+        int successCount = requestCount - failData.size();
+
+        return TypeChangeMargin.marginValidationResponse(successCount, requestCount, failData);
+    }
+
+    // ID 유효성 검증 및 업데이트 시도, 실패 시 false 반환
+    private boolean updateIfValid(MarginUpdateRequestDto data) {
+        return marginRepository.findById(data.getId())
+                .map(margin -> {
+                    margin.updateMarginData(data.getMarTargetEfficiency(), data.getMarAdBudget());
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    // 실패 데이터 생성 메서드
+    private Map<String, Double> createFailData(MarginUpdateRequestDto data) {
+        return Map.of(
+                "targetEfficiency", data.getMarTargetEfficiency(),
+                "adBudget", data.getMarAdBudget()
+        );
     }
 }

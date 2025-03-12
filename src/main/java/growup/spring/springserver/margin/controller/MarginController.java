@@ -97,4 +97,16 @@ public class MarginController {
                 .build(), HttpStatus.OK);
 
     }
+
+    // 목표효율, 광고 예산 업데이트
+    @PostMapping("/updateEfficiencyAndAdBudget")
+    public ResponseEntity<CommonResponse<MarginUpdateResponseDto>> updateEfficiencyAndAdBudget(@Valid @RequestBody MarginUpdateRequestDtos marginUpdateRequestDtos,
+                                                                                              @AuthenticationPrincipal UserDetails userDetails) {
+        MarginUpdateResponseDto marginUpdateResponseDto = marginService.updateEfficiencyAndAdBudget(marginUpdateRequestDtos);
+
+        return new ResponseEntity<>(CommonResponse
+                .<MarginUpdateResponseDto>builder("success : updateEfficiencyAndAdBudget")
+                .data(marginUpdateResponseDto)
+                .build(), HttpStatus.OK);
+    }
 }

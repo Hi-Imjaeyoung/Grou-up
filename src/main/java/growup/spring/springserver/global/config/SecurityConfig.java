@@ -91,7 +91,7 @@ public class SecurityConfig {
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
         );
-        List<String> ipList = List.of("http://localhost:8000", "https://www.grouup.co.kr");
+        List<String> ipList = List.of("http://localhost:8000", "https://www.grouup.co.kr","http://localhost:3000");
 
         config.setAllowCredentials(true);
         config.setAllowedMethods(httpMethodList);

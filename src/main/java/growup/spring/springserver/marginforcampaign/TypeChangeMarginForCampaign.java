@@ -18,6 +18,8 @@ public class TypeChangeMarginForCampaign {
                 .mfcSalePrice(data.getMfcSalePrice())
                 .mfcTotalPrice(data.getMfcTotalPrice())
                 .mfcCostPrice(data.getMfcCostPrice())
+                .mfcType(data.getMfcType())
+                .mfcReturnPrice(data.getMfcReturnPrice())
                 .mfcPerPiece(data.getMfcPerPiece())
                 .mfcZeroRoas(data.getMfcZeroRoas())
                 .build();
@@ -37,6 +39,8 @@ public class TypeChangeMarginForCampaign {
                 .mfcTotalPrice(mfcDto.getMfcTotalPrice())
                 .mfcSalePrice(mfcDto.getMfcSalePrice())
                 .mfcCostPrice(mfcDto.getMfcCostPrice())
+                .mfcType(mfcDto.getMfcType())
+                .mfcReturnPrice(mfcDto.getMfcReturnPrice())
                 .mfcPerPiece(mfcDto.getMfcPerPiece())
                 .mfcZeroRoas(mfcDto.getMfcZeroRoas())
                 .campaign(campaign)

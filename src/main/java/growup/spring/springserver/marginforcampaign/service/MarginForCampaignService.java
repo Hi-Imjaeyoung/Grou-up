@@ -12,6 +12,7 @@ import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestDtos;
 import growup.spring.springserver.marginforcampaign.dto.MfcValidationResponseDto;
 import growup.spring.springserver.marginforcampaign.repository.MarginForCampaignRepository;
+import growup.spring.springserver.marginforcampaign.support.MarginType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,47 +55,66 @@ public class MarginForCampaignService {
     private MfcValidationResponseDto validateProducts(List<MfcDto> datas, String email, Campaign campaign) {
         List<MarginForCampaign> successfulProducts = new ArrayList<>();
         List<String> failedProductNames = new ArrayList<>();
-        Set<String> productNamesSet = new HashSet<>(); // 중복 체크를 위한 Set
+        Map<String, Set<MarginType>> productNamesMap = new HashMap<>(); // 중복 체크를 위한 Map
 
-        handleProductValidation(datas, email, campaign, productNamesSet, failedProductNames, successfulProducts);
+        handleProductValidation(datas, email, campaign, productNamesMap, failedProductNames, successfulProducts);
 
         saveSuccessfulProducts(successfulProducts);
 
         return createValidationResponse(datas.size(), successfulProducts.size(), failedProductNames);
     }
 
-    private void handleProductValidation(List<MfcDto> datas, String email, Campaign campaign, Set<String> productNamesSet, List<String> failedProductNames, List<MarginForCampaign> successfulProducts) {
+    private void handleProductValidation(List<MfcDto> datas, String email, Campaign campaign,
+                                         Map<String, Set<MarginType>> productNamesMap,
+                                         List<String> failedProductNames,
+                                         List<MarginForCampaign> successfulProducts) {
         for (MfcDto data : datas) {
-            if (productNamesSet.contains(data.getMfcProductName())) {
-                // 이미 처리한 상품명이면 건너뜀.
+            if (isProductAlreadyProcessed(data, productNamesMap)) {
                 failedProductNames.add(data.getMfcProductName());
                 continue;
             }
-            productNamesSet.add(data.getMfcProductName()); // Set에 추가
 
             try {
-                checkDuplicate(data, campaign);
-                checkProductName(email, data, campaign);
+                validateUniqueProductInMyCampaign(data, campaign);
+                validateUniqueProductNameInOtherCampaigns(email, data, campaign);
                 failedProductNames.add(data.getMfcProductName());
             } catch (MarginForCampaignProductNameNotFoundException exception) {
-                // 상품이 존재하지 않을 경우, 추가 또는 업데이트 처리
                 handleProduct(data, campaign, successfulProducts);
             } catch (MarginForCampaignFoundException exception) {
-                // 새롭게 추가하는 경우는 실패
-                if (data.getMfcId() == null) {
-                    failedProductNames.add(data.getMfcProductName());
-                }
-                // 기존에 있는거인 경우 업데이트
-                else{
-                    handleProduct(data, campaign, successfulProducts);
-                }
+                handleExistingProduct(data, campaign, successfulProducts, failedProductNames);
             }
+        }
+    }
+    /*
+    * TODO
+    *  computeIfAbsent :
+    *   상품명과 타입 기준으로 set가져옴, 없으면 생성
+    * */
+    private boolean isProductAlreadyProcessed(MfcDto data, Map<String, Set<MarginType>> productNamesMap) {
+        String productName = data.getMfcProductName();
+        MarginType productType = data.getMfcType();
+//        상품명 + 타입의 조합
+        Set<MarginType> typesSet = productNamesMap.computeIfAbsent(productName, k -> new HashSet<>());
+        if (typesSet.contains(productType)) {
+            return true; // 이미 처리한 상품
+        }
+
+        typesSet.add(productType); // 타입을 추가
+        return false; // 처리 안 한 상품
+    }
+    private void handleExistingProduct(MfcDto data, Campaign campaign,
+                                       List<MarginForCampaign> successfulProducts,
+                                       List<String> failedProductNames) {
+        if (data.getMfcId() == null) {
+            failedProductNames.add(data.getMfcProductName());
+        } else {
+            handleProduct(data, campaign, successfulProducts);
         }
     }
 
     // 자기 캠페인에서 중복 체크
-    private void checkDuplicate(MfcDto data, Campaign campaign) {
-        if (marginForCampaignRepository.existsByCampaignAndMfcProductName(campaign, data.getMfcProductName())) {
+    private void validateUniqueProductInMyCampaign(MfcDto data, Campaign campaign) {
+        if (marginForCampaignRepository.existsByCampaignAndMfcProductNameAndMfcType(campaign, data.getMfcProductName(), data.getMfcType())) {
             throw new MarginForCampaignFoundException();
         }
     }
@@ -105,16 +125,14 @@ public class MarginForCampaignService {
 
 //        캠페인 명과 MfcId 로 찾음
         Optional<MarginForCampaign> existingProduct = marginForCampaignRepository.findByCampaignAndMfcId(data.getMfcId(), campaign.getCampaignId());
-        if (existingProduct.isPresent()) {
-            // 기존 상품 업데이트
-            MarginForCampaign updateMarginForCampaign = existingProduct.get();
-            updateMarginForCampaign.updateExistingProduct(data);
-            successfulProducts.add(updateMarginForCampaign);
-        } else {
-            // 새로운 상품 생성
-            MarginForCampaign newMargin = createMarginFromDto(data, campaign);
-            successfulProducts.add(newMargin);
-        }
+//        있는 경우는 있는거 return 후 add
+        MarginForCampaign product = existingProduct.map(existing -> {
+            existing.updateExistingProduct(data);
+            return existing;
+//            없으면 새로운거 생성
+        }).orElseGet(() -> createMarginFromDto(data, campaign));
+//        있으면 Existing 없으면 createMarginFromDto 로 생성된것 add 해줌
+        successfulProducts.add(product);
     }
 
 
@@ -132,11 +150,11 @@ public class MarginForCampaignService {
     }
     /*
     ** TODO
-    *   email, data, camapign
+    *   email, camapign,상품명, type(판매자배송, 로켓그로스)
     *   현재 캠페인을 제외하고 중복되는 이름이 있는지 확인
      */
-    private MarginForCampaign checkProductName(String email, MfcDto data, Campaign campaign) {
-        return marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(email, data.getMfcProductName(), campaign.getCampaignId())
+    private void validateUniqueProductNameInOtherCampaigns(String email, MfcDto data, Campaign campaign) {
+        marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(email, data.getMfcProductName(), campaign.getCampaignId(), data.getMfcType())
                 .orElseThrow(MarginForCampaignProductNameNotFoundException::new);
     }
 }

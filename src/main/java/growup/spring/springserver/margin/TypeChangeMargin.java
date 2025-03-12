@@ -5,10 +5,12 @@ import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyMarginSummary;
 import growup.spring.springserver.margin.dto.MarginResponseDto;
 import growup.spring.springserver.margin.dto.MarginSummaryResponseDto;
+import growup.spring.springserver.margin.dto.MarginUpdateResponseDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TypeChangeMargin {
 
@@ -47,6 +49,23 @@ public class TypeChangeMargin {
                 .marSales(0.0) // 기본값 설정
                 .build();
     }
+    public static Margin createSaveDefaultMargin(Campaign campaign, LocalDate date) {
+        return Margin.builder()
+                .campaign(campaign)
+                .marDate(date)
+                .marImpressions(0L)
+                .marClicks(0L)
+                .marAdConversionSales(0L)
+                .marAdConversionSalesCount(0L)
+                .marSales(0.0)
+                .marTargetEfficiency(0.0)
+                .marAdBudget(0.0)
+                .marAdMargin(0L)
+                .marNetProfit(0.0)
+                .marActualSales(0L)
+                .marAdCost(0.0)
+                .build();
+    }
 
     public static List<MarginResponseDto> getMarginDto(List<Margin> calculateMargin, Long campaignId) {
         List<MarginResponseDto> marginResponseDtos = new ArrayList<>();
@@ -69,4 +88,13 @@ public class TypeChangeMargin {
                 .marNetProfit(marginData.getMarNetProfit())
                 .build();
     }
+
+    public static MarginUpdateResponseDto marginValidationResponse(int responseNumber, int requestNumber, Map<LocalDate, Map<String, Double>> failData) {
+        return MarginUpdateResponseDto.builder()
+                .requestNumber(requestNumber)
+                .responseNumber(responseNumber)
+                .failedDate(failData)
+                .build();
+    }
+
 }

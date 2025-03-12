@@ -1,15 +1,13 @@
-import json
-import traceback
 from csv import excel
 from datetime import datetime
 import time
-
+import re
 import pandas as pd
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail, \
-    Margin, NetSales
+    Margin, NetSales, MarginType
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -20,39 +18,22 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def upload_excel(request):
-    try:
-        if request.method == 'POST':
-            print("[DEBUG] Received a POST request to upload_excel")  # 로그 출력
+    if request.method == 'POST':
+        print("1번 엑셀 투입")
+        form = ExcelFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            return handle_excel_upload(request, form)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Failed to upload Excel file.'}, status=500)
+    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
-            form = ExcelFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                print("[DEBUG] Form is valid. Proceeding with file handling.")
-                return handle_excel_upload(request, form)
-            else:
-                print(f"[ERROR] Form validation failed: {form.errors}")
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Invalid form submission.',
-                    'errors': form.errors.as_json()  # 폼 유효성 검사 실패 시 상세 오류 반환
-                }, status=400)
-
-        print("[ERROR] Received a non-POST request.")
-        return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed.'}, status=405)
-
-    except Exception as e:
-        error_trace = traceback.format_exc()
-        print(f"[EXCEPTION] {str(e)}\n{error_trace}")  # Lambda 로그에서 확인 가능
-        return JsonResponse({
-            'status': 'error',
-            'message': 'An unexpected error occurred while uploading the Excel file.',
-            'error': str(e)
-        }, status=500)
 
 
 
 @csrf_exempt
 def upload_margin(request):
     if request.method == 'POST':
+        print("2번엑셀 투입")
         form = ExcelFileForm(request.POST, request.FILES)
         if form.is_valid():
             # handle_upload_margin에서 반환된 값을 그대로 반환
@@ -68,18 +49,26 @@ def handle_upload_margin(request, form):
 
     # 1️⃣ 파일명에서 날짜 추출
     file_name = uploaded_file.name
-    start_index = file_name.find('-') + 1  # '-' 다음 위치 찾기
-    date_str = file_name[start_index:start_index + 8]  # 8자리 날짜 추출
-    net_date = datetime.strptime(date_str, '%Y%m%d').date()  # LocalDate 변환
+    date_pattern = r'(\d{4}-\d{2}-\d{2})|(\d{8})'
+    date_match = re.search(date_pattern, file_name)
 
+    if date_match:
+        date_str = date_match.group()
+        # 날짜 형식에 따라 파싱
+        if '-' in date_str:
+            net_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        else:
+            net_date = datetime.strptime(date_str, '%Y%m%d').date()
+    print(net_date)
     # 2️⃣ 엑셀 파일 읽기
     df = pd.read_excel(uploaded_file)
     df = df.iloc[:-1]
 
-    # 3️⃣ 옵션명 기준으로 순판매금액과 순판매수 합산
-    df_grouped = df.groupby('옵션명', as_index=False).agg({
+    # 3️⃣ 옵션명+상품타입 기준으로 순판매금액과 순판매수 합산
+    df_grouped = df.groupby(['옵션명', '상품타입'], as_index=False).agg({
         '순 판매 금액(전체 거래 금액 - 취소 금액)': 'sum',
-        '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum'
+        '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum',
+        '총 취소 상품 수': 'sum'
     })
 
     # 4️⃣ 로그인한 유저 가져오기
@@ -89,37 +78,48 @@ def handle_upload_margin(request, form):
     # 5️⃣ 데이터베이스 저장 (업데이트 or 새로 생성)
     for _, row in df_grouped.iterrows():
         product_name = row['옵션명']
+        product_type = row['상품타입']
         total_sales_amount = row['순 판매 금액(전체 거래 금액 - 취소 금액)']
         total_sales_count = row['순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)']
+        total_return_count = row['총 취소 상품 수']
 
-        if total_sales_count == 0:
+        if total_sales_count == 0 and total_return_count ==0:
             continue
-
-        # 같은 날짜 + 옵션명이 있는지 확인
+        # 상품 타입을 데이터베이스에 저장할 형식으로 변환
+        if product_type == '로켓그로스':
+            net_type = MarginType.ROCKET_GROWTH
+        elif product_type == '판매자배송':
+            net_type = MarginType.SELLER_DELIVERY
+        else:
+            continue  # 알 수 없는 상품 타입은 무시
+        # 같은 날짜 + 옵션명+상품타입이 있는지 확인
         try:
             net_sales = NetSales.objects.get(
                 net_product_name=product_name,
+                net_type=net_type,
                 net_date=net_date,
                 email=member
             )
             # 이미 존재하는 경우 업데이트
             net_sales.net_sales_count = total_sales_count
             net_sales.net_sales_amount = total_sales_amount
+            net_sales.net_return_count = total_return_count
+            net_sales.net_type = net_type
             net_sales.save()
-
         except NetSales.DoesNotExist:
             # 존재하지 않으면 새로 생성
             net_sales = NetSales(
                 net_product_name=product_name,
+                net_type=net_type,
                 net_sales_count=total_sales_count,
                 net_sales_amount=total_sales_amount,
+                net_return_count=total_return_count,
                 net_date=net_date,
                 email=member
             )
             net_sales.save()
 
     # 데이터를 'data'로 추가하여 render할 때 반환
-
     return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
 
 
@@ -146,7 +146,14 @@ def handle_excel_upload(request, form):
 
     print(f"Time taken: {time_taken} milliseconds")
 
-    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
+    return render(request, 'upload_excel.html',
+                  {'form': form,
+                   'data': excel.to_html(),
+                   'summary': {
+                       'total_count': total_count,
+                       'insert_count': insert_count,
+                       'duplicate_count': duplicate_count,
+                   }})
 
 
 def aggregate_data(excel, member):
@@ -165,7 +172,7 @@ def aggregate_data(excel, member):
 
         key_keyword = row['키워드']
         if pd.isna(key_keyword):
-            key_keyword = ""
+            key_keyword = "-"
         else:
             # 공백 제거 및 띄어쓰기 없이 처리
             key_keyword = str(key_keyword).replace(" ", "")
@@ -309,29 +316,75 @@ def save_keyword_details(keyword_details_data):
 
 
 def save_margin(margin_data):
-    buffer = []
-    # 날짜 + 캠페인
+    buffer_create = []
+    buffer_update = []
+
+    # 기존 Margin 데이터 조회
+    existing_margins = Margin.objects.filter(
+        mar_date__in=[data['mar_date'] for data in margin_data.values()],
+        campaign__in=[data['campaign'] for data in margin_data.values()]
+    )
+
+    # 기존 데이터를 (날짜, 캠페인) 키로 매핑
+    existing_margins_map = {
+        (margin.mar_date, margin.campaign_id): margin
+        for margin in existing_margins
+    }
+
+    # 날짜 + 캠페인 기준으로 데이터 처리
     for key, data in margin_data.items():
-        if not Margin.objects.filter(
-                mar_date=data['mar_date'],
-                campaign=data['campaign'],
-        ).exists():
-            buffer.append(Margin(
+        existing_margin = existing_margins_map.get((data['mar_date'], data['campaign'].campaign_id))
+
+        if existing_margin:
+            # 기존 Margin 업데이트
+            existing_margin.mar_ad_budget = data['mar_ad_budget']
+            existing_margin.mar_impressions = data['mar_impressions']
+            existing_margin.mar_clicks = data['mar_clicks']
+            existing_margin.mar_ad_conversion_sales = data['mar_ad_conversion_sales']
+            existing_margin.mar_ad_conversion_sales_count = data['mar_ad_conversion_sales_count']
+            existing_margin.mar_ad_cost = data['mar_ad_cost']
+            existing_margin.mar_ad_margin = data['mar_ad_margin']
+            existing_margin.mar_net_profit = data['mar_net_profit']
+            existing_margin.mar_target_efficiency = data['mar_target_efficiency']
+            existing_margin.mar_sales = data['mar_sales']
+
+
+            # existing_margin.mar_actual_sales = data['mar_actual_sales']
+            # existing_margin.mar_return_count = data['mar_return_count']
+            buffer_update.append(existing_margin)
+
+        else:
+            # 새 Margin 생성
+            buffer_create.append(Margin(
                 mar_date=data['mar_date'],
                 campaign=data['campaign'],
                 mar_ad_budget=data['mar_ad_budget'],
                 mar_impressions=data['mar_impressions'],
                 mar_clicks=data['mar_clicks'],
                 mar_ad_conversion_sales=data['mar_ad_conversion_sales'],
-                mar_ad_conversion_sales_count = data['mar_ad_conversion_sales_count'],
+                mar_ad_conversion_sales_count=data['mar_ad_conversion_sales_count'],
                 mar_ad_cost=data['mar_ad_cost'],
                 mar_ad_margin=data['mar_ad_margin'],
                 mar_net_profit=data['mar_net_profit'],
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
-                mar_sales = data['mar_sales'],
+                mar_sales=data['mar_sales'],
             ))
-    Margin.objects.bulk_create(buffer)
+
+    # 데이터 저장
+    if buffer_create:
+        Margin.objects.bulk_create(buffer_create)
+
+    if buffer_update:
+        Margin.objects.bulk_update(
+            buffer_update,
+            [
+                'mar_ad_budget', 'mar_impressions', 'mar_clicks',
+                'mar_ad_conversion_sales', 'mar_ad_conversion_sales_count',
+                'mar_ad_cost', 'mar_ad_margin', 'mar_net_profit',
+                'mar_target_efficiency', 'mar_actual_sales', 'mar_sales'
+            ]
+        )
 
 
 def save_keywords(keyword_data):
@@ -339,7 +392,6 @@ def save_keywords(keyword_data):
     insert_count = 0
     duplicate_count = 0
     for key, data in keyword_data.items():
-        key_product_sales_json = json.dumps(data['key_product_sales'], ensure_ascii=False)
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
                 key_date=data['key_date'],
@@ -364,7 +416,7 @@ def save_keywords(keyword_data):
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign'],
-                key_product_sales=key_product_sales_json,
+                key_product_sales=data['key_product_sales'],
             ))
             insert_count += 1  # 들어간 값
         else:

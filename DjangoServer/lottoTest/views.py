@@ -87,9 +87,9 @@ def handle_upload_margin(request, form):
             continue
         # 상품 타입을 데이터베이스에 저장할 형식으로 변환
         if product_type == '로켓그로스':
-            net_type = MarginType.ROCKET_GROWTH
+            net_type = MarginType.ROCKET_GROWTH.value
         elif product_type == '판매자배송':
-            net_type = MarginType.SELLER_DELIVERY
+            net_type = MarginType.SELLER_DELIVERY.value
         else:
             continue  # 알 수 없는 상품 타입은 무시
         # 같은 날짜 + 옵션명+상품타입이 있는지 확인

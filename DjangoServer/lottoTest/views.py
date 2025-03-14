@@ -1,3 +1,4 @@
+import json
 from csv import excel
 from datetime import datetime
 import time
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def upload_excel(request):
     if request.method == 'POST':
+        print("시작")
         form = ExcelFileForm(request.POST, request.FILES)
         if form.is_valid():
             return handle_excel_upload(request, form)
@@ -200,6 +202,7 @@ def update_aggregated_data(aggregated_data, detail_key, row, execution, cop_date
             'cop_search_type': cop_search_type
         }
         # 집계
+
     aggregated_data[detail_key]['cop_impressions'] += row['노출수']
     aggregated_data[detail_key]['cop_clicks'] += row['클릭수']
     aggregated_data[detail_key]['cop_adcost'] += row['광고비']
@@ -390,6 +393,8 @@ def save_keywords(keyword_data):
     insert_count = 0
     duplicate_count = 0
     for key, data in keyword_data.items():
+        key_product_sales_json = json.dumps(data['key_product_sales'], ensure_ascii=False)  # ✅ 한글 깨짐 방지
+
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
                 key_date=data['key_date'],
@@ -414,11 +419,11 @@ def save_keywords(keyword_data):
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign'],
-                key_product_sales=data['key_product_sales'],
+                key_product_sales=key_product_sales_json,
             ))
-            insert_count += 1  # 들어간 값
+            insert_count += 1
         else:
-            duplicate_count += 1  # 안 들어간 값
+            duplicate_count += 1
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
 

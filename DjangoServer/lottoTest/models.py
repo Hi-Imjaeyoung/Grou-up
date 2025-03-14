@@ -27,7 +27,7 @@ class MarginType(models.TextChoices):
 class NetSales(models.Model):
     id = models.AutoField(primary_key=True)
     net_product_name = models.CharField(max_length=255) # 상품명
-    net_type =models.CharField(max_length=20)  # 마진 타입
+    net_type = models.CharField(max_length=20, choices=MarginType.choices)  # 마진 타입 (choices 추가)
     net_sales_count = models.BigIntegerField() # 순 판매수
     net_sales_amount = models.BigIntegerField() # 순 판매 금액
     net_return_count = models.BigIntegerField() # 반품 수

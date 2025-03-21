@@ -35,4 +35,25 @@ public class Member {
     // 구매 금액에 따른 role 부여
     @Enumerated(EnumType.STRING)
     private Role role;
+
+//    Erd V2
+    private Long sunshine; // 햇살
+
+    private String recommendationCode; // 나의 추천인 코드
+
+    private Long totalCount; // 나를 추천한 사람들의 수
+
+    private Long monthlyReferralCount; // 이번달 나를 추천한 사람들의 수
+
+    private String referralMember; // 내가 추천한 사람의 추천인 코드
+
+    private Long expirationTime; // 토큰 만료시간
+
+    public void updateMember(String myCode) {
+        this.sunshine= 0L;
+        this.recommendationCode=myCode;
+        this.totalCount=0L;
+        this.monthlyReferralCount=0L;
+        this.expirationTime=60L;
+    }
 }

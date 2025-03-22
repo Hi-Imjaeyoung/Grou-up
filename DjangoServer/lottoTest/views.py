@@ -225,6 +225,7 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_target_efficiency': 0,
             'mar_actual_sales': 0,
             'mar_sales': 0,
+            'mar_return_cost' : 0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
@@ -335,7 +336,6 @@ def save_margin(margin_data):
     # 날짜 + 캠페인 기준으로 데이터 처리
     for key, data in margin_data.items():
         existing_margin = existing_margins_map.get((data['mar_date'], data['campaign'].campaign_id))
-
         if existing_margin:
             # 기존 Margin 업데이트
             existing_margin.mar_ad_budget = data['mar_ad_budget']
@@ -344,10 +344,14 @@ def save_margin(margin_data):
             existing_margin.mar_ad_conversion_sales = data['mar_ad_conversion_sales']
             existing_margin.mar_ad_conversion_sales_count = data['mar_ad_conversion_sales_count']
             existing_margin.mar_ad_cost = data['mar_ad_cost']
-            existing_margin.mar_ad_margin = data['mar_ad_margin']
-            existing_margin.mar_net_profit = data['mar_net_profit']
+            # existing_margin.mar_ad_margin = data['mar_ad_margin']
+            # existing_margin.mar_net_profit = data['mar_net_profit']
             existing_margin.mar_target_efficiency = data['mar_target_efficiency']
             existing_margin.mar_sales = data['mar_sales']
+
+            existing_margin.mar_return_cost = existing_margin.mar_return_cost
+            existing_margin.mar_net_profit = existing_margin.mar_net_profit
+            existing_margin.mar_ad_margin = existing_margin.mar_ad_margin
 
 
             # existing_margin.mar_actual_sales = data['mar_actual_sales']
@@ -369,6 +373,7 @@ def save_margin(margin_data):
                 mar_net_profit=data['mar_net_profit'],
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
+                mar_return_cost =data['mar_return_cost'],
                 mar_sales=data['mar_sales'],
             ))
 
@@ -382,7 +387,7 @@ def save_margin(margin_data):
             [
                 'mar_ad_budget', 'mar_impressions', 'mar_clicks',
                 'mar_ad_conversion_sales', 'mar_ad_conversion_sales_count',
-                'mar_ad_cost', 'mar_ad_margin', 'mar_net_profit',
+                'mar_ad_cost', 'mar_ad_margin', 'mar_net_profit', 'mar_return_cost',
                 'mar_target_efficiency', 'mar_actual_sales', 'mar_sales'
             ]
         )

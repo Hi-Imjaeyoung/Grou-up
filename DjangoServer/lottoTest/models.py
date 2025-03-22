@@ -162,7 +162,7 @@ class Margin(models.Model):
 
     mar_ad_margin = models.BigIntegerField()  # 광고 마진 수
     mar_net_profit = models.FloatField()  # 순이익
-
+    mar_return_cost = models.BigIntegerField() # 반품비용
 
     mar_target_efficiency = models.FloatField()  # 목표 효율성
 

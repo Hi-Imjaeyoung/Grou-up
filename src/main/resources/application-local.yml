@@ -29,7 +29,7 @@ spring:
             client-authentication-method: client_secret_post
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: ${KAKAO_URL}
             scope:
               - profile_nickname
               - account_email
@@ -38,7 +38,7 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             client-name: google
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/google # 구글에 추가함
+            redirect-uri:  ${GOOGLE_URL} # 구글에 추가함
             scope:
               - profile
               - email
@@ -65,6 +65,9 @@ logging:
 jwt:
   expiration: ${JWT_EXPIRATION}
   secretKey: ${JWT_SECRET_KEY}
+reDirect:
+  kakao: ${RE_DIRECT_URL_KAKAO}
+  google: ${RE_DIRECT_URL_GOOGLE}
 
 springdoc:
   swagger-ui:

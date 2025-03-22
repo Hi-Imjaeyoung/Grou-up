@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,6 +21,12 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    @Value("${reDirect.kakao}")
+    private String reDirectUrlKakao;
+
+    @Value("${reDirect.google}")
+    private String reDirectUrlGoogle;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -56,6 +63,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.addHeader("Authorization", "Bearer " + accessToken);
 
         // 리디렉트 URL 설정
+        OAuth2RedirectUrlProvider.setRedirectUrls(reDirectUrlKakao,reDirectUrlGoogle);
         String redirectUrl = OAuth2RedirectUrlProvider.getRedirectUrl(registrationId, accessToken);
 
         log.info("Redirecting to: {}", redirectUrl);

@@ -9,9 +9,17 @@ import java.util.Map;
 public class OAuth2RedirectUrlProvider {
     private static final Map<String, String> REDIRECT_URLS = new HashMap<>();
 
-    static {
-        REDIRECT_URLS.put("kakao", "https://www.grouup.co.kr/oauth/kakao/callback?token=%s");
-        REDIRECT_URLS.put("google", "https://www.grouup.co.kr/oauth/google/callback?token=%s");
+//    static {
+//        REDIRECT_URLS.put("kakao", "http://localhost:3000/oauth/kakao/callback?token=%s");
+//        REDIRECT_URLS.put("google", "http://localhost:3000/oauth/google/callback?token=%s");
+//    }
+//public OAuth2RedirectUrlProvider(String kakaoUrl, String googleUrl){
+//        REDIRECT_URLS.put("kakao", kakaoUrl);
+//        REDIRECT_URLS.put("google", googleUrl);
+//    }
+    public static void setRedirectUrls(String kakaoUrl, String googleUrl){
+        REDIRECT_URLS.put("kakao", kakaoUrl);
+        REDIRECT_URLS.put("google", googleUrl);
     }
 
     public static String getRedirectUrl(String registrationId, String accessToken) {

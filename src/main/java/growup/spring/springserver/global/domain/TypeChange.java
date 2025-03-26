@@ -11,14 +11,20 @@ import org.springframework.stereotype.Component;
 public class TypeChange {
 
     // 멤버 객체 생성
-    public Member memberCreateDtoToMember(LoginSignUpReqDto loginCreateReqDto, String encode) {
+    public Member memberCreateDtoToMember(LoginSignUpReqDto loginCreateReqDto, String encode, String myCode) {
         return Member.builder()
                 .email(loginCreateReqDto.email())  // record에서 email 필드는 email()으로 접근
                 .password(encode)  // password()로 접근
                 .name(loginCreateReqDto.name())
                 .role(Role.USER)
+                .sunshine(0L)
+                .recommendationCode(myCode)
+                .totalCount(0L)
+                .monthlyReferralCount(0L)
+                .expirationTime(60L)
                 .build();
     }
+
     // 로그인 및 토큰 발행
     public LoginResDto memberToLoginResDto(Member findmember, String accessToken) {
         return LoginResDto.builder()

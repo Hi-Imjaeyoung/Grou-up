@@ -1,5 +1,7 @@
 package growup.spring.springserver.margin.controller;
 
+import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,21 +27,41 @@ import java.util.List;
 public class MarginController {
     private final MarginService marginService;
 
+    /*
+    * TODO
+    *  매출보고서(3사분)
+    *  실패시 빈 리스트 리턴
+    * */
     @GetMapping("/getCampaignAllSales")
-    public ResponseEntity<CommonResponse<?>> getCampaignAllSales(@RequestParam("date") LocalDate date,
+    public ResponseEntity<CommonResponse<List<MarginSummaryResponseDto>>> getCampaignAllSales(@RequestParam("date") LocalDate date,
                                                                  @AuthenticationPrincipal UserDetails userDetails) {
-        List<MarginSummaryResponseDto> campaignAllSales = marginService.getCampaignAllSales(userDetails.getUsername(), date);
+        List<MarginSummaryResponseDto> campaignAllSales;
+        try{
+            campaignAllSales = marginService.getCampaignAllSales(userDetails.getUsername(), date);
+        }catch (CampaignNotFoundException campaignNotFoundException){
+            campaignAllSales = new ArrayList<>();
+        }
 
         return new ResponseEntity<>(CommonResponse
                 .<List<MarginSummaryResponseDto>>builder("success : getMyCampaignDetails")
                 .data(campaignAllSales)
                 .build(), HttpStatus.OK);
     }
-
+    /*
+    * TODO
+    *  종합보고서(2사분면)
+    *  실패시 빈 리스트 리턴
+    *  */
     @GetMapping("/getDailyAdSummary")
-    public ResponseEntity<CommonResponse<?>> getDailyAdSummary(@RequestParam("date") LocalDate date,
+    public ResponseEntity<CommonResponse<List<DailyAdSummaryDto>>> getDailyAdSummary(@RequestParam("date") LocalDate date,
                                                                @AuthenticationPrincipal UserDetails userDetails) {
-        List<DailyAdSummaryDto> byCampaignIdsAndDates = marginService.findByCampaignIdsAndDates(userDetails.getUsername(), date);
+
+        List<DailyAdSummaryDto> byCampaignIdsAndDates;
+        try{
+            byCampaignIdsAndDates = marginService.findByCampaignIdsAndDates(userDetails.getUsername(), date);
+        }catch (CampaignNotFoundException|MemberNotFoundException exception){
+            byCampaignIdsAndDates = new ArrayList<>();
+        }
 
         return new ResponseEntity<>(CommonResponse
                 .<List<DailyAdSummaryDto>>builder("success: getDailyAdSummary")
@@ -74,10 +97,19 @@ public class MarginController {
                 .build());
     }
 
+    /*TODO
+    *  마진보고서 (4사분면)
+    *  실패시 빈 리스트 리턴*/
     @GetMapping("getDailyMarginSummary")
     public ResponseEntity<CommonResponse<List<DailyMarginSummary>>> getDailyMarginSummary(@RequestParam("date") LocalDate date,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
-        List<DailyMarginSummary> dailyMarginSummary = marginService.getDailyMarginSummary(userDetails.getUsername(), date);
+        List<DailyMarginSummary> dailyMarginSummary;
+
+        try {
+            dailyMarginSummary = marginService.getDailyMarginSummary(userDetails.getUsername(), date);
+        } catch (CampaignNotFoundException | MemberNotFoundException exception) {
+            dailyMarginSummary = new ArrayList<>();
+        }
 
         return new ResponseEntity<>(CommonResponse
                 .<List<DailyMarginSummary>>builder("success : getMyCampaignDetails")

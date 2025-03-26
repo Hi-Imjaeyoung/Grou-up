@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
     private final TypeChange typeChange;
 
     @Override
+    @Transactional // 트랜잭션 관리 추가
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("Oauth2UserService.loadUser called");
 
@@ -66,11 +68,14 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 
         // 기존 사용자 체크
         Member member = memberRepository.findByEmail(email).orElse(null);
+        String myCode = MemberService.createRecommendationCode();
 
         // 기존 사용자가 없으면 새로 생성
         if (member == null) {
-            member = typeChange.memberCreateDtoToMember(new LoginSignUpReqDto(email, null, nickname), null);
+            member = typeChange.memberCreateDtoToMember(new LoginSignUpReqDto(email, null, nickname), null, myCode);
             memberRepository.save(member);
+        } else if (member.getRecommendationCode() == null || member.getRecommendationCode().isEmpty()) {
+            member.updateMember(myCode);
         }
 
         return new DefaultOAuth2User(

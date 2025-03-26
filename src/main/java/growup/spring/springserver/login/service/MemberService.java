@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +36,18 @@ public class MemberService {
                     throw new MemberNotFoundException();
                 });
         String encode = passwordEncoder.encode(loginCreateReqDto.password());
-        Member member = typeChange.memberCreateDtoToMember(loginCreateReqDto, encode);
+
+        String myCode = createRecommendationCode();
+
+        Member member = typeChange.memberCreateDtoToMember(loginCreateReqDto, encode, myCode);
 
         memberRepository.save(member);
 
+    }
+
+    static String createRecommendationCode() {
+
+        return UUID.randomUUID().toString().substring(0, 12);
     }
 
     public LoginResDto login(LoginSignInReqDto loginSignInReqDto) {

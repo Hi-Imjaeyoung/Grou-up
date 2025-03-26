@@ -25,8 +25,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${reDirect.kakao}")
     private String reDirectUrlKakao;
 
-    @Value("${reDirect.google}")
-    private String reDirectUrlGoogle;
+//    @Value("${reDirect.google}")
+    private String reDirectUrlGoogle = "https://www.grouup.co.kr/oauth/google/callback?token=%s";
 
     private final JwtTokenProvider jwtTokenProvider;
 

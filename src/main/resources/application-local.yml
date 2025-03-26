@@ -66,8 +66,8 @@ jwt:
   expiration: ${JWT_EXPIRATION}
   secretKey: ${JWT_SECRET_KEY}
 reDirect:
-  kakao: ${RE_DIRECT_URL_KAKAO}
-  google: ${RE_DIRECT_URL_GOOGLE}
+  kakao: https://www.grouup.co.kr/oauth/kakao/callback?token=%s
+  google: https://www.grouup.co.kr/oauth/google/callback?token=%s
 
 springdoc:
   swagger-ui:

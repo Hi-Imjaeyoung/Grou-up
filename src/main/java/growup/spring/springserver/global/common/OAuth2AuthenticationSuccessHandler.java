@@ -22,10 +22,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${reDirect.kakao}")
+    @Value("${redirect.kakao}")
     private String reDirectUrlKakao;
 
-    @Value("${reDirect.google}")
+    @Value("${redirect.google}")
     private String reDirectUrlGoogle;
 
     private final JwtTokenProvider jwtTokenProvider;

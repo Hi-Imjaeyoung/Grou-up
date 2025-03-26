@@ -22,8 +22,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${reDirect.kakao}")
-    private String reDirectUrlKakao;
+//    @Value("${reDirect.kakao}")
+    private String reDirectUrlKakao = "https://www.grouup.co.kr/oauth/kakao/callback?token=%s";
 
 //    @Value("${reDirect.google}")
     private String reDirectUrlGoogle = "https://www.grouup.co.kr/oauth/google/callback?token=%s";

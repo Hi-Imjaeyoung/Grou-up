@@ -65,7 +65,7 @@ logging:
 jwt:
   expiration: ${JWT_EXPIRATION}
   secretKey: ${JWT_SECRET_KEY}
-reDirect:
+redirect:
   kakao: ${RE_DIRECT_URL_KAKAO}
   google: ${RE_DIRECT_URL_GOOGLE}
 

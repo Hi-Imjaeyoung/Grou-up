@@ -71,7 +71,6 @@ jobs:
             --reDirect.kakao=${{ secrets.RE_DIRECT_URL_KAKAO }}\
             --spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.KAKAO_CLIENT_ID }} \
             --spring.security.oauth2.client.registration.kakao.client-secret=${{ secrets.KAKAO_CLIENT_SECRET }} \
-            --spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.KAKAO_URL }} \
             --spring.security.oauth2.client.registration.google.client-id=${{ secrets.GOOGLE_CLIENT_ID }} \
             --spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.GOOGLE_URL }} \
             --spring.security.oauth2.client.registration.google.client-secret=${{ secrets.GOOGLE_CLIENT_SECRET }} > /home/${{ secrets.EC2_USERNAME }}/app.log 2>&1 &

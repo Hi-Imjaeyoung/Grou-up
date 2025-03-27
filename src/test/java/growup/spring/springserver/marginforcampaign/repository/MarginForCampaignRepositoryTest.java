@@ -5,6 +5,7 @@ import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
+import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class MarginForCampaignRepositoryTest {
     @DisplayName("save success")
     @Test
     void test1() {
-        final MarginForCampaign marginForCampaign = getgetMarginForCampaign(getCampaign("송보석",1L), "모자", 1L, 1L, 1L, 1.1);
+        final MarginForCampaign marginForCampaign = getgetMarginForCampaign(getCampaign("송보석",1L), "모자", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH);
         MarginForCampaign result = marginForCampaignRepository.save(marginForCampaign);
 
         assertThat(result.getCampaign().getCamCampaignName()).isEqualTo("송보석");
@@ -39,11 +40,11 @@ public class MarginForCampaignRepositoryTest {
         Campaign campaign = campaignRepository.save(getCampaign("송보석",1L));
         Campaign IncorrectCampaign = campaignRepository.save(getCampaign("Not송보석",2L));
 //        given
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자2", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자3", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자2", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자3", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
-        marginForCampaignRepository.save(getgetMarginForCampaign(IncorrectCampaign, "모자3", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(IncorrectCampaign, "모자3", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
 //        when
         List<MarginForCampaign> result = marginForCampaignRepository.MarginForCampaignByCampaignId(1L);
@@ -62,25 +63,26 @@ public class MarginForCampaignRepositoryTest {
         memberRepository.save(member);
 
         Campaign campaign = campaignRepository.save(getCampaign("송보석",1L,member));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자2", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자2", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
         Campaign campaign2 = campaignRepository.save(getCampaign("송보석1",2L,member));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자3", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자4", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자3", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자4", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
         Campaign campaign3 = campaignRepository.save(getCampaign("송보석2",3L,member));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자5", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자6", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자5", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자6", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
         Campaign campaign4 = campaignRepository.save(getCampaign("송보석3",4L,member));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign4, "모자7", 1L, 1L, 1L, 1.1));
-        marginForCampaignRepository.save(getgetMarginForCampaign(campaign4, "모자8", 1L, 1L, 1L, 1.1));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign4, "모자7", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign4, "모자8", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
 
         // 3 캠페인은 5,6 가지고 있음 8 다른곳에 있음 존재해야함
-        Optional<MarginForCampaign> emptyResult= marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign("fa7271@naver.com", "모자8",3L);
+
+        Optional<MarginForCampaign> emptyResult= marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign("fa7271@naver.com", "모자8",3L, MarginType.ROCKET_GROWTH);
         // 내꺼니까 상관없음
-        Optional<MarginForCampaign> notEmptyResult = marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign("fa7271@naver.com", "모자",1L);
+        Optional<MarginForCampaign> notEmptyResult = marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign("fa7271@naver.com", "모자",1L,MarginType.ROCKET_GROWTH);
 
 
         //then
@@ -123,7 +125,7 @@ public class MarginForCampaignRepositoryTest {
                 .build();
     }
 
-    public MarginForCampaign getgetMarginForCampaign(Campaign campaign, String productName, Long mfcTotalPrice, Long mfcCostPrice, Long mfcPerPiece, Double mfcZeroRoas) {
+    public MarginForCampaign getgetMarginForCampaign(Campaign campaign, String productName, Long mfcTotalPrice, Long mfcCostPrice, Long mfcPerPiece, Double mfcZeroRoas, MarginType marginType ) {
         return MarginForCampaign.builder()
                 .mfcProductName(productName)
                 .mfcTotalPrice(mfcTotalPrice)
@@ -131,6 +133,7 @@ public class MarginForCampaignRepositoryTest {
                 .mfcPerPiece(mfcPerPiece)
                 .mfcZeroRoas(mfcZeroRoas)
                 .campaign(campaign)
+                .mfcType(marginType)
                 .build();
     }
 }

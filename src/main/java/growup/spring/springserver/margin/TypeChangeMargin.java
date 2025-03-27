@@ -64,6 +64,8 @@ public class TypeChangeMargin {
                 .marNetProfit(0.0)
                 .marActualSales(0L)
                 .marAdCost(0.0)
+                .marReturnCount(0L)
+                .marReturnCost(0.0)
                 .build();
     }
 

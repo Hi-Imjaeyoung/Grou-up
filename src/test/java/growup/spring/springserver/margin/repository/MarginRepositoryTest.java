@@ -6,6 +6,7 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,6 +128,22 @@ class MarginRepositoryTest {
 
         assertThat(margins).hasSize(1);
 
+    }
+
+    @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDate(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        marginRepository.save(newMargin(includeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign1,0L,0.0,0L,0.0));
+        //given
+        final int result = marginRepository.deleteByCampaignIdAndDate(start,end,campaign1.getCampaignId());
+        assertThat(result).isEqualTo(1);
     }
 
     private Member newMember() {

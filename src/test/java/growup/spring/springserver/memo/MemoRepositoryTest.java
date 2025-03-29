@@ -4,6 +4,7 @@ import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.memo.domain.Memo;
 import growup.spring.springserver.memo.repository.MemoRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,9 +103,33 @@ public class MemoRepositoryTest {
         assertThat(result.get().getContents()).isEqualTo("success update");
     }
 
+    @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDat(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",includeDate,campaign));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign));
+        //given
+        final int result = memoRepository.deleteByCampaignIdAndDate(start,end,campaign.getCampaignId());
+        assertThat(result).isEqualTo(1);
+    }
+
     private Memo makeMemo(String contents4,Campaign campaign) {
         return Memo.builder()
                 .date(LocalDate.now())
+                .campaign(campaign)
+                .contents(contents4)
+                .build();
+    }
+
+    private Memo makeMemo(String contents4,LocalDate localDate,Campaign campaign) {
+        return Memo.builder()
+                .date(localDate)
                 .campaign(campaign)
                 .contents(contents4)
                 .build();

@@ -7,6 +7,7 @@ import growup.spring.springserver.execution.domain.Execution;
 import growup.spring.springserver.execution.repository.ExecutionRepository;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,6 +137,23 @@ class CampaignOptionDetailsRepositoryTest {
 
         // Then
         assertThat(result).hasSize(2); // 범위 내 데이터 2개
+    }
+
+    @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDate(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        campaignOptionDetailsRepository.save(newCampaignOptionDetails(execution1, includeDate, 100L, 5L, 1000.0, 5000.0, 500.0, 50L, 5.0, 10.0, "검색"));
+        campaignOptionDetailsRepository.save(newCampaignOptionDetails(execution2, excludeDate, 100L, 5L, 1000.0, 5000.0, 500.0, 50L, 5.0, 10.0, "검색"));
+        List<Long> executionIds = List.of(execution1.getId(), execution2.getId());
+        //given
+        final int result = campaignOptionDetailsRepository.deleteByCampaignIdAndDate(start,end,executionIds);
+        assertThat(result).isEqualTo(1);
     }
 
     public Member newMember() {

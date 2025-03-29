@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,6 +75,24 @@ public class CampaignControllerTest {
                 jsonPath("data[0].campaignId").value(1L), // 첫 번째 요소 검증
                 jsonPath("data[1].campaignId").value(2L), // 두 번째 요소 검증
                 jsonPath("data[2].campaignId").value(3L)  // 세 번째 요소 검증
+        ).andDo(print());
+    }
+
+    @Test
+    @WithAuthUser
+    @DisplayName("캠패인 삭제 api - 실패 id 누락 ")
+    void test3() throws Exception {
+        Gson gson = new Gson();
+        final String url = "/api/campaign/deleteCampaign";
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(new ArrayList<String>()))
+                        .with(csrf()));
+
+        resultActions.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("errorMessage").value("잘못된 요청값 입니다.")
         ).andDo(print());
     }
 

@@ -4,6 +4,9 @@ import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,12 +45,15 @@ public class CampaignController {
     }
 
     @DeleteMapping("/deleteCampaign")
-    public ResponseEntity<CommonResponse<String>> deleteCampaign(@RequestParam("campaignId") Long campaignId,
+    public ResponseEntity<CommonResponse<Integer>> deleteCampaign(@RequestBody @NotEmpty List<Long> campaignIds,
                                                                  BindingResult bindingResult) throws BindException {
-        if(bindingResult.hasErrors()){
+        if(bindingResult.hasErrors() || campaignIds.isEmpty()){
+            log.error(bindingResult.toString());
             throw new BindException(bindingResult);
         }
-        campaignService.deleteCampaign(campaignId);
-        return new ResponseEntity<>(CommonResponse.<String>builder("success delete").data("good").build(),HttpStatus.OK);
+        int deletedCampaignNumber = campaignService.deleteCampaign(campaignIds);
+        return new ResponseEntity<>(CommonResponse.<Integer>builder("success delete")
+                .data(deletedCampaignNumber)
+                .build(),HttpStatus.OK);
     }
 }

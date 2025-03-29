@@ -5,14 +5,18 @@ import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class CampaignService {
     @Autowired
     private MemberService memberService;
@@ -47,8 +51,19 @@ public class CampaignService {
                 .orElseThrow(CampaignNotFoundException::new);
     }
 
-    public void deleteCampaign(Long campaignId){
-        campaignRepository.deleteById(campaignId);
+    public int deleteCampaign(List<Long> campaignIds){
+        int deletedCampaignNumber = 0;
+        for(Long campaignId : campaignIds){
+            try {
+                if (campaignRepository.findByCampaignId(campaignId).isPresent()) {
+                    campaignRepository.deleteById(campaignId);
+                    deletedCampaignNumber++;
+                }
+            }catch (ConstraintViolationException exception){
+                log.error("FK 제약조건 설정이 위배되어 "+campaignId+" 캠패인이 삭제 되지 않았습니다.");
+            }
+        }
+        return deletedCampaignNumber;
     }
 
 }

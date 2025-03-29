@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -84,15 +85,34 @@ public class CampaignControllerTest {
     void test3() throws Exception {
         Gson gson = new Gson();
         final String url = "/api/campaign/deleteCampaign";
+        final List<Long> campaignIds = new ArrayList<>();
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.delete(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(new ArrayList<String>()))
+                        .content(gson.toJson(campaignIds))
                         .with(csrf()));
-
         resultActions.andExpectAll(
                 status().isBadRequest(),
                 jsonPath("errorMessage").value("잘못된 요청값 입니다.")
+        ).andDo(print());
+    }
+
+    @Test
+    @WithAuthUser
+    @DisplayName("캠패인 삭제 api - 성공")
+    void test4() throws Exception {
+        Gson gson = new Gson();
+        doReturn(2).when(campaignService).deleteCampaign(any());
+        final String url = "/api/campaign/deleteCampaign";
+        final List<Long> campaignIds = List.of(1L,2L);
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(campaignIds))
+                        .with(csrf()));
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("data").value("2")
         ).andDo(print());
     }
 

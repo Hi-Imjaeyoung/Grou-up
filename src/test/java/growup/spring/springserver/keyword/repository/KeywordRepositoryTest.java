@@ -105,15 +105,22 @@ public class KeywordRepositoryTest{
     @Transactional
     void test9(){
         //when
+        Campaign campaign2 = Campaign.builder()
+                .campaignId(2L)
+                .camCampaignName("testCampaign")
+                .build();
+        campaignRepository.save(campaign2);
         LocalDate start = LocalDate.parse("2025-03-01",DateTimeFormatter.ISO_DATE);
         LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
         LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
         LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
         keywordRepository.save(getKeyword("key1",campaign,includeDate,false));
         keywordRepository.save(getKeyword("key2",campaign,excludeDate,false));
+        keywordRepository.save(getKeyword("key2",campaign2,includeDate,false));
+        keywordRepository.save(getKeyword("key2",campaign2,excludeDate,false));
         //given
-        final int result = keywordRepository.deleteByCampaignIdAndDate(start,end,campaign.getCampaignId());
-        assertThat(result).isEqualTo(1);
+        final int result = keywordRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
     }
 
     public Keyword getKeyword(String title, Campaign campaign){

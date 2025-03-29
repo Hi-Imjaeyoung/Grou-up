@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -38,6 +39,10 @@ public class MemoService {
     @Transactional
     public int deleteMemo(Long id){
         return memoRepository.deleteMemoById(id);
+    }
+
+    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start , LocalDate end){
+        return memoRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
     }
 
 }

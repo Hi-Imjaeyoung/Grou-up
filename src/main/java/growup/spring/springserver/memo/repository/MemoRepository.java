@@ -20,8 +20,8 @@ public interface MemoRepository extends JpaRepository<Memo,Long> {
 
     @Modifying
     @Query("DELETE FROM Memo m WHERE m.date BETWEEN :start AND :end " +
-            "AND m.campaign.campaignId = :campaignId")
+            "AND m.campaign.campaignId IN :campaignIds")
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
-                                  @Param("campaignId") Long campaignId);
+                                  @Param("campaignIds") List<Long> campaignIds);
 }

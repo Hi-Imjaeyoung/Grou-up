@@ -32,8 +32,8 @@ public interface KeywordRepository extends JpaRepository <Keyword,Long>{
 
     @Modifying
     @Query("DELETE FROM Keyword k WHERE k.keyDate BETWEEN :start AND :end " +
-            "AND k.campaign.campaignId = :campaignId")
+            "AND k.campaign.campaignId IN :campaignIds")
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
-                                  @Param("campaignId") Long campaignId);
+                                  @Param("campaignIds") List<Long> campaignIds);
 }

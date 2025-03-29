@@ -64,9 +64,9 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
                                                                        @Param("email") String email);
     @Modifying
     @Query("DELETE FROM Margin m WHERE m.marDate BETWEEN :start AND :end " +
-            "AND m.campaign.campaignId = :campaignId")
+            "AND m.campaign.campaignId IN:campaignIds")
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
-                                  @Param("campaignId") Long campaignId);
+                                  @Param("campaignIds") List<Long> campaignIds);
 
 }

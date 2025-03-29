@@ -151,4 +151,7 @@ public class KeywordService {
                 .nonSearch(nonSearch)
                 .build();
     }
+    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds,LocalDate start, LocalDate end){
+        return keywordRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
+    }
 }

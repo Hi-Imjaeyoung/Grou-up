@@ -141,9 +141,11 @@ class MarginRepositoryTest {
         LocalDate excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
         marginRepository.save(newMargin(includeDate,campaign1,0L,0.0,0L,0.0));
         marginRepository.save(newMargin(excludeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(includeDate,campaign2,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign2,0L,0.0,0L,0.0));
         //given
-        final int result = marginRepository.deleteByCampaignIdAndDate(start,end,campaign1.getCampaignId());
-        assertThat(result).isEqualTo(1);
+        final int result = marginRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
     }
 
     private Member newMember() {

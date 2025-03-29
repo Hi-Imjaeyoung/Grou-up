@@ -114,9 +114,11 @@ public class MemoRepositoryTest {
         LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
         memoRepository.save(makeMemo("memo1",includeDate,campaign));
         memoRepository.save(makeMemo("memo2",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo1",includeDate,campaign2));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign2));
         //given
-        final int result = memoRepository.deleteByCampaignIdAndDate(start,end,campaign.getCampaignId());
-        assertThat(result).isEqualTo(1);
+        final int result = memoRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
     }
 
     private Memo makeMemo(String contents4,Campaign campaign) {

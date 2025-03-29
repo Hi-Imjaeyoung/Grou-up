@@ -38,7 +38,7 @@ public class Execution {
 
     @OneToMany(mappedBy = "execution", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @Builder.Default
-    private List<CampaignOptionDetails> margins = new ArrayList<>();
+    private List<CampaignOptionDetails> campaignOptionDetails = new ArrayList<>();
 
 
     public void update(Long exeSalePrice, Long exeTotalPrice, Long exeCostPrice, Double exePerPiece, Double exeZeroRoas) {

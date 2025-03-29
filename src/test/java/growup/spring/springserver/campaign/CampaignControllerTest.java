@@ -1,14 +1,26 @@
 package growup.spring.springserver.campaign;
 
-import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.*;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.campaign.controller.CampaignController;
+import growup.spring.springserver.campaign.dto.CampaignDeleteDto;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.service.CampaignService;
+import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
+import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
+import growup.spring.springserver.execution.dto.ExecutionResponseDto;
+import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.global.config.JwtTokenProvider;
+import growup.spring.springserver.keyword.service.KeywordService;
+import growup.spring.springserver.margin.service.MarginService;
+import growup.spring.springserver.memo.MemoControllerTest;
+import growup.spring.springserver.memo.service.MemoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,8 +31,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -37,6 +53,16 @@ public class CampaignControllerTest {
 
     @MockBean
     private CampaignService campaignService;
+    @MockBean
+    private KeywordService keywordService;
+    @MockBean
+    private MarginService marginService;
+    @MockBean
+    private MemoService memoService;
+    @MockBean
+    private ExecutionService executionService;
+    @MockBean
+    private CampaignOptionDetailsService campaignOptionDetailsService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
@@ -82,7 +108,7 @@ public class CampaignControllerTest {
     @Test
     @WithAuthUser
     @DisplayName("캠패인 삭제 api - 실패 id 누락 ")
-    void test3() throws Exception {
+    void deleteCampaign() throws Exception {
         Gson gson = new Gson();
         final String url = "/api/campaign/deleteCampaign";
         final List<Long> campaignIds = new ArrayList<>();
@@ -100,7 +126,7 @@ public class CampaignControllerTest {
     @Test
     @WithAuthUser
     @DisplayName("캠패인 삭제 api - 성공")
-    void test4() throws Exception {
+    void deleteCampaign2() throws Exception {
         Gson gson = new Gson();
         doReturn(2).when(campaignService).deleteCampaign(any());
         final String url = "/api/campaign/deleteCampaign";
@@ -116,11 +142,116 @@ public class CampaignControllerTest {
         ).andDo(print());
     }
 
+    @ParameterizedTest
+    @WithAuthUser
+    @DisplayName("캠패인 데이터 기간 삭제 API : 실패 body 값 누락")
+    @MethodSource("provideInvalidCampaignDeleteRequests")
+    void deleteCampaignData1(CampaignDeleteDto body) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        String url = "/api/campaign/deleteCampaignData";
+
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(body))
+                        .with(csrf())
+        );
+
+        resultActions.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    public static Stream<Arguments> provideInvalidCampaignDeleteRequests() {
+        return Stream.of(
+                // LocalDate 형식 오류 (종료 날짜만 제공)
+                Arguments.of(CampaignDeleteDto.builder()
+                        .end(LocalDate.now())
+                        .campaignIds(List.of(1L))
+                        .build()),
+                // 시작 날짜가 끝 날짜보다 늦거나 캠페인 ID 누락
+                Arguments.of(CampaignDeleteDto.builder()
+                        .start(LocalDate.now())
+                        .end(LocalDate.now()) // 시작 날짜가 종료 날짜보다 늦음
+                        .campaignIds(List.of())
+                        .build())
+        );
+    }
+    @Test
+    @WithAuthUser
+    @DisplayName("캠패인 데이터 기간 삭제 API : 실패 조회 기간 오류")
+    void deleteCampaignData2() throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        String url = "/api/campaign/deleteCampaignData";
+        CampaignDeleteDto body = CampaignDeleteDto.builder()
+                .start(LocalDate.now())
+                .end(LocalDate.now().minusDays(1))
+                .campaignIds(List.of(1L))
+                .build();
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(body))
+                        .with(csrf())
+        );
+
+        resultActions.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("errorMessage").value("날짜 형식이 이상합니다.")
+        ).andDo(print());
+    }
+
+    @Test
+    @WithAuthUser
+    @DisplayName("캠패인 데이터 기간 삭제 API : 성공")
+    void deleteCampaignData3() throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        String url = "/api/campaign/deleteCampaignData";
+        doReturn(1).when(keywordService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
+        doReturn(1).when(memoService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
+        doReturn(1).when(marginService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
+        doReturn(List.of(ExecutionMarginResDto.builder().build())).when(executionService).getMyExecutionData(any());
+        doReturn(1).when(campaignOptionDetailsService).deleteKeywordByExecutionIdsAndDate(any(),any(),any());
+
+        CampaignDeleteDto body = CampaignDeleteDto.builder()
+                .start(LocalDate.now().minusDays(1))
+                .end(LocalDate.now())
+                .campaignIds(List.of(1L))
+                .build();
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(body))
+                        .with(csrf())
+        );
+
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("data.campaignOptionDetail").value(1),
+                jsonPath("data.margin").value(1),
+                jsonPath("data.memo").value(1),
+                jsonPath("data.keyword").value(1)
+        ).andDo(print());
+    }
+
     public CampaignResponseDto getCampaignResDto(String name,Long id){
         return CampaignResponseDto.builder()
                 .title(name)
                 .campaignId(id)
                 .build();
 
+    }
+    class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        @Override
+        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(date.format(formatter));
+        }
+
+        @Override
+        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
+            return LocalDate.parse(json.getAsString(), formatter);
+        }
     }
 }

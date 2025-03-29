@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,5 +39,15 @@ public class CampaignController {
                 .<List<CampaignResponseDto>>builder("success : load campaign name list")
                 .data(data)
                 .build(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteCampaign")
+    public ResponseEntity<CommonResponse<String>> deleteCampaign(@RequestParam("campaignId") Long campaignId,
+                                                                 BindingResult bindingResult) throws BindException {
+        if(bindingResult.hasErrors()){
+            throw new BindException(bindingResult);
+        }
+        campaignService.deleteCampaign(campaignId);
+        return new ResponseEntity<>(CommonResponse.<String>builder("success delete").data("good").build(),HttpStatus.OK);
     }
 }

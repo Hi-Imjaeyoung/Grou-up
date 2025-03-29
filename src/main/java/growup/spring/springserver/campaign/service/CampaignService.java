@@ -47,5 +47,8 @@ public class CampaignService {
                 .orElseThrow(CampaignNotFoundException::new);
     }
 
+    public void deleteCampaign(Long campaignId){
+        campaignRepository.deleteById(campaignId);
+    }
 
 }

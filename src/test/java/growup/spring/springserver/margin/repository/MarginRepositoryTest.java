@@ -149,6 +149,7 @@ class MarginRepositoryTest {
         //given
         final int result = marginRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
         assertThat(result).isEqualTo(2);
+    }
     @DisplayName("findByCampaignIdAndDate() : successCase1.")
     void test4_1() {
         LocalDate date = LocalDate.of(2024, 11, 10);

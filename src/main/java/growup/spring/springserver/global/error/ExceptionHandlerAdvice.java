@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
@@ -65,6 +66,14 @@ public class ExceptionHandlerAdvice {
     // controller 에서 Param 형식 오류 시 던지는 에러 (null)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponseDto> MissingServletRequestParameterException() {
+        RequestError e = new RequestError();
+        log.error("Handler campaignNotFoundException message: {}", e.getErrorCode());
+        return ErrorResponseDto.of(HttpStatus.BAD_REQUEST, e.getErrorCode().getMessage());
+    }
+
+    // controller 에서 requestBody가 empty인 경우 발생하는 예외.
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponseDto> HandlerMethodValidationException() {
         RequestError e = new RequestError();
         log.error("Handler campaignNotFoundException message: {}", e.getErrorCode());
         return ErrorResponseDto.of(HttpStatus.BAD_REQUEST, e.getErrorCode().getMessage());

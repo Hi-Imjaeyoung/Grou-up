@@ -59,4 +59,8 @@ public class CampaignOptionDetailsService {
         }
         return campaignOptionDetailsResponseDtos;
     }
+
+    public int deleteKeywordByExecutionIdsAndDate(List<Long> executionIds, LocalDate start, LocalDate end){
+        return campaignOptionDetailsRepository.deleteByCampaignIdAndDate(start,end,executionIds);
+    }
 }

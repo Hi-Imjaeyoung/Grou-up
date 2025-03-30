@@ -327,4 +327,8 @@ public class MarginService {
                 "adBudget", data.getMarAdBudget()
         );
     }
+
+    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start, LocalDate end){
+        return marginRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
+    }
 }

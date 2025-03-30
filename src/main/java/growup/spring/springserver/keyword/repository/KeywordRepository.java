@@ -2,6 +2,7 @@ package growup.spring.springserver.keyword.repository;
 
 import growup.spring.springserver.keyword.domain.Keyword;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,4 +28,12 @@ public interface KeywordRepository extends JpaRepository <Keyword,Long>{
             @Param("end") LocalDate end,
             @Param("campaignId") Long campaignId,
             @Param("keys") List<String> keys);
+
+
+    @Modifying
+    @Query("DELETE FROM Keyword k WHERE k.keyDate BETWEEN :start AND :end " +
+            "AND k.campaign.campaignId IN :campaignIds")
+    int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
+                                  @Param("end") LocalDate end,
+                                  @Param("campaignIds") List<Long> campaignIds);
 }

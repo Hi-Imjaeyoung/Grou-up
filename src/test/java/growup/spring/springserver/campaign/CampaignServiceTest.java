@@ -10,6 +10,7 @@ import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.login.service.MemberService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,6 +112,19 @@ class CampaignServiceTest {
     }
     public static Campaign getCampaign(){
         return Campaign.builder().campaignId(1L).camCampaignName("testCamp").build();
+    }
+
+    @Test
+    @DisplayName("deleteCampaign() : 부분 성공")
+    void deleteCampaign() {
+        //given
+        doReturn(Optional.empty()).when(campaignRepository).findByCampaignId(1L);
+        doReturn(Optional.of(getCampaign())).when(campaignRepository).findByCampaignId(2L);
+        doThrow(ConstraintViolationException.class).when(campaignRepository).findByCampaignId(3L);
+        //when
+        final int result = campaignService.deleteCampaign(List.of(1L,2L,3L));
+        //then
+        assertThat(result).isEqualTo(1);
     }
 
     public Member getMember(){

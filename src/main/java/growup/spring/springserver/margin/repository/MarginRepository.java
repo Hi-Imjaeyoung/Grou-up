@@ -4,6 +4,7 @@ import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
 import growup.spring.springserver.margin.dto.DailyNetProfitResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -60,6 +61,12 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
     List<DailyNetProfitResponseDto> findTotalMarginByDateRangeAndEmail(@Param("start") LocalDate start,
                                                                        @Param("end") LocalDate end,
                                                                        @Param("email") String email);
+    @Modifying
+    @Query("DELETE FROM Margin m WHERE m.marDate BETWEEN :start AND :end " +
+            "AND m.campaign.campaignId IN:campaignIds")
+    int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
+                                  @Param("end") LocalDate end,
+                                  @Param("campaignIds") List<Long> campaignIds);
 
 
 }

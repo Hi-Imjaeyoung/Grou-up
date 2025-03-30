@@ -6,6 +6,7 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
+import jakarta.transaction.Transactional;
 import growup.spring.springserver.margin.dto.DailyNetProfitResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -132,6 +134,21 @@ class MarginRepositoryTest {
     }
 
     @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDate(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        marginRepository.save(newMargin(includeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(includeDate,campaign2,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign2,0L,0.0,0L,0.0));
+        //given
+        final int result = marginRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
     @DisplayName("findByCampaignIdAndDate() : successCase1.")
     void test4_1() {
         LocalDate date = LocalDate.of(2024, 11, 10);
@@ -169,7 +186,6 @@ class MarginRepositoryTest {
 
         assertThat(totalMarginByDateRangeAndEmail.get(0).getMargin()).isEqualTo(150.0);
         assertThat(totalMarginByDateRangeAndEmail.get(0).getMarReturnCost()).isEqualTo(130.0);
-
     }
 
     private Member newMember() {

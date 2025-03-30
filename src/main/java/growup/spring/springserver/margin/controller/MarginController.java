@@ -85,7 +85,7 @@ public class MarginController {
     }
 
     // Return 타입 뭘로 ?. 고민
-    @PatchMapping("marginUpdatesByPeriod")
+    @PatchMapping("/marginUpdatesByPeriod")
     public ResponseEntity<CommonResponse<String>> marginUpdatesByPeriod(@Valid @RequestBody MfcRequestWithDatesDto mfcRequestWithDatesDto,
                                                                         @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -116,15 +116,14 @@ public class MarginController {
                 .data(dailyMarginSummary)
                 .build(), HttpStatus.OK);
     }
-    // 일자별 모든 캠페인의 마진을더한 총 마진.
-    @GetMapping("/getNetProfit")
+    // 일자별 모든 캠페인의 마진을더한 총 마진 및 반품
+    @GetMapping("/getNetProfitAndReturnCost")
     public ResponseEntity<CommonResponse<List<DailyNetProfitResponseDto>>> getNetProfit(@RequestParam("startDate") LocalDate start,
                                                                                         @RequestParam("endDate") LocalDate end,
                                                                                         @AuthenticationPrincipal UserDetails userDetails) {
         List<DailyNetProfitResponseDto> dailyTotalMargin = marginService.getDailyTotalMarginListResDto(start, end, userDetails.getUsername());
-
         return new ResponseEntity<>(CommonResponse
-                .<List<DailyNetProfitResponseDto>>builder("success : getNetProfit")
+                .<List<DailyNetProfitResponseDto>>builder("success : getNetProfitAndReturnCost")
                 .data(dailyTotalMargin)
                 .build(), HttpStatus.OK);
 

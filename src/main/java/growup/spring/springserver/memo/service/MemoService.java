@@ -41,6 +41,7 @@ public class MemoService {
         return memoRepository.deleteMemoById(id);
     }
 
+    @Transactional
     public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start , LocalDate end){
         return memoRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
     }

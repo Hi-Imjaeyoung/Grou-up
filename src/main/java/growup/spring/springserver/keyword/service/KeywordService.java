@@ -13,6 +13,7 @@ import growup.spring.springserver.keyword.repository.KeywordRepository;
 import growup.spring.springserver.keywordBid.dto.KeywordBidDto;
 import growup.spring.springserver.keywordBid.dto.KeywordBidResponseDto;
 import growup.spring.springserver.keywordBid.service.KeywordBidService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -151,6 +152,7 @@ public class KeywordService {
                 .nonSearch(nonSearch)
                 .build();
     }
+    @Transactional
     public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds,LocalDate start, LocalDate end){
         return keywordRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
     }

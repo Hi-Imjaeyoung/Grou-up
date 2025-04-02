@@ -47,7 +47,8 @@ public class MemoRepositoryTest {
         Memo memo = makeMemo("contents..",campaign);
         final Memo result = memoRepository.save(memo);
         assertThat(result.getContents()).isEqualTo("contents..");
-        assertThat(result.getDate()).isEqualTo(LocalDate.now());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        assertThat(result.getDate()).isEqualTo(formatter.format(LocalDate.now()));
     }
     @DisplayName("해당 캠패인 메모 조회")
     @Test
@@ -120,6 +121,43 @@ public class MemoRepositoryTest {
         final int result = memoRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
         assertThat(result).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("findByDateAndCampaignId() : 조회 성공(빈값)")
+    void findByDateAndCampaignId1(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo3",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo4",excludeDate,campaign));
+        //given
+        final List<Memo> result = memoRepository.findByDateAndCampaignId(start,end,1L);
+        //then
+        assertThat(result).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("findByDateAndCampaignId() : 조회 성공")
+    void findByDateAndCampaignId2(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",includeDate,campaign));
+        memoRepository.save(makeMemo("memo2",includeDate,campaign));
+        memoRepository.save(makeMemo("memo3",includeDate,campaign));
+        memoRepository.save(makeMemo("memo4",excludeDate,campaign));
+        //given
+        final List<Memo> result = memoRepository.findByDateAndCampaignId(start,end,1L);
+        //then
+        assertThat(result).hasSize(3);
+    }
+
 
     private Memo makeMemo(String contents4,Campaign campaign) {
         return Memo.builder()

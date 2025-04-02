@@ -14,6 +14,9 @@ import growup.spring.springserver.memo.service.MemoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +30,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -208,6 +214,52 @@ public class MemoControllerTest {
                 status().isBadRequest(),
                 jsonPath("errorMessage").value("해당 메모가 존재하지 않습니다")
         );
+    }
+
+    @DisplayName("특정 기간 내 메모 조회 실패 : 요청 값 누락")
+    @ParameterizedTest
+    @WithAuthUser
+    @MethodSource("GetMemoByDateIncorrectParam")
+    void findMemoByDateAndCampaignId(String start,String end, Long campaignId) throws Exception {
+        String url = "/api/memo/getMemoByDate";
+        ResultActions resultActions;
+        if(campaignId==null){
+            resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url)
+                    .param("start",start)
+                    .param("end",end));
+        }else{
+            resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url)
+                    .param("start",start)
+                    .param("end",end)
+                    .param("campaignId", String.valueOf(campaignId)));
+        }
+        resultActions.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("errorMessage").value("잘못된 요청값 입니다.")
+        ).andDo(print());
+    }
+    public static Stream<Arguments> GetMemoByDateIncorrectParam(){
+        return Stream.of(
+                Arguments.of("","2012-01-01",1L),
+                Arguments.of("2012-01-01","",1L),
+                Arguments.of("2012-01-01","2012-01-05",null));
+    }
+    @DisplayName("특정 기간 내 메모 조회 성공")
+    @Test
+    @WithAuthUser
+    void findMemoByDateAndCampaignId2() throws Exception {
+        String url = "/api/memo/getMemoByDate";
+        Map<String,List<String>> map = new HashMap<>();
+        map.put("2025-04-01",List.of("memo1"));
+        map.put("2025-04-02",List.of("memo3"));
+        doReturn(map).when(memoService).getMemoByDateAndCampaign(any(),any(),any());
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url)
+                    .param("start","2025-04-01")
+                    .param("end","2025-04-01")
+                    .param("campaignId", String.valueOf(1L)));
+        resultActions.andExpectAll(
+                status().isOk()
+        ).andDo(print());
     }
 
     private Campaign getCampaign(){

@@ -15,8 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,6 +80,18 @@ public class MemoServiceTest {
         doReturn(1).when(memoRepository).deleteMemoById(1L);
         final int result = memoService.deleteMemo(1L);
         assertThat(result).isEqualTo(1);
+    }
+
+    @DisplayName("기간 내 Memo 조회")
+    @Test
+    void getMemoByDateAndCampaign(){
+        doReturn(List.of(getSavedMemo(1L,"memo",LocalDate.now())
+                ,getSavedMemo(2L,"memo",LocalDate.now()),
+                getSavedMemo(3L,"memo3",LocalDate.now().minusDays(1))))
+                .when(memoRepository).findByDateAndCampaignId(any(LocalDate.class),any(LocalDate.class),any(Long.class));
+        final Map<String,List<String>> map = memoService.getMemoByDateAndCampaign(LocalDate.now(),LocalDate.now(),1L);
+        assertThat(map.get(LocalDate.now().toString())).hasSize(2);
+        assertThat(map.get(LocalDate.now().minusDays(1).toString())).hasSize(1);
     }
 
     private Campaign getCampaign(){

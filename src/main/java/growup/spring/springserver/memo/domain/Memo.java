@@ -38,4 +38,8 @@ public class Memo {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
         return this.date.format(formatter);
     }
+
+    public String getRawDate(){
+        return this.date.toString();
+    }
 }

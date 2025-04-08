@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MemoService {
@@ -44,6 +47,18 @@ public class MemoService {
     @Transactional
     public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start , LocalDate end){
         return memoRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
+    }
+
+    public Map<String,List<String>> getMemoByDateAndCampaign(LocalDate start, LocalDate end, Long campaignId){
+        List<Memo> result = memoRepository.findByDateAndCampaignId(start,end,campaignId);
+        Map<String,List<String>> map = new HashMap<>();
+        for(Memo memo : result){
+            if(!map.containsKey(memo.getRawDate())){
+                map.put(memo.getRawDate(), new ArrayList<>());
+            }
+            map.get(memo.getRawDate()).add(memo.getContents());
+        }
+        return map;
     }
 
 }

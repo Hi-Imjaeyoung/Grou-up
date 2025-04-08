@@ -84,7 +84,7 @@ public class MarginController {
                 .build(), HttpStatus.OK);
     }
 
-    // Return 타입 뭘로 ?. 고민
+    // 기간 별 마진, 반품 비용 없데이트
     @PatchMapping("/marginUpdatesByPeriod")
     public ResponseEntity<CommonResponse<String>> marginUpdatesByPeriod(@Valid @RequestBody MfcRequestWithDatesDto mfcRequestWithDatesDto,
                                                                         @AuthenticationPrincipal UserDetails userDetails) {

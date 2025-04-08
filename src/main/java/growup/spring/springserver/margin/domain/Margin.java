@@ -65,11 +65,10 @@ public class Margin {
         this.marReturnCost = returnCost; // 반품 총 비용
     }
 
-    public void update(long adMargin) {
+    public void update(long adMargin, double returnPrice) {
         this.marAdMargin = adMargin;
-        if (this.marActualSales != 0 && this.getMarAdMargin() != 0) {
-            this.marNetProfit = adMargin - (this.marAdCost * 1.1) - this.marReturnCost;
-        }
+        this.marReturnCost = returnPrice;
+        this.marNetProfit = adMargin - (this.marAdCost * 1.1) - this.marReturnCost;
     }
 
     public void updateMarginData(double targetEfficiency, double adBudget) {

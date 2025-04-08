@@ -8,11 +8,12 @@ import growup.spring.springserver.exception.netsales.NetSalesNotFoundProductName
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.login.service.MemberService;
-import growup.spring.springserver.margin.TypeChangeMargin;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.repository.MarginRepository;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
+import growup.spring.springserver.marginforcampaign.dto.MfcDto;
+import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
 import growup.spring.springserver.marginforcampaign.repository.MarginForCampaignRepository;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.netsales.domain.NetSales;
@@ -514,12 +515,12 @@ class MarginServiceTest {
         // then
         Set<LocalDate> existingDates = result.stream()
                 .flatMap(dto -> dto.getData().stream())
-                .map(Margin::getMarDate)  // Margin 객체에서 날짜를 가져옵니다.
+                .map(MarginResultDto::getMarDate)  // Margin 객체에서 날짜를 가져옵니다.
                 .collect(Collectors.toSet());
 
         List<LocalDate> newMarginDates = result.stream()
                 .flatMap(dto -> dto.getData().stream())
-                .map(Margin::getMarDate)
+                .map(MarginResultDto::getMarDate)
                 .collect(Collectors.toList());
 
         // Verify
@@ -760,7 +761,7 @@ class MarginServiceTest {
 
 
         // when stub 세팅
-        when(marginRepository.findByCampaignIdAndDates(campaignId,start, end)).thenReturn(existingMargins);
+        when(marginRepository.findByCampaignIdAndDates(campaignId, start, end)).thenReturn(existingMargins);
         when(campaignService.getMyCampaign(campaignId, email)).thenReturn(myCampaign);
         when(netRepository.findDatesWithNetSalesByEmailAndDateRange(email, start, end)).thenReturn(netSalesDates);
         when(marginRepository.saveAll(anyList())).thenReturn(List.of(newMargin));
@@ -774,7 +775,7 @@ class MarginServiceTest {
         assertAll(
                 () -> {
                     MarginResponseDto dto = result.get(0);
-                    List<Margin> data = dto.getData();
+                    List<MarginResultDto> data = dto.getData();
 
                     assertThat(dto.getCampaignId()).isEqualTo(campaignId);
                     assertThat(data).hasSize(2);
@@ -790,9 +791,8 @@ class MarginServiceTest {
         );
 
 
-
         // verify
-        verify(marginRepository).findByCampaignIdAndDates(campaignId,start, end );
+        verify(marginRepository).findByCampaignIdAndDates(campaignId, start, end);
         verify(campaignService).getMyCampaign(campaignId, email);
         verify(netRepository).findDatesWithNetSalesByEmailAndDateRange(email, start, end);
         verify(marginRepository).saveAll(anyList());
@@ -801,6 +801,104 @@ class MarginServiceTest {
         // any - 모든값 허용, 느슨 eq - 특정값 허용,엄격 정확
     }
 
+    @Test
+    @DisplayName("marginUpdatesByPeriod : 업데이트 성공")
+    void marginUpdatesByPeriod() {
+        LocalDate start = LocalDate.of(2025, 3, 1);
+        LocalDate end = LocalDate.of(2025, 3, 1);
+        Long campaignId = 1L;
+        Member member = getMember();
+        String email = "test@test.com";
+        Campaign campaign = Campaign.builder().campaignId(campaignId).member(member).camCampaignName("방한마스크").build();
+
+        MfcRequestWithDatesDto request = MfcRequestWithDatesDto.builder()
+                .startDate(LocalDate.of(2024, 4, 1))
+                .endDate(LocalDate.of(2024, 4, 10))
+                .campaignId(1L)
+                .data(List.of(
+                        MfcDto.builder()
+                                .mfcProductName("방한마스크 빨강색")
+                                .mfcType(MarginType.SELLER_DELIVERY)
+                                .mfcPerPiece(500L)  // 변경된 값
+                                .mfcReturnPrice(100L)
+                                .build(),
+                        MfcDto.builder()
+                                .mfcProductName("방한마스크 파랑색")
+                                .mfcType(MarginType.ROCKET_GROWTH)
+                                .mfcPerPiece(600L)  // 변경된 값
+                                .mfcReturnPrice(150L)
+                                .build()
+                ))
+                .build();
+
+
+        List<Margin> margins = List.of(
+                newMargin(LocalDate.of(2025, 03, 01), campaign, 100.0, 10.0)
+        );
+
+
+        List<MarginForCampaign> marginForCampaigns = List.of(
+                newMarginForCampaign(campaign, "방한마스크 빨강색", MarginType.ROCKET_GROWTH, 100L, 100L),
+                newMarginForCampaign(campaign, "방한마스크 빨강색", MarginType.SELLER_DELIVERY, 33L, 33L),
+                newMarginForCampaign(campaign, "방한마스크 파랑색", MarginType.ROCKET_GROWTH, 13L, 21L)
+        );
+
+        // 첫 번째 NetSales mock 설정
+        NetSales netSales1 = mock(NetSales.class);
+        when(netSales1.getNetSalesCount()).thenReturn(50L);  // 실제 판매 수
+        when(netSales1.getNetReturnCount()).thenReturn(5L);  // 반품 수
+
+        // 두 번째 NetSales mock 설정
+        NetSales netSales2 = mock(NetSales.class);
+        when(netSales2.getNetSalesCount()).thenReturn(30L);  // 실제 판매 수
+        when(netSales2.getNetReturnCount()).thenReturn(3L);  // 반품 수
+
+        NetSales netSales3 = mock(NetSales.class);
+        when(netSales3.getNetSalesCount()).thenReturn(25L);  // 실제 판매 수
+        when(netSales3.getNetReturnCount()).thenReturn(5L);  // 반품 수
+
+
+        when(netRepository.findByNetDateAndEmailAndNetProductNameAndNetMarginType(
+                any(LocalDate.class),
+                anyString(),
+                eq("방한마스크 빨강색"),
+                eq(MarginType.ROCKET_GROWTH)
+        )).thenReturn(Optional.of(netSales1));
+
+        when(netRepository.findByNetDateAndEmailAndNetProductNameAndNetMarginType(
+                any(LocalDate.class),
+                anyString(),
+                eq("방한마스크 빨강색"),
+                eq(MarginType.SELLER_DELIVERY)
+        )).thenReturn(Optional.of(netSales2));
+
+        when(netRepository.findByNetDateAndEmailAndNetProductNameAndNetMarginType(
+                any(LocalDate.class),
+                anyString(),
+                eq("방한마스크 파랑색"),
+                eq(MarginType.ROCKET_GROWTH)
+        )).thenReturn(Optional.of(netSales3));
+
+        when(marginRepository.findByCampaignIdAndDates(
+                anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .thenReturn(margins);
+
+        when(marginForCampaignRepository.MarginForCampaignByCampaignId(campaignId)).thenReturn(marginForCampaigns);
+
+        marginService.marginUpdatesByPeriod(request, email);
+
+        Margin updatedMargin = margins.get(0);  // 변경된 Margin 객체 가져오기
+
+//        { "방한마스크 빨강색 + MarginType.ROCKET_GROWTH } 는 값이 변경되지 않기때문에 기존에 MarginForCampaign에 저장된 값으로 진행
+
+        long expectedAdMargin =
+                (50 * 100) + (30 * 500) + (25 * 600);
+        long expectedReturnPrice =
+                (5 * 100) + (3 * 100) + (5 * 150);
+
+        assertEquals(expectedAdMargin, updatedMargin.getMarAdMargin());
+        assertEquals(expectedReturnPrice, updatedMargin.getMarReturnCost());
+    }
 
     private Margin newMargin(LocalDate date, Campaign campaign, Double marsale) {
         return Margin.builder()
@@ -810,11 +908,33 @@ class MarginServiceTest {
                 .build();
     }
 
+    private Margin newMargin(LocalDate date, Campaign campaign, Double marsale, Double marReturnCost) {
+        return Margin.builder()
+                .marDate(date)
+                .campaign(campaign)
+                .marSales(marsale)
+                .marReturnCost(marReturnCost)
+                .marAdMargin(100L)
+                .marActualSales(100L)
+                .marAdCost(100.0)
+                .build();
+    }
+
     private Margin newMarginDto(Long marAdMargin, Campaign campaign, Double marNetProfit) {
         return Margin.builder()
                 .marAdMargin(marAdMargin)
                 .campaign(campaign)
                 .marNetProfit(marNetProfit)
+                .build();
+    }
+
+    private MarginForCampaign newMarginForCampaign(Campaign campaign, String productName, MarginType mfcType, Long mfcReturnPrice, Long mfcPerPiece) {
+        return MarginForCampaign.builder()
+                .campaign(campaign)
+                .mfcProductName(productName)
+                .mfcType(mfcType)
+                .mfcReturnPrice(mfcReturnPrice)
+                .mfcPerPiece(mfcPerPiece)
                 .build();
     }
 

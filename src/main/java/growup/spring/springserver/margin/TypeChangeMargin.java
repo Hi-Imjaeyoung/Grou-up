@@ -2,10 +2,7 @@ package growup.spring.springserver.margin;
 
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.margin.domain.Margin;
-import growup.spring.springserver.margin.dto.DailyMarginSummary;
-import growup.spring.springserver.margin.dto.MarginResponseDto;
-import growup.spring.springserver.margin.dto.MarginSummaryResponseDto;
-import growup.spring.springserver.margin.dto.MarginUpdateResponseDto;
+import growup.spring.springserver.margin.dto.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -70,14 +67,34 @@ public class TypeChangeMargin {
     }
 
     public static List<MarginResponseDto> getMarginDto(List<Margin> calculateMargin, Long campaignId) {
+        List<MarginResultDto> marginResultDtos = calculateMargin.stream()
+                .map(margin -> MarginResultDto.builder()
+                        .id(margin.getId())
+                        .marDate(margin.getMarDate())
+                        .marImpressions(margin.getMarImpressions())
+                        .marClicks(margin.getMarClicks())
+                        .marAdConversionSales(margin.getMarAdConversionSales())
+                        .marAdConversionSalesCount(margin.getMarAdConversionSalesCount())
+                        .marReturnCount(margin.getMarReturnCount())
+                        .marReturnCost(margin.getMarReturnCost())
+                        .marAdCost(margin.getMarAdCost())
+                        .marSales(margin.getMarSales())
+                        .marAdMargin(margin.getMarAdMargin())
+                        .marNetProfit(margin.getMarNetProfit())
+                        .marTargetEfficiency(margin.getMarTargetEfficiency())
+                        .marAdBudget(margin.getMarAdBudget())
+                        .marActualSales(margin.getMarActualSales())
+                        .build())
+                .toList(); // Margin -> MarginResultDto 변환
+
         List<MarginResponseDto> marginResponseDtos = new ArrayList<>();
 
         MarginResponseDto marginResponseDto = MarginResponseDto.builder()
                 .campaignId(campaignId)
-                .data(calculateMargin)
+                .data(marginResultDtos) // 변환된 리스트 사용
                 .build();
 
-        marginResponseDtos.add(marginResponseDto);  // 리스트에 추가
+        marginResponseDtos.add(marginResponseDto);
 
         return marginResponseDtos;
     }

@@ -10,5 +10,5 @@ import java.util.List;
 @Builder
 public class MarginResponseDto {
     private Long campaignId;
-    private List<Margin> data;
+    private List<MarginResultDto> data;
 }

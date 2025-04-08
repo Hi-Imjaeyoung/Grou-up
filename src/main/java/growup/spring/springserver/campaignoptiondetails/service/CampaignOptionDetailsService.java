@@ -8,6 +8,7 @@ import growup.spring.springserver.campaignoptiondetails.repository.CampaignOptio
 import growup.spring.springserver.exception.InvalidDateFormatException;
 import growup.spring.springserver.execution.repository.ExecutionRepository;
 import growup.spring.springserver.login.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,5 +59,10 @@ public class CampaignOptionDetailsService {
             campaignOptionDetailsResponseDtos.add(map.get(key));
         }
         return campaignOptionDetailsResponseDtos;
+    }
+
+    @Transactional
+    public int deleteKeywordByExecutionIdsAndDate(List<Long> executionIds, LocalDate start, LocalDate end){
+        return campaignOptionDetailsRepository.deleteByCampaignIdAndDate(start,end,executionIds);
     }
 }

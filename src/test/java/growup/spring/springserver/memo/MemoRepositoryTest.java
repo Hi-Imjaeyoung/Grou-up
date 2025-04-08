@@ -4,6 +4,7 @@ import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.memo.domain.Memo;
 import growup.spring.springserver.memo.repository.MemoRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +47,8 @@ public class MemoRepositoryTest {
         Memo memo = makeMemo("contents..",campaign);
         final Memo result = memoRepository.save(memo);
         assertThat(result.getContents()).isEqualTo("contents..");
-        assertThat(result.getDate()).isEqualTo(LocalDate.now());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        assertThat(result.getDate()).isEqualTo(formatter.format(LocalDate.now()));
     }
     @DisplayName("해당 캠패인 메모 조회")
     @Test
@@ -101,9 +104,72 @@ public class MemoRepositoryTest {
         assertThat(result.get().getContents()).isEqualTo("success update");
     }
 
+    @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDat(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",includeDate,campaign));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo1",includeDate,campaign2));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign2));
+        //given
+        final int result = memoRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("findByDateAndCampaignId() : 조회 성공(빈값)")
+    void findByDateAndCampaignId1(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo2",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo3",excludeDate,campaign));
+        memoRepository.save(makeMemo("memo4",excludeDate,campaign));
+        //given
+        final List<Memo> result = memoRepository.findByDateAndCampaignId(start,end,1L);
+        //then
+        assertThat(result).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("findByDateAndCampaignId() : 조회 성공")
+    void findByDateAndCampaignId2(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate  excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        memoRepository.save(makeMemo("memo1",includeDate,campaign));
+        memoRepository.save(makeMemo("memo2",includeDate,campaign));
+        memoRepository.save(makeMemo("memo3",includeDate,campaign));
+        memoRepository.save(makeMemo("memo4",excludeDate,campaign));
+        //given
+        final List<Memo> result = memoRepository.findByDateAndCampaignId(start,end,1L);
+        //then
+        assertThat(result).hasSize(3);
+    }
+
+
     private Memo makeMemo(String contents4,Campaign campaign) {
         return Memo.builder()
                 .date(LocalDate.now())
+                .campaign(campaign)
+                .contents(contents4)
+                .build();
+    }
+
+    private Memo makeMemo(String contents4,LocalDate localDate,Campaign campaign) {
+        return Memo.builder()
+                .date(localDate)
                 .campaign(campaign)
                 .contents(contents4)
                 .build();

@@ -1,12 +1,13 @@
 package growup.spring.springserver.marginforcampaign.dto;
 
+import growup.spring.springserver.margin.util.MfcKeyProvider;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
-public class MfcDto {
+public class MfcDto implements MfcKeyProvider {
     private Long mfcId;
     private String mfcProductName; // 상품명
     private Long mfcSalePrice;

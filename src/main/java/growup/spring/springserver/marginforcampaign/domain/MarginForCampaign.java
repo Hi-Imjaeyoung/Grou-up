@@ -1,7 +1,7 @@
 package growup.spring.springserver.marginforcampaign.domain;
 
 import growup.spring.springserver.campaign.domain.Campaign;
-import growup.spring.springserver.global.support.Role;
+import growup.spring.springserver.margin.util.MfcKeyProvider;
 import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(indexes = {
         @Index(name = "idx_product_name_email", columnList = "mfcProductName"),
 })
-public class MarginForCampaign {
+public class MarginForCampaign implements MfcKeyProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mfc_id")

@@ -8,6 +8,7 @@ import growup.spring.springserver.margin.TypeChangeMargin;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.repository.MarginRepository;
+import growup.spring.springserver.margin.util.MfcKeyUtils;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
 import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
@@ -153,14 +154,13 @@ public class MarginService {
     }
 
 
-
-    private List<Margin> calculateMargin(List<Margin> margins, Long campaignId, String email) {
+    public List<Margin> calculateMargin(List<Margin> margins, Long campaignId, String email) {
         // 보여줄 데이터
         List<Margin> datas = new ArrayList<>();
         for (Margin margin : margins) {
             // marAdMargin과 marNetProfit이 모두 0일 때 netSales를 호출
             // A 에 대해서 마진이 없음 => A에 대해서 업데이트 쳐야함
-            if (margin.getMarAdMargin() == 0 && margin.getMarNetProfit() == 0.0) {
+            if (margin.getMarAdMargin() == 0 && margin.getMarNetProfit() == 0.0 || margin.getMarReturnCost() == 0) {
                 Margin updateMargin = callNetSales(margin, campaignId, margin.getMarDate(), email);
                 datas.add(updateMargin);
             } else {
@@ -171,13 +171,14 @@ public class MarginService {
     }
 
     // NetSales 에서 가져와야함, 옵션명이랑 연결되어있음
-    private Margin callNetSales(Margin margin, Long campaignId, LocalDate date, String email) {
+    public Margin callNetSales(Margin margin, Long campaignId, LocalDate date, String email) {
         // 해당 캠페인의 내가 추가한 모든 옵션들 가져옴
         List<MarginForCampaign> marginForCampaigns = marginForCampaignRepository.MarginForCampaignByCampaignId(campaignId);
 
         long actualSales = 0; // 순 판매 수
         long adMargin = 0; // 광고 머진
         long returnCount = 0; // 반품 수
+        double returnCost = 0.0; // 캠페인 별 총 반품 비용
 
         // MarginForCampaign마다 netSales를 매칭해서 합산
         for (MarginForCampaign data : marginForCampaigns) {
@@ -187,12 +188,13 @@ public class MarginService {
                 actualSales += netSales.getNetSalesCount();
                 adMargin += netSales.getNetSalesCount() * data.getMfcPerPiece();
                 returnCount += netSales.getNetReturnCount();
+                returnCost += netSales.getNetReturnCount() * data.getMfcReturnPrice();
             } catch (NetSalesNotFoundProductName e) {
                 continue;
             }
         }
 
-        margin.update(actualSales, adMargin, returnCount);
+        margin.update(actualSales, adMargin, returnCount, returnCost);
 
         return margin;
     }
@@ -203,7 +205,7 @@ public class MarginService {
         return marginRepository.findByCampaignIdAndDates(campaignId, start, end);
     }
 
-    private NetSales checkNetSales(LocalDate date, String email, String productName, MarginType marginType) {
+    public NetSales checkNetSales(LocalDate date, String email, String productName, MarginType marginType) {
         return netRepository.findByNetDateAndEmailAndNetProductNameAndNetMarginType(date, email, productName, marginType)
                 .orElseThrow(NetSalesNotFoundProductName::new);
     }
@@ -218,39 +220,61 @@ public class MarginService {
         // 1. 기간별 마진 데이터 가져옴
         List<Margin> margins = byCampaignIdAndDates(start, end, campaignId);
 
-        // 2. 변경된 옵션 이름 리스트 보석 ,재영 있음
-        Set<String> updatedProductNames = mfcRequestWithDatesDto.getData().stream()
-                .map(MfcDto::getMfcProductName)
-                .collect(Collectors.toSet());
+        // 2. 프론트에서 넘겨준 변경된 마진 데이터를 Map으로 변환
+        Map<MfcKey, MfcDto> updatedMarginsMap = MfcKeyUtils.toMfcMap(mfcRequestWithDatesDto.getData());
 
-        // 3. 변경된 옵션 데이터를 Map으로 변환 (상품명 기준으로 빠르게 찾기 위해)
-        Map<String, MfcDto> updatedMarginsMap = mfcRequestWithDatesDto.getData().stream()
-                .collect(Collectors.toMap(MfcDto::getMfcProductName, mfc -> mfc));
+        // 3. 해당 캠페인의 옵션 데이터를 Map으로 변환
+        List<MarginForCampaign> marginForCampaignList = marginForCampaignRepository.MarginForCampaignByCampaignId(campaignId);
+        Map<MfcKey, MarginForCampaign> marginForCampaignMap = MfcKeyUtils.toMfcMap(marginForCampaignList);
 
-        List<MarginForCampaign> marginForCampaigns = marginForCampaignRepository.MarginForCampaignByCampaignId(campaignId);
-
-        for (Margin data : margins) {
-            long adMargin = 0; // 광고 머진
-            // 보석, 재영, 은아 있음
-            for (MarginForCampaign tempData : marginForCampaigns) {
-                try {
-                    // 해당 날짜 갯수 불러옴
-                    NetSales netSalesList = checkNetSales(data.getMarDate(), email, tempData.getMfcProductName(), tempData.getMfcType());
-
-                    // 변경된 옵션 리스트일경우
-                    long perPieceMargin = updatedProductNames.contains(tempData.getMfcProductName())
-                            ? updatedMarginsMap.get(tempData.getMfcProductName()).getMfcPerPiece()
-                            : tempData.getMfcPerPiece();
-
-                    adMargin += netSalesList.getNetSalesCount() * perPieceMargin;
-                } catch (NetSalesNotFoundProductName e) {
-                    continue;
-                }
-            }
-            data.update(adMargin);
-        }
+        // 4. 기간별 마진 업데이트
+        margins.forEach(margin -> updateMargin(margin, updatedMarginsMap, marginForCampaignMap, email));
     }
 
+    /**
+     * 특정 기간의 마진 데이터를 업데이트
+     *
+     * @param margin 기존 마진 데이터
+     * @param updatedMarginsMap 프론트에서 받은 *변경된* 마진 정보 (상품명 + 마진 타입 기준)
+     * @param marginForCampaignMap 해당 캠페인에 속한 옵션 정보 (상품명 + 마진 타입 기준)
+     * @param email 사용자 이메일
+     */
+
+    private void updateMargin(Margin margin, Map<MfcKey, MfcDto> updatedMarginsMap,
+                              Map<MfcKey, MarginForCampaign> marginForCampaignMap, String email) {
+        long adMargin = 0;
+        long returnPrice = 0;
+
+        // 1. 해당 캠페인의 각 옵션을 순회하면서 마진 업데이트
+        for (Map.Entry<MfcKey, MarginForCampaign> entry : marginForCampaignMap.entrySet()) {
+            MfcKey key = entry.getKey();
+            MarginForCampaign tempData = entry.getValue();
+
+            try {
+                // 2. 해당 상품의 순 매출 및 반품 건수를 가져온다.
+                NetSales netSales = checkNetSales(margin.getMarDate(), email, key.getProductName(), key.getType());
+
+                // 3. 프론트에서 넘어온 수정된 값이 있으면 사용하고, 없으면 기존 값을 사용
+                long perPieceMargin = Optional.ofNullable(updatedMarginsMap.get(key))
+                        .map(MfcDto::getMfcPerPiece)
+                        .orElse(tempData.getMfcPerPiece());
+
+                long perReturnPrice = Optional.ofNullable(updatedMarginsMap.get(key))
+                        .map(MfcDto::getMfcReturnPrice)
+                        .orElse(tempData.getMfcReturnPrice());
+
+                // 4. 해당 기간 동안 발생한 순 매출 및 반품을 반영하여 마진 계산
+                adMargin += netSales.getNetSalesCount() * perPieceMargin;
+                returnPrice += netSales.getNetReturnCount() * perReturnPrice;
+            } catch (NetSalesNotFoundProductName e) {
+                // 5. 해당 상품의 순 매출 데이터가 없으면 예외 발생, 무시하고 다음 옵션으로 진행
+
+                continue;
+            }
+        }
+
+        margin.update(adMargin, returnPrice);
+    }
     public List<DailyMarginSummary> getDailyMarginSummary(String email, LocalDate targetDate) {
 
         List<DailyMarginSummary> summaries = new ArrayList<>();
@@ -316,5 +340,9 @@ public class MarginService {
                 "targetEfficiency", data.getMarTargetEfficiency(),
                 "adBudget", data.getMarAdBudget()
         );
+    }
+    @Transactional
+    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start, LocalDate end){
+        return marginRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
     }
 }

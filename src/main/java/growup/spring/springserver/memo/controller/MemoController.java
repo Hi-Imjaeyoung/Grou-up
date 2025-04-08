@@ -21,7 +21,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -81,6 +83,16 @@ public class MemoController {
         }
         return new ResponseEntity<>(CommonResponse.<String>builder("delete success")
                 .data(result)
+                .build(),HttpStatus.OK);
+    }
+
+    @GetMapping("/getMemoByDate")
+    public ResponseEntity<CommonResponse<Map<String,List<String>>>> getMemoByDate(@RequestParam("start")LocalDate start,
+                                                                @RequestParam("end") LocalDate end,
+                                                                @RequestParam("campaignId") Long campaignId){
+        final Map<String,List<String>> map = memoService.getMemoByDateAndCampaign(start,end,campaignId);
+        return new ResponseEntity<>(CommonResponse.<Map<String,List<String>>>builder("get success")
+                .data(map)
                 .build(),HttpStatus.OK);
     }
 }

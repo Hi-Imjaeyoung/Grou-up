@@ -6,6 +6,8 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
+import jakarta.transaction.Transactional;
+import growup.spring.springserver.margin.dto.DailyNetProfitResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 class MarginRepositoryTest {
@@ -128,6 +133,62 @@ class MarginRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("deleteByCampaignIdAndDate()")
+    @Transactional
+    void deleteByCampaignIdAndDate(){
+        //when
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
+        LocalDate end = LocalDate.parse("2025-03-29",DateTimeFormatter.ISO_DATE);
+        LocalDate includeDate = LocalDate.parse("2025-03-20",DateTimeFormatter.ISO_DATE);
+        LocalDate excludeDate = LocalDate.parse("2025-04-01",DateTimeFormatter.ISO_DATE);
+        marginRepository.save(newMargin(includeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign1,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(includeDate,campaign2,0L,0.0,0L,0.0));
+        marginRepository.save(newMargin(excludeDate,campaign2,0L,0.0,0L,0.0));
+        //given
+        final int result = marginRepository.deleteByCampaignIdAndDate(start,end,List.of(1L,2L));
+        assertThat(result).isEqualTo(2);
+    }
+    @DisplayName("findByCampaignIdAndDate() : successCase1.")
+    void test4_1() {
+        LocalDate date = LocalDate.of(2024, 11, 10);
+        Long campaignId = campaign1.getCampaignId();
+
+        Margin margin = marginRepository.findByCampaignIdAndDate(campaignId, date).get();
+        assertAll(
+                () -> assertThat(margin.getMarDate()).isEqualTo(LocalDate.of(2024, 11, 10)),
+                () -> assertThat(margin.getMarImpressions()).isEqualTo(100L),
+                () -> assertThat(margin.getCampaign().getCampaignId()).isEqualTo(1L),
+                () -> assertThat(margin.getMarAdConversionSales()).isEqualTo(50L)
+        );
+    }
+
+    @Test
+    @DisplayName("findTotalMarginByDateRangeAndEmail() : SuccessCase")
+    void test5() {
+        LocalDate start = LocalDate.of(2024, 11, 8);
+        LocalDate end = LocalDate.of(2024, 11, 10);
+        String email = "test@test.com";
+
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 8), campaign1, 100.0, 100.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 9), campaign1, 20.0, 25.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign1, 30.0, 25.0));
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 8), campaign2, 50.0, 30.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 9), campaign2, 50.0, 15.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign2, 50.0, 20.0));
+
+
+        List<DailyNetProfitResponseDto> totalMarginByDateRangeAndEmail = marginRepository.findTotalMarginByDateRangeAndEmail(start, end, email);
+
+        assertThat(totalMarginByDateRangeAndEmail).hasSize(3);
+
+        assertThat(totalMarginByDateRangeAndEmail.get(0).getMargin()).isEqualTo(150.0);
+        assertThat(totalMarginByDateRangeAndEmail.get(0).getMarReturnCost()).isEqualTo(130.0);
+    }
+
     private Member newMember() {
         return Member.builder().email("test@test.com").build();
     }
@@ -149,6 +210,15 @@ class MarginRepositoryTest {
                 .marAdCost(cost)
                 .marSales(sales)
                 .marAdConversionSales(conversions)
+                .build();
+    }
+
+    private Margin newMargin(LocalDate date, Campaign campaign, Double marNetProfit, Double marReturnCost) {
+        return Margin.builder()
+                .marDate(date)
+                .campaign(campaign)
+                .marReturnCost(marReturnCost)
+                .marNetProfit(marNetProfit)
                 .build();
     }
 }

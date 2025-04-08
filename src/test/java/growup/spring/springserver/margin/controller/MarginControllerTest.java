@@ -2,10 +2,13 @@ package growup.spring.springserver.margin.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import growup.spring.springserver.annotation.WithAuthUser;
+import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
-import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
-import growup.spring.springserver.margin.dto.MarginSummaryResponseDto;
+import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
+import growup.spring.springserver.marginforcampaign.dto.MfcDto;
+import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
+import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,17 +17,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -139,4 +148,199 @@ class MarginControllerTest {
         verify(marginService).findByCampaignIdsAndDates(any(String.class), any(LocalDate.class));
     }
 
+    @Test
+    @DisplayName("getNetProfitAndReturnCost() : success 1. 빈값 리턴")
+    @WithAuthUser
+    void getNetProfitAndReturnCost_success1() throws Exception {
+
+        Gson gson = new Gson();
+        // Given
+        final String url = "/api/margin/getNetProfitAndReturnCost?startDate=2024-12-01&endDate=2024-12-05";
+
+        doReturn(new ArrayList<>()).when(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
+
+        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get(url));
+
+        resultActions.andDo(print());
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : getNetProfitAndReturnCost"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    @DisplayName("getNetProfitAndReturnCost() : success 1. 알맞는 값 리턴")
+    @WithAuthUser
+    void getNetProfitAndReturnCost_success2() throws Exception {
+        Gson gson = new Gson();
+        List<DailyNetProfitResponseDto> ResponseDto = List.of(
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0,10L),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0,10L),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8.,100L)
+        );
+        doReturn(ResponseDto).when(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
+
+        final String url = "/api/margin/getNetProfitAndReturnCost?startDate=2024-12-01&endDate=2024-12-05";
+
+        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get(url));
+
+        resultActions.andDo(print());
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : getNetProfitAndReturnCost"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].marDate").value("2024-12-12"))
+                .andExpect(jsonPath("$.data[1].marDate").value("2024-12-13"))
+                .andExpect(jsonPath("$.data[2].marDate").value("2024-12-14"))
+                .andExpect(jsonPath("$.data[0].margin").value(10.0))
+                .andExpect(jsonPath("$.data[1].margin").value(9.0));
+
+        verify(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
+    }
+
+    @Test
+    @DisplayName("getDailyMarginSummary() : success 1. 알맞는 값 리턴")
+    @WithAuthUser
+    void getDailyMarginSummary_success1() throws Exception {
+        Gson gson = new Gson();
+
+        List<DailyMarginSummary> ResponsDto = List.of(
+                new DailyMarginSummary("방한마스크1", 100L, 100.0),
+                new DailyMarginSummary("방한마스크2", 1100L, 100.0)
+        );
+
+        doReturn(ResponsDto).when(marginService).getDailyMarginSummary(any(String.class), any(LocalDate.class));
+
+        final String url = "/api/margin/getDailyMarginSummary?date=2025-01-01";
+
+        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get(url));
+
+        resultActions.andDo(print());
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : getMyCampaignDetails"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].marAdMargin").value(100L))
+                .andExpect(jsonPath("$.data[1].marAdMargin").value(1100L));
+
+    }
+
+    @Test
+    @DisplayName("updateEfficiencyAndAdBudget() : failCase1. campaignId 없음")
+    @WithAuthUser
+    void updateEfficiencyAndAdBudget_fail1() throws Exception{
+        Gson gson = GsonConfig.getGson();
+        final String url = "/api/margin/updateEfficiencyAndAdBudget";
+        final MarginUpdateRequestDtos body = MarginUpdateRequestDtos.builder()
+                .campaignId(null)
+                .data(List.of(
+                        MarginUpdateRequestDto.builder()
+                                .id(1L)
+                                .marDate(LocalDate.of(2025, 1, 1))
+                                .marAdBudget(10.0)
+                                .marTargetEfficiency(10.0)
+                                .build()
+                ))
+                .build();
+
+        ResultActions result = mockMvc.perform(post(url)
+                .content(gson.toJson(body))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+        result.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("$.errorMessage").value("캠페인 ID를 입력해주세요.")
+        );
+    }
+    @Test
+    @DisplayName("updateEfficiencyAndAdBudget() : failCase2. data 빔")
+    @WithAuthUser
+    void updateEfficiencyAndAdBudget_fail2() throws Exception{
+        Gson gson = GsonConfig.getGson();
+
+        final String url = "/api/margin/updateEfficiencyAndAdBudget";
+        MarginUpdateRequestDtos invalidBody = MarginUpdateRequestDtos.builder()
+                .campaignId(1L)
+                .data(Collections.emptyList())
+                .build();
+
+        ResultActions result = mockMvc.perform(post(url)
+                .content(gson.toJson(invalidBody))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+        result.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("$.errorMessage").value("1개 이상 수정해주세요.")
+        );
+    }
+    @Test
+    @DisplayName("updateEfficiencyAndAdBudget() : successCase. ")
+    @WithAuthUser
+    void updateEfficiencyAndAdBudget_success() throws Exception{
+        Gson gson = GsonConfig.getGson();
+
+        final String url = "/api/margin/updateEfficiencyAndAdBudget";
+        final MarginUpdateRequestDtos body = MarginUpdateRequestDtos.builder()
+                .campaignId(1L)
+                .data(List.of(
+                        MarginUpdateRequestDto.builder()
+                                .id(1L)
+                                .marDate(LocalDate.of(2025, 1, 1))
+                                .marAdBudget(10.0)
+                                .marTargetEfficiency(10.0)
+                                .build(),
+                        MarginUpdateRequestDto.builder()
+                                .id(2L)
+                                .marDate(LocalDate.of(2025, 1, 2))
+                                .marAdBudget(15.0)
+                                .marTargetEfficiency(15.0)
+                                .build()
+                ))
+                .build();
+
+
+        ResultActions result = mockMvc.perform(post(url)
+                .content(gson.toJson(body))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+        result.andExpectAll(
+                status().isOk(),
+                jsonPath("$.message").value("success : updateEfficiencyAndAdBudget")
+        );
+    }
+
+    @Test
+    @DisplayName("marginUpdatesByPeriod() : failCase. ")
+    @WithAuthUser
+    void marginUpdatesByPeriod_failCase() throws Exception {
+
+        Gson gson = GsonConfig.getGson();
+        final String url = "/api/margin/marginUpdatesByPeriod";
+        MfcRequestWithDatesDto body = MfcRequestWithDatesDto.builder()
+                .startDate(LocalDate.of(2024, 4, 1))
+                .endDate(LocalDate.of(2024, 4, 10))
+                .campaignId(1L)
+                .data(List.of(
+                        MfcDto.builder()
+                                .mfcProductName("방한마스크 빨강색")
+                                .mfcType(MarginType.SELLER_DELIVERY)
+                                .mfcPerPiece(500L)
+                                .mfcReturnPrice(100L)
+                                .build()
+                ))
+                .build();
+        ResultActions result = mockMvc.perform(patch(url)
+                .content(gson.toJson(body))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+        result.andExpectAll(
+                status().isOk(),
+                jsonPath("$.message").value("success: marginUpdatesByPeriod")
+        );
+
+    }
 }

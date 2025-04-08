@@ -12,4 +12,6 @@ import java.time.LocalDate;
 public class DailyNetProfitResponseDto {
     private LocalDate marDate;  // 날짜
     private Double margin; // 마진 (캠페인 마다 마진의 총 합)
+    private Double marReturnCost;
+    private Long marReturnTotalCount;
 }

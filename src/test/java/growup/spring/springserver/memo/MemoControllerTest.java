@@ -82,8 +82,9 @@ public class MemoControllerTest {
     @WithAuthUser
     void postMemo_success() throws Exception {
         Campaign campaign = getCampaign();
+        LocalDate start = LocalDate.parse("2025-03-01", DateTimeFormatter.ISO_DATE);
         doReturn(campaign).when(campaignService).getMyCampaign(any(Long.class),any(String.class));
-        doReturn(getMemo(1L,"contents",campaign,LocalDate.now())).when(memoService).makeMemo(any(Campaign.class),any(MemoRequestDto.class));
+        doReturn(getMemo(1L,"contents",campaign,start)).when(memoService).makeMemo(any(Campaign.class),any(MemoRequestDto.class));
         gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
         String url1 = "/api/memo/post";
@@ -99,7 +100,7 @@ public class MemoControllerTest {
         resultActions.andExpectAll(
                 status().isOk(),
                 jsonPath("data.id").value("1"),
-                jsonPath("data.date").value("03-12")
+                jsonPath("data.date").value("2025-03-01")
         ).andDo(print());
     }
 

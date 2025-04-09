@@ -17,7 +17,7 @@ public class MemoTypeChanger {
         return MemoResponseDto.builder()
                 .contents(memo.getContents())
                 .id(memo.getId())
-                .date(memo.getDate())
+                .date(memo.getRawDate())
                 .build();
     }
 }

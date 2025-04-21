@@ -1,5 +1,5 @@
+from django.utils import timezone
 import json
-from csv import excel
 from datetime import datetime
 import time
 import re
@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail, \
-    Margin, NetSales, MarginType
+    Margin, NetSales, MarginType, File, FileType
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -44,6 +44,9 @@ def upload_margin(request):
     return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
 
 
+
+
+
 def handle_upload_margin(request, form):
     uploaded_file = request.FILES['file']
 
@@ -52,6 +55,10 @@ def handle_upload_margin(request, form):
     date_pattern = r'(\d{4}-\d{2}-\d{2})|(\d{8})'
     date_match = re.search(date_pattern, file_name)
 
+    file_all_count = 0
+    file_new_count = 0
+    file_duplicate_count = 0
+
     if date_match:
         date_str = date_match.group()
         # 날짜 형식에 따라 파싱
@@ -59,7 +66,6 @@ def handle_upload_margin(request, form):
             net_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         else:
             net_date = datetime.strptime(date_str, '%Y%m%d').date()
-    print(net_date)
     # 2️⃣ 엑셀 파일 읽기
     df = pd.read_excel(uploaded_file)
     df = df.iloc[:-1]
@@ -70,6 +76,8 @@ def handle_upload_margin(request, form):
         '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum',
         '총 취소 상품 수': 'sum'
     })
+
+    file_all_count += len(df_grouped)
 
     # 4️⃣ 로그인한 유저 가져오기
     email = some_protected_view(request)
@@ -82,6 +90,7 @@ def handle_upload_margin(request, form):
         total_sales_amount = row['순 판매 금액(전체 거래 금액 - 취소 금액)']
         total_sales_count = row['순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)']
         total_return_count = row['총 취소 상품 수']
+        file_type = FileType.NET_SALES_REPORT.value
 
         if total_sales_count == 0 and total_return_count ==0:
             continue
@@ -106,6 +115,8 @@ def handle_upload_margin(request, form):
             net_sales.net_return_count = total_return_count
             net_sales.net_type = net_type
             net_sales.save()
+            file_duplicate_count += 1
+
         except NetSales.DoesNotExist:
             # 존재하지 않으면 새로 생성
             net_sales = NetSales(
@@ -118,19 +129,40 @@ def handle_upload_margin(request, form):
                 email=member
             )
             net_sales.save()
+            file_new_count += 1
+
+
+
+    save_file(email,member, file_name, file_all_count, file_new_count, file_duplicate_count, file_type)
 
     # 데이터를 'data'로 추가하여 render할 때 반환
-    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Margin file uploaded successfully.',
+        'data': {
+            'file_all_count': file_all_count,
+            'upload_new_count': file_new_count,
+            'upload_duplicate_count': file_duplicate_count
+        }
+    }, status=200)
+
+
+
 
 
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위
+    uploaded_file = request.FILES['file']
+
+    file_name = uploaded_file.name
 
     email = some_protected_view(request)
     member = get_object_or_404(Member, email=email)
+
     logger.info(f"Member Info: Email={member.email}")
 
-    excel = pd.read_excel(request.FILES['file'], dtype={'날짜': str})
+    excel = pd.read_excel(uploaded_file, dtype={'날짜': str})
+
     aggregated_data, keyword_data, margin_data = aggregate_data(excel, member)
     with transaction.atomic():  # 트랜잭션 시작
         save_campaign_option_details(aggregated_data)
@@ -140,21 +172,24 @@ def handle_excel_upload(request, form):
     time_taken = end_time - start_time
 
     total_count = excel.shape[0]
+
     print(f"엑셀 총 row = {total_count}")
     print(f"합쳐저서 들어간 총 데이터 = {insert_count}")
     print(f"중복 데이터 = {duplicate_count}")
 
     print(f"Time taken: {time_taken} milliseconds")
 
-    return render(request, 'upload_excel.html',
-                  {'form': form,
-                   'data': excel.to_html(),
-                   'summary': {
-                       'total_count': total_count,
-                       'insert_count': insert_count,
-                       'duplicate_count': duplicate_count,
-                   }})
+    file_type = FileType.ADVERTISING_REPORT.value
 
+    save_file(email,member,file_name,total_count,insert_count,duplicate_count,file_type)
+
+    return JsonResponse({'status': 'success',
+                         'data' : {
+                             'total_count' : total_count,
+                             'insert_count' : insert_count,
+                             'duplicate_count' : duplicate_count,
+                         },
+                         'message': 'Margin file uploaded successfully.'}, status=200)
 
 def aggregate_data(excel, member):
     aggregated_data = {}
@@ -431,6 +466,19 @@ def save_keywords(keyword_data):
             duplicate_count += 1
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
+
+def save_file(email,member, file_name, file_all_count, file_new_count, file_duplicate_count,file_type):
+    file_record = File.objects.create(
+        file_name=file_name,
+        file_upload_date=timezone.now(),
+        file_all_count=file_all_count,
+        file_new_count=file_new_count,
+        file_duplicate_count=file_duplicate_count,
+        file_type = file_type,
+        email=member
+    )
+    return file_record
+
 
 
 def get_or_create_campaign(row, member):

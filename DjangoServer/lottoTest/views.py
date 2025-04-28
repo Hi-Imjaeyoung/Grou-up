@@ -372,8 +372,9 @@ def save_margin(margin_data):
     for key, data in margin_data.items():
         existing_margin = existing_margins_map.get((data['mar_date'], data['campaign'].campaign_id))
         if existing_margin:
+
             # 기존 Margin 업데이트
-            existing_margin.mar_ad_budget = data['mar_ad_budget']
+            # existing_margin.mar_ad_budget = data['mar_ad_budget']
             existing_margin.mar_impressions = data['mar_impressions']
             existing_margin.mar_clicks = data['mar_clicks']
             existing_margin.mar_ad_conversion_sales = data['mar_ad_conversion_sales']
@@ -381,7 +382,7 @@ def save_margin(margin_data):
             existing_margin.mar_ad_cost = data['mar_ad_cost']
             # existing_margin.mar_ad_margin = data['mar_ad_margin']
             # existing_margin.mar_net_profit = data['mar_net_profit']
-            existing_margin.mar_target_efficiency = data['mar_target_efficiency']
+            # existing_margin.mar_target_efficiency = data['mar_target_efficiency']
             existing_margin.mar_sales = data['mar_sales']
 
             existing_margin.mar_return_cost = existing_margin.mar_return_cost
@@ -392,7 +393,6 @@ def save_margin(margin_data):
             # existing_margin.mar_actual_sales = data['mar_actual_sales']
             # existing_margin.mar_return_count = data['mar_return_count']
             buffer_update.append(existing_margin)
-
         else:
             # 새 Margin 생성
             buffer_create.append(Margin(

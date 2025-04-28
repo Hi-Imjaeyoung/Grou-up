@@ -1,68 +1,24 @@
-version: '3.8' # 사용하시는 Docker Compose 버전에 맞게 조절
-
+version: "3.8"
 services:
-  # 기존 Spring Boot 애플리케이션 서비스
   app:
-    build: . # Dockerfile이 있는 경로
-    container_name: my_spring_boot_app # (선택 사항) 컨테이너 이름 지정
+    image: grou_up:1.2  # 사용할 이미지 이름과 태그를 지정합니다.
     ports:
-      - "8080:8080" # 호스트의 8080 포트를 컨테이너의 8080 포트로 연결
-    env_file:
-      - .env # .env 파일 로드
+      - "8080:8080"  # 호스트의 8080 포트를 컨테이너의 8080 포트에 매핑합니다. (필요에 따라 변경)
     environment:
-      # 컨테이너 메모리 제한보다 작게 설정해야 합니다.
-      # 예: 컨테이너 메모리가 1GB일 때, 700-800MB 정도로 설정
-      JAVA_OPTS: "-Xms512m -Xmx768m" # 최소 힙 512MB, 최대 힙 768MB 예시
-    deploy: # 자원 제한 설정
-      resources:
-        limits:
-          cpus: '1.0' # CPU 코어 1개 사용으로 제한 (t2.micro와 유사하게)
-          # t3.micro(2 vCPU)와 유사하게 하려면 '2.0'으로 설정 가능
-          memory: 1024M # 메모리를 1024MiB (1GiB)로 제한
-        # reservations: # (선택 사항) 최소 보장 자원
-        #   cpus: '0.5'
-        #   memory: 512M
-
-#    depends_on:
-#      db_maria: # app 서비스는 db_maria 서비스가 시작된 후에 시작하도록 시도
-#        condition: service_healthy # (선택 사항) db_maria가 healthy 상태가 될 때까지 기다림
-#    networks:
-#      - my_app_network # (선택 사항) 명시적인 네트워크 사용
-
-#  # 새로 추가할 MariaDB 서비스
-#  db_maria:
-#    image: mariadb:${MARIADB_IMAGE_VERSION:-10.11} # .env 파일 또는 기본값(10.11) 사용
-#    container_name: my_mariadb_container # (선택 사항) 컨테이너 이름 지정
-#    restart: unless-stopped # 컨테이너가 비정상 종료 시 재시작 (수동으로 중지한 경우는 제외)
-#    environment:
-#      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-#      MARIADB_DATABASE: ${MARIADB_DATABASE_NAME}
-#      MARIADB_USER: ${MARIADB_USER}
-#      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-#      TZ: Asia/Seoul # (선택 사항) 컨테이너 시간대 설정
-#    volumes:
-#      - mariadb_data:/var/lib/mysql # 데이터 영속성을 위해 명명된 볼륨 사용
-#      # 초기 스키마/데이터 로딩을 위한 .sql 파일 마운트 (선택 사항)
-#      # - ./path/to/your/init-scripts:/docker-entrypoint-initdb.d
-#    ports:
-#      # 호스트의 3307 포트를 MariaDB 컨테이너의 3306 포트로 연결 (선택 사항)
-#      # 이렇게 하면 외부 DB 관리 툴(예: DBeaver, HeidiSQL)로 호스트의 3307 포트를 통해 접속 가능합니다.
-#      # Spring Boot 애플리케이션은 Docker 내부 네트워크를 통해 'db_maria:3306'으로 직접 접속합니다.
-#      - "3307:3306"
-#    networks:
-#      - my_app_network # (선택 사항) 명시적인 네트워크 사용
-#    healthcheck: # (선택 사항) MariaDB 컨테이너의 건강 상태를 주기적으로 확인
-#      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${MARIADB_USER}", "-p${MARIADB_PASSWORD}"]
-#      interval: 10s # 10초마다 확인
-#      timeout: 5s   # 5초 내 응답 없으면 실패
-#      retries: 5    # 5번 재시도
-#
-## (선택 사항) 애플리케이션과 DB가 사용할 명시적인 네트워크 정의
-#networks:
-#  my_app_network:
-#    driver: bridge # 기본 브릿지 네트워크 드라이버 사용
-#
-## 데이터 영속성을 위한 명명된 볼륨 정의
-#volumes:
-#  mariadb_data: # 이 볼륨은 Docker가 관리하며, 컨테이너가 삭제되어도 데이터는 유지됩니다.
+      KAKAO_CLIENT_ID: "${KAKAO_CLIENT_ID}"
+      KAKAO_CLIENT_SECRET: "${KAKAO_CLIENT_SECRET}"
+      KAKAO_URL: "${KAKAO_URL}"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+      JWT_EXPIRATION: "${JWT_EXPIRATION}"
+      DATASOURCE_USERNAME: "${DATASOURCE_USERNAME}"
+      DATASOURCE_PASSWORD: "${DATASOURCE_PASSWORD}"
+      DATASOURCE_URL: "jdbc:mariadb://db:3306/${SCHEMA}"
+      SCHEMA: "${SCHEMA}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      GOOGLE_URL: "${GOOGLE_URL}"
+      KAKAO_CID: "${KAKAO_CID}"
+      KAKAO_APP_SECRET: "${KAKAO_APP_SECRET}"
+      RE_DIRECT_URL_KAKAO: "${RE_DIRECT_URL_KAKAO}"
+      RE_DIRECT_URL_GOOGLE: "${RE_DIRECT_URL_GOOGLE}"
 

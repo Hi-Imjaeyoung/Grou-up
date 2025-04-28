@@ -15,10 +15,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: false
-        format_sql: false
-        highlight_sql: false
-    show-sql: false
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+    show-sql: true
   security:
     oauth2:
       client:
@@ -58,13 +58,9 @@ logging:
     root: info
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.web: WARN
-    # 프로메테우스 관련 로그 Level WARN 설정.
-    org.springframework.boot.actuate: WARN
-    org.springframework.security: WARN
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
     growup.spring.springserver.global.config: DEBUG
-    # 새로 만든 HealthCheckController만 딱 집어서 WARN 레벨로 설정!
-    com.example.demo.controller.HealthCheckController: WARN
 
 jwt:
   expiration: ${JWT_EXPIRATION}
@@ -76,19 +72,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,prometheus"  # health와 prometheus 엔드포인트만 외부에 노출
-  metrics:
-    distribution:
-      # 1. http.server.requests 라는 측정 항목에 대해 히스토그램을 활성화!
-      percentiles-histogram:
-        http.server.requests: true
-
-      # 2. (선택사항, 하지만 강력 추천) 히스토그램의 경계값(bucket)을 직접 설정
-      # 더 정확한 백분위 수 계산을 위해 우리 서비스의 응답 시간 목표(SLO)를 정의하는 거야.
-      slo:
-        http.server.requests: 10ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s, 5s
-    tags: # 모든 메트릭에 공통 태그 추가 (나중에 서버 많아지면 구분하기 좋음)
-      application: grouUP
+        include: prometheus
 springdoc:
   swagger-ui:
     groups-order: ASC

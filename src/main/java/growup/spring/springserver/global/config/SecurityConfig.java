@@ -115,7 +115,8 @@ public class SecurityConfig {
             "/swagger-ui.html",         // Swagger UI 메인 페이지
             "/swagger-resources/**",    // Swagger 리소스
             "/webjars/**" ,              // Swagger UI에서 사용하는 웹 자원들
-            "/favicon.ico"
+            "/favicon.ico",
+            "/actuator/prometheus"
     };
 
 //    401

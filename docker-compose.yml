@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  app:
+    image: grou_up:1.2  # 사용할 이미지 이름과 태그를 지정합니다.
+    ports:
+      - "8080:8080"  # 호스트의 8080 포트를 컨테이너의 8080 포트에 매핑합니다. (필요에 따라 변경)
+    environment:
+      KAKAO_CLIENT_ID: "${KAKAO_CLIENT_ID}"
+      KAKAO_CLIENT_SECRET: "${KAKAO_CLIENT_SECRET}"
+      KAKAO_URL: "${KAKAO_URL}"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+      JWT_EXPIRATION: "${JWT_EXPIRATION}"
+      DATASOURCE_USERNAME: "${DATASOURCE_USERNAME}"
+      DATASOURCE_PASSWORD: "${DATASOURCE_PASSWORD}"
+      DATASOURCE_URL: "jdbc:mariadb://db:3306/${SCHEMA}"
+      SCHEMA: "${SCHEMA}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      GOOGLE_URL: "${GOOGLE_URL}"
+      KAKAO_CID: "${KAKAO_CID}"
+      KAKAO_APP_SECRET: "${KAKAO_APP_SECRET}"
+      RE_DIRECT_URL_KAKAO: "${RE_DIRECT_URL_KAKAO}"
+      RE_DIRECT_URL_GOOGLE: "${RE_DIRECT_URL_GOOGLE}"
+

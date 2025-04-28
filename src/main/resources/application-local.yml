@@ -68,7 +68,11 @@ jwt:
 redirect:
   kakao: ${RE_DIRECT_URL_KAKAO}
   google: ${RE_DIRECT_URL_GOOGLE}
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
 springdoc:
   swagger-ui:
     groups-order: ASC

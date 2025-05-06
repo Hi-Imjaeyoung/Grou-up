@@ -68,7 +68,11 @@ jobs:
             --spring.datasource.password=${{ secrets.DATASOURCE_PASSWORD }} \
             --jwt.expiration=${{ secrets.JWT_EXPIRATION }} \
             --jwt.secretKey=${{ secrets.JWT_SECRET_KEY }} \
+            --redirect.kakao=${{ secrets.RE_DIRECT_URL_KAKAO }} \
+            --redirect.google=${{ secrets.RE_DIRECT_URL_GOOGLE }} \
             --spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.KAKAO_CLIENT_ID }} \
             --spring.security.oauth2.client.registration.kakao.client-secret=${{ secrets.KAKAO_CLIENT_SECRET }} \
+            --spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.KAKAO_URL }} \
             --spring.security.oauth2.client.registration.google.client-id=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.GOOGLE_URL }} \
             --spring.security.oauth2.client.registration.google.client-secret=${{ secrets.GOOGLE_CLIENT_SECRET }} > /home/${{ secrets.EC2_USERNAME }}/app.log 2>&1 &

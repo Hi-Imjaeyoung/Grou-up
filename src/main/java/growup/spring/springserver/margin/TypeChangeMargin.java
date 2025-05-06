@@ -65,38 +65,12 @@ public class TypeChangeMargin {
                 .marReturnCost(0.0)
                 .build();
     }
-
-    public static List<MarginResponseDto> getMarginDto(List<Margin> calculateMargin, Long campaignId) {
-        List<MarginResultDto> marginResultDtos = calculateMargin.stream()
-                .map(margin -> MarginResultDto.builder()
-                        .id(margin.getId())
-                        .marDate(margin.getMarDate())
-                        .marImpressions(margin.getMarImpressions())
-                        .marClicks(margin.getMarClicks())
-                        .marAdConversionSales(margin.getMarAdConversionSales())
-                        .marAdConversionSalesCount(margin.getMarAdConversionSalesCount())
-                        .marReturnCount(margin.getMarReturnCount())
-                        .marReturnCost(margin.getMarReturnCost())
-                        .marAdCost(margin.getMarAdCost())
-                        .marSales(margin.getMarSales())
-                        .marAdMargin(margin.getMarAdMargin())
-                        .marNetProfit(margin.getMarNetProfit())
-                        .marTargetEfficiency(margin.getMarTargetEfficiency())
-                        .marAdBudget(margin.getMarAdBudget())
-                        .marActualSales(margin.getMarActualSales())
-                        .build())
-                .toList(); // Margin -> MarginResultDto 변환
-
-        List<MarginResponseDto> marginResponseDtos = new ArrayList<>();
-
-        MarginResponseDto marginResponseDto = MarginResponseDto.builder()
-                .campaignId(campaignId)
-                .data(marginResultDtos) // 변환된 리스트 사용
+    public static MarginUpdateResponseDto marginValidationResponse(int responseNumber, int requestNumber, Map<LocalDate, Map<String, Double>> failData) {
+        return MarginUpdateResponseDto.builder()
+                .requestNumber(requestNumber)
+                .responseNumber(responseNumber)
+                .failedDate(failData)
                 .build();
-
-        marginResponseDtos.add(marginResponseDto);
-
-        return marginResponseDtos;
     }
 
     public static DailyMarginSummary getDailyMarginSummary(Margin marginData, String productName) {
@@ -107,13 +81,4 @@ public class TypeChangeMargin {
                 .marNetProfit(marginData.getMarNetProfit())
                 .build();
     }
-
-    public static MarginUpdateResponseDto marginValidationResponse(int responseNumber, int requestNumber, Map<LocalDate, Map<String, Double>> failData) {
-        return MarginUpdateResponseDto.builder()
-                .requestNumber(requestNumber)
-                .responseNumber(responseNumber)
-                .failedDate(failData)
-                .build();
-    }
-
 }

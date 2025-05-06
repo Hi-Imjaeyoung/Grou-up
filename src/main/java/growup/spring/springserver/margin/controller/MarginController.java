@@ -5,7 +5,6 @@ import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
-import growup.spring.springserver.marginforcampaign.dto.MfcRequestDtos;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -34,11 +33,11 @@ public class MarginController {
     * */
     @GetMapping("/getCampaignAllSales")
     public ResponseEntity<CommonResponse<List<MarginSummaryResponseDto>>> getCampaignAllSales(@RequestParam("date") LocalDate date,
-                                                                 @AuthenticationPrincipal UserDetails userDetails) {
+                                                                                              @AuthenticationPrincipal UserDetails userDetails) {
         List<MarginSummaryResponseDto> campaignAllSales;
-        try{
+        try {
             campaignAllSales = marginService.getCampaignAllSales(userDetails.getUsername(), date);
-        }catch (CampaignNotFoundException campaignNotFoundException){
+        } catch (CampaignNotFoundException campaignNotFoundException) {
             campaignAllSales = new ArrayList<>();
         }
 
@@ -47,19 +46,20 @@ public class MarginController {
                 .data(campaignAllSales)
                 .build(), HttpStatus.OK);
     }
+
     /*
-    * TODO
-    *  종합보고서(2사분면)
-    *  실패시 빈 리스트 리턴
-    *  */
+     * TODO
+     *  종합보고서(2사분면)
+     *  실패시 빈 리스트 리턴
+     *  */
     @GetMapping("/getDailyAdSummary")
     public ResponseEntity<CommonResponse<List<DailyAdSummaryDto>>> getDailyAdSummary(@RequestParam("date") LocalDate date,
-                                                               @AuthenticationPrincipal UserDetails userDetails) {
+                                                                                     @AuthenticationPrincipal UserDetails userDetails) {
 
         List<DailyAdSummaryDto> byCampaignIdsAndDates;
-        try{
+        try {
             byCampaignIdsAndDates = marginService.findByCampaignIdsAndDates(userDetails.getUsername(), date);
-        }catch (CampaignNotFoundException|MemberNotFoundException exception){
+        } catch (CampaignNotFoundException | MemberNotFoundException exception) {
             byCampaignIdsAndDates = new ArrayList<>();
         }
 
@@ -96,13 +96,12 @@ public class MarginController {
                 .data("Margin update successful")  // 성공 메시지 반환
                 .build());
     }
-
     /*TODO
     *  마진보고서 (4사분면)
     *  실패시 빈 리스트 리턴*/
     @GetMapping("getDailyMarginSummary")
     public ResponseEntity<CommonResponse<List<DailyMarginSummary>>> getDailyMarginSummary(@RequestParam("date") LocalDate date,
-                                                                   @AuthenticationPrincipal UserDetails userDetails) {
+                                                                                          @AuthenticationPrincipal UserDetails userDetails) {
         List<DailyMarginSummary> dailyMarginSummary;
 
         try {
@@ -132,12 +131,55 @@ public class MarginController {
     // 목표효율, 광고 예산 업데이트
     @PostMapping("/updateEfficiencyAndAdBudget")
     public ResponseEntity<CommonResponse<MarginUpdateResponseDto>> updateEfficiencyAndAdBudget(@Valid @RequestBody MarginUpdateRequestDtos marginUpdateRequestDtos,
-                                                                                              @AuthenticationPrincipal UserDetails userDetails) {
+                                                                                               @AuthenticationPrincipal UserDetails userDetails) {
         MarginUpdateResponseDto marginUpdateResponseDto = marginService.updateEfficiencyAndAdBudget(marginUpdateRequestDtos);
 
         return new ResponseEntity<>(CommonResponse
                 .<MarginUpdateResponseDto>builder("success : updateEfficiencyAndAdBudget")
                 .data(marginUpdateResponseDto)
                 .build(), HttpStatus.OK);
+    }
+
+    /**
+     * 마진 테이블 사용자가 생성
+     * @param targetDate
+     * @param campaignId
+     * @return margin_ID
+     */
+
+    @PostMapping("/createMarginTable")
+    public ResponseEntity<CommonResponse<Long>> createMarginTable(@RequestParam("targetDate") LocalDate targetDate,
+                                                                  @RequestParam("campaignId") Long campaignId,
+                                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        Long marginId = marginService.createMarginTable(targetDate, campaignId, userDetails.getUsername());
+        return new ResponseEntity<>(CommonResponse
+                .<Long>builder("success : createMarginTable")
+                .data(marginId)
+                .build(), HttpStatus.OK);
+    }
+
+    /**
+     * 마진 결과 보기에서 작성한 목표효율, 광고예산 만
+     * 캠페인 분석 표 (statGraph3) 에 같이 보여주고자 함.
+     *
+     * @param startDate
+     * @param endDate
+     * @param campaignId
+     * @return List<SimpleMarginResponseDto>
+     */
+
+    @GetMapping("/getMarginSimple")
+    public ResponseEntity<CommonResponse<SimpleMarginResponseForStaticGraph3Dto>> getMarginSimple(
+            @RequestParam("startDate") LocalDate start,
+            @RequestParam("endDate") LocalDate end,
+            @RequestParam("campaignId") Long campaignId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        SimpleMarginResponseForStaticGraph3Dto simpleMargins = marginService.getSimpleMargin(start, end, campaignId, userDetails.getUsername());
+
+        return ResponseEntity.ok(CommonResponse
+                .<SimpleMarginResponseForStaticGraph3Dto>builder("success : getMarginSimple")
+                .data(simpleMargins)
+                .build());
     }
 }

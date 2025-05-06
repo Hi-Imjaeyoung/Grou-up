@@ -900,6 +900,88 @@ class MarginServiceTest {
         assertEquals(expectedReturnPrice, updatedMargin.getMarReturnCost());
     }
 
+    @DisplayName("createMarginTable_createMarginTable failCase 1. 이미 있는 CampaignId")
+    @Test
+    void createMarginTable_failCase1() {
+
+        // Given
+        LocalDate targetDate = LocalDate.of(2025, 11, 11);
+        Long campaignId = 1L;
+        Member member = getMember();
+        String email = "test@test.com";
+
+
+        Campaign campaign = Campaign.builder().campaignId(campaignId).member(member).camCampaignName("방한마스크").build();
+        Margin margin = Margin.builder()
+                .id(20L)
+                .campaign(campaign)
+                .marDate(targetDate)
+                .marAdMargin(0L)
+                .marNetProfit(0.0)
+                .marAdCost(0.0).build();
+
+        when(campaignService.getMyCampaign(campaignId, email)).thenReturn(campaign);
+        when(marginRepository.findByCampaignIdAndDate(campaignId, targetDate)).thenReturn(Optional.of(margin));
+
+        // When
+        Long result = marginService.createMarginTable(targetDate, campaignId, email);
+        assertThat(result).isEqualTo(20L);
+    }
+
+    @Test
+    @DisplayName("createMarginTable_successCase1: CampaignNotFoundException 처리")
+    void createMarginTable_failCase_CampaignNotFound() {
+        // Given
+        LocalDate targetDate = LocalDate.of(2025, 11, 12);
+        Long campaignId = 1L;
+        String email = "test@test.com";
+
+        when(campaignService.getMyCampaign(campaignId, email)).thenThrow(new CampaignNotFoundException());
+
+        // When
+        CampaignNotFoundException exception = assertThrows(CampaignNotFoundException.class,
+                () -> marginService.createMarginTable(targetDate, campaignId, email));
+
+        // Then
+        assertThat(exception.getMessage()).isEqualTo("현재 등록된 캠페인이 없습니다.");
+        verify(campaignService).getMyCampaign(campaignId, email);
+        verify(marginRepository, never()).save(any(Margin.class)); // 저장을 호출하지 않음
+    }
+
+    @Test
+    @DisplayName("createMarginTable_successCase2: 새로운 Margin 생성 성공")
+    void createMarginTable_successCase2() {
+        // Given
+        LocalDate targetDate = LocalDate.of(2025, 11, 12);
+        Long campaignId = 1L;
+        Member member = getMember();
+        String email = "test@test.com";
+
+        Campaign campaign = Campaign.builder().campaignId(campaignId).member(member).camCampaignName("방한마스크").build();
+
+        when(campaignService.getMyCampaign(campaignId, email)).thenReturn(campaign);
+        when(marginRepository.findByCampaignIdAndDate(campaignId, targetDate)).thenReturn(Optional.empty());
+
+        Margin mockSavedMargin = Margin.builder()
+                .id(100L) // 테스트용 임의의 ID
+                .campaign(campaign)
+                .marDate(targetDate)
+                .build();
+
+        when(marginRepository.save(any(Margin.class))).thenReturn(mockSavedMargin);
+
+        // When
+        Long result = marginService.createMarginTable(targetDate, campaignId, email);
+
+        // Then
+        assertThat(result).isEqualTo(100L);
+
+        // Verify
+        verify(marginRepository).save(any(Margin.class));
+        verify(campaignService).getMyCampaign(campaignId, email);
+    }
+
+
     private Margin newMargin(LocalDate date, Campaign campaign, Double marsale) {
         return Margin.builder()
                 .marDate(date)

@@ -38,7 +38,7 @@ public class JwtTokenProvider {
                 .signWith(this.getSigningKey()) // 서명 키
                 .setSubject(memberSpecification) // 토큰의 주제
                 .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .setExpiration(Date.from(Instant.now().plus(60, ChronoUnit.MINUTES)))
+                .setExpiration(Date.from(Instant.now().plus(360, ChronoUnit.MINUTES)))
                 .compact();
     }
 

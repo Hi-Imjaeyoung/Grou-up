@@ -7,10 +7,8 @@ import lombok.Builder;
 @Schema(title = "MEM_RES_02 : 내 이메일 등급 DTO")
 public record LoginDataResDto(
 
-    @Schema(description = "이메일", example = "test@test.com")
-    String email,
+    @Schema(description = "이메일", example = "송보석")
+    String name
 
 
-    @Schema(description = "등급", example = "GOLD")
-    String role
 ) {}

@@ -87,10 +87,10 @@ public class MemberController {
                 .build(), HttpStatus.CREATED);
     }
 
-    @GetMapping("/getMyEmailAndRole")
+    @GetMapping("/getMyName")
     public ResponseEntity<CommonResponse<LoginDataResDto>> getMyEmailAndRole(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("start getMyEmailAndRole");
-        LoginDataResDto myEmailAndRole = memberService.getMyEmailAndRole(userDetails.getUsername());
+        LoginDataResDto myEmailAndRole = memberService.getMyName(userDetails.getUsername());
 
         return new ResponseEntity<>(CommonResponse
                 .<LoginDataResDto>builder("getMyEmailAndRole Success")

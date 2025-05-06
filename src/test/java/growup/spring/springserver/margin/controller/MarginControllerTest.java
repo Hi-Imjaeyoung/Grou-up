@@ -29,8 +29,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -176,9 +175,9 @@ class MarginControllerTest {
     void getNetProfitAndReturnCost_success2() throws Exception {
         Gson gson = new Gson();
         List<DailyNetProfitResponseDto> ResponseDto = List.of(
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0,10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0,10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8.,100L)
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0, 10L),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0, 10L),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8., 100L)
         );
         doReturn(ResponseDto).when(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
 
@@ -232,7 +231,7 @@ class MarginControllerTest {
     @Test
     @DisplayName("updateEfficiencyAndAdBudget() : failCase1. campaignId 없음")
     @WithAuthUser
-    void updateEfficiencyAndAdBudget_fail1() throws Exception{
+    void updateEfficiencyAndAdBudget_fail1() throws Exception {
         Gson gson = GsonConfig.getGson();
         final String url = "/api/margin/updateEfficiencyAndAdBudget";
         final MarginUpdateRequestDtos body = MarginUpdateRequestDtos.builder()
@@ -256,10 +255,11 @@ class MarginControllerTest {
                 jsonPath("$.errorMessage").value("캠페인 ID를 입력해주세요.")
         );
     }
+
     @Test
     @DisplayName("updateEfficiencyAndAdBudget() : failCase2. data 빔")
     @WithAuthUser
-    void updateEfficiencyAndAdBudget_fail2() throws Exception{
+    void updateEfficiencyAndAdBudget_fail2() throws Exception {
         Gson gson = GsonConfig.getGson();
 
         final String url = "/api/margin/updateEfficiencyAndAdBudget";
@@ -277,10 +277,11 @@ class MarginControllerTest {
                 jsonPath("$.errorMessage").value("1개 이상 수정해주세요.")
         );
     }
+
     @Test
     @DisplayName("updateEfficiencyAndAdBudget() : successCase. ")
     @WithAuthUser
-    void updateEfficiencyAndAdBudget_success() throws Exception{
+    void updateEfficiencyAndAdBudget_success() throws Exception {
         Gson gson = GsonConfig.getGson();
 
         final String url = "/api/margin/updateEfficiencyAndAdBudget";
@@ -341,6 +342,32 @@ class MarginControllerTest {
                 status().isOk(),
                 jsonPath("$.message").value("success: marginUpdatesByPeriod")
         );
+    }
 
+    @Test
+    @DisplayName("createMarginTable() : successCase. 새로운 Margin 생성 성공")
+    @WithAuthUser
+    void createMarginTable_successCase() throws Exception {
+        Gson gson = GsonConfig.getGson();
+        // Given
+        final String url = "/api/margin/createMarginTable?targetDate=2025-11-12&campaignId=1";
+        Long mockMarginId = 100L;
+
+        doReturn(mockMarginId).when(marginService).createMarginTable(any(LocalDate.class), any(Long.class), any(String.class));
+
+        // When
+        ResultActions result = mockMvc.perform(post(url)
+                .content(gson.toJson(mockMarginId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+
+
+        // Then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : createMarginTable"))
+                .andExpect(jsonPath("$.data").value(mockMarginId));
+
+        verify(marginService).createMarginTable(any(LocalDate.class), any(Long.class), any(String.class));
     }
 }

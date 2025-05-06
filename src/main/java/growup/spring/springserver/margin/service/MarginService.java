@@ -5,8 +5,12 @@ import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.netsales.NetSalesNotFoundProductName;
 import growup.spring.springserver.margin.TypeChangeMargin;
+import growup.spring.springserver.margin.converter.MarginConverter;
+import growup.spring.springserver.margin.converter.MarginToMarginResultConverter;
+import growup.spring.springserver.margin.converter.MarginToSimpleMarginConverter;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.*;
+import growup.spring.springserver.margin.factory.MarginConverterFactory;
 import growup.spring.springserver.margin.repository.MarginRepository;
 import growup.spring.springserver.margin.util.MfcKeyUtils;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
@@ -35,6 +39,7 @@ public class MarginService {
     private final CampaignService campaignService;
     private final MarginForCampaignRepository marginForCampaignRepository;
     private final NetRepository netRepository;
+    private final MarginConverterFactory marginConverterFactory;
 //    private final OAuth2ClientRegistrationRepositoryConfiguration oAuth2ClientRegistrationRepositoryConfiguration;
 
     /*
@@ -99,13 +104,19 @@ public class MarginService {
     }
 
     private Margin getMarginForDateOrDefault(Map<Long, List<Margin>> marginMap, Campaign campaign, LocalDate date) {
-        Long campaignId = campaign.getCampaignId();
-        List<Margin> campaignMargins = marginMap.getOrDefault(campaignId, new ArrayList<>());
-
-        return campaignMargins.stream()
-                .filter(m -> m.getMarDate().equals(date))
-                .findFirst()
+        List<Margin> campaignMargins = getMarginsForCampaign(marginMap, campaign.getCampaignId());
+        return findMarginByDate(campaignMargins, date)
                 .orElse(TypeChangeMargin.createDefaultMargin(campaign, date));
+    }
+
+    private List<Margin> getMarginsForCampaign(Map<Long, List<Margin>> marginMap, Long campaignId) {
+        return marginMap.getOrDefault(campaignId, new ArrayList<>());
+    }
+
+    private Optional<Margin> findMarginByDate(List<Margin> margins, LocalDate date) {
+        return margins.stream()
+                .filter(m -> m.getMarDate().equals(date))
+                .findFirst(); // Optional로 반환
     }
 
     /*
@@ -116,16 +127,13 @@ public class MarginService {
      * */
     @Transactional
     public List<MarginResponseDto> getALLMargin(LocalDate start, LocalDate end, Long campaignId, String email) {
-        // 1. 기존 마진 데이터 조회
         List<Margin> margins = byCampaignIdAndDates(start, end, campaignId);
         Campaign myCampaign = campaignService.getMyCampaign(campaignId, email);
 
-        // 2. 조회된 날짜를 Set으로 변환
         Set<LocalDate> existingDates = margins.stream()
                 .map(Margin::getMarDate)
                 .collect(Collectors.toSet());
 
-        // NetSales 데이터가 있는 날짜만 필터링
         List<LocalDate> datesWithNetSales = netRepository.findDatesWithNetSalesByEmailAndDateRange(
                 email, start, end);
 
@@ -133,25 +141,34 @@ public class MarginService {
                 .filter(date -> !existingDates.contains(date))
                 .toList();
 
-        // 4. 필요한 기본 Margin 생성 (NetSales 있는 날짜만)
         List<Margin> newMargins = newMarginDates.stream()
-                .map(date -> TypeChangeMargin.createSaveDefaultMargin(myCampaign, date)) // 메서드 호출로 변경
+                .map(date -> TypeChangeMargin.createSaveDefaultMargin(myCampaign, date))
                 .toList();
 
-        // 5. 새 Margin 데이터 저장
         if (!newMargins.isEmpty()) {
             marginRepository.saveAll(newMargins);
         }
 
-        // 6. 기존 Margin + 새로 생성된 Margin 합쳐서 계산
         List<Margin> fullMargins = new ArrayList<>(margins);
         fullMargins.addAll(newMargins);
 
-        // 7. NetSales 데이터를 활용해 마진 업데이트
         List<Margin> calculateMargin = calculateMargin(fullMargins, campaignId, email);
 
-        return TypeChangeMargin.getMarginDto(calculateMargin, campaignId);
+        // 전략패턴 적용
+        MarginConverter<MarginResultDto> converter = marginConverterFactory.getResultConverter();
+
+        List<MarginResultDto> marginResultDtos = calculateMargin.stream()
+                .map(converter::convert)
+                .toList();
+
+        MarginResponseDto marginResponseDto = MarginResponseDto.builder()
+                .campaignId(campaignId)
+                .data(marginResultDtos)
+                .build();
+
+        return List.of(marginResponseDto);
     }
+
 
 
     public List<Margin> calculateMargin(List<Margin> margins, Long campaignId, String email) {
@@ -234,10 +251,10 @@ public class MarginService {
     /**
      * 특정 기간의 마진 데이터를 업데이트
      *
-     * @param margin 기존 마진 데이터
-     * @param updatedMarginsMap 프론트에서 받은 *변경된* 마진 정보 (상품명 + 마진 타입 기준)
+     * @param margin               기존 마진 데이터
+     * @param updatedMarginsMap    프론트에서 받은 *변경된* 마진 정보 (상품명 + 마진 타입 기준)
      * @param marginForCampaignMap 해당 캠페인에 속한 옵션 정보 (상품명 + 마진 타입 기준)
-     * @param email 사용자 이메일
+     * @param email                사용자 이메일
      */
 
     private void updateMargin(Margin margin, Map<MfcKey, MfcDto> updatedMarginsMap,
@@ -281,7 +298,6 @@ public class MarginService {
 
         List<Campaign> campaignList = getCampaignsByEmail(email);
 
-
         // 보석, 재영, 은아
         for (Campaign campaign : campaignList) {
             try {
@@ -297,6 +313,7 @@ public class MarginService {
         return summaries;
     }
 
+
     // 기간별 마진의 총 합
     public List<DailyNetProfitResponseDto> getDailyTotalMarginListResDto(LocalDate start, LocalDate end, String email) {
         return marginRepository.findTotalMarginByDateRangeAndEmail(start, end, email);
@@ -305,6 +322,7 @@ public class MarginService {
     private Margin getMargin(LocalDate targetDate, Campaign campaign) {
         return marginRepository.findByCampaignIdAndDate(campaign.getCampaignId(), targetDate).orElseThrow(CampaignNotFoundException::new);
     }
+
     @Transactional
     public MarginUpdateResponseDto updateEfficiencyAndAdBudget(MarginUpdateRequestDtos requestDtos) {
         int requestCount = requestDtos.getData().size();
@@ -341,8 +359,42 @@ public class MarginService {
                 "adBudget", data.getMarAdBudget()
         );
     }
+
     @Transactional
-    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start, LocalDate end){
-        return marginRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
+    public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds, LocalDate start, LocalDate end) {
+        return marginRepository.deleteByCampaignIdAndDate(start, end, campaignIds);
+    }
+
+    public Long createMarginTable(LocalDate targetDate, Long campaignId, String email) {
+
+        Campaign myCampaign = campaignService.getMyCampaign(campaignId, email);
+
+        // Db에 이미 있는 마진 데이터 인지 확인 ID는 모르니 CAMPAIGN_ID와 날짜로 확인
+
+        try {
+            Margin margin = getMargin(targetDate, myCampaign);
+            return margin.getId();
+        } catch (CampaignNotFoundException e) {
+            log.warn("Margin not exist so create new margin");
+            Margin saveDefaultMargin = TypeChangeMargin.createSaveDefaultMargin(myCampaign, targetDate);
+            Margin savedMargin = marginRepository.save(saveDefaultMargin);
+            return savedMargin.getId();
+        }
+    }
+
+    public SimpleMarginResponseForStaticGraph3Dto getSimpleMargin(LocalDate start, LocalDate end, Long campaignId, String email) {
+        List<Margin> margins = marginRepository.findByCampaignIdAndDates(campaignId, start, end);
+
+        // 책임을 팩토리에 넘김
+        MarginConverter<SimpleMarginResponseDto> converter = marginConverterFactory.getSimpleConverter();
+
+        List<SimpleMarginResponseDto> simpleMarginResponseDtos = margins.stream()
+                .map(converter::convert)
+                .toList();
+
+        return SimpleMarginResponseForStaticGraph3Dto.builder()
+                .campaignId(campaignId)
+                .data(simpleMarginResponseDtos)
+                .build();
     }
 }

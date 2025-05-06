@@ -73,7 +73,7 @@ public class MemberService {
         return typeChange.memberToLoginResDto(findmember, accessToken);
     }
 
-    public LoginDataResDto getMyEmailAndRole(String email) {
+    public LoginDataResDto getMyName(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 MemberNotFoundException::new);
 

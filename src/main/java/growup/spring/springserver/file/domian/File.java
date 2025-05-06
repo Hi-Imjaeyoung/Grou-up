@@ -1,5 +1,6 @@
 package growup.spring.springserver.file.domian;
 
+import growup.spring.springserver.file.FileType;
 import growup.spring.springserver.login.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,15 +25,19 @@ public class File {
     // 파일 업로드한 날짜
     private LocalDateTime fileUploadDate;
 
-    // 넣은 총 갯수
+    // 엑셀파일 총 갯수
     private Long fileAllCount;
 
-    // 중복 빼고 들어간 갯수
-    private Long fileUniqueCount;
+    // 새롭게 들어간 갯수
+    private Long fileNewCount;
+
+    // 기존꺼에 들어간 갯수
+    private Long fileDuplicateCount;
+
+    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
+    private FileType fileType; // 타입 로켓그로스, 판매자배송
 
     @ManyToOne
     @JoinColumn(name = "email", referencedColumnName = "email")
     private Member member;
-
-
 }

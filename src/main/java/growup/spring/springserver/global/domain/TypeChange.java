@@ -37,8 +37,7 @@ public class TypeChange {
     // 멤버 ID Role 반환
     public LoginDataResDto MemberToMyEmailAndRoleDto(Member findmember) {
         return LoginDataResDto.builder()
-                .email(findmember.getEmail())
-                .role(findmember.getRole().name())
+                .name(findmember.getName())
                 .build();
     }
 }

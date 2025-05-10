@@ -53,8 +53,8 @@ public class MemberControllerTest {
         Gson gson = new Gson();
         final String url = "/api/members/getMyEmailAndRole";
 
-        LoginDataResDto mockResponse = new LoginDataResDto("fa7271@naver.com", "USER");
-        doReturn(mockResponse).when(memberService).getMyEmailAndRole(any());
+        LoginDataResDto mockResponse = new LoginDataResDto("fa7271@naver.com");
+        doReturn(mockResponse).when(memberService).getMyName(any());
 
         // MockMvc 요청
         final ResultActions resultActions = mockMvc.perform(

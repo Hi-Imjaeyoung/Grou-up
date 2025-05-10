@@ -37,7 +37,7 @@ class MemberServiceTest {
         // when
         MemberNotFoundException ex = assertThrows(
                 MemberNotFoundException.class,
-                () -> memberService.getMyEmailAndRole("test@test.com")
+                () -> memberService.getMyName("test@test.com")
         );
         //then
         assertThat(ex.getMessage()).isEqualTo("존재하지 않는 회원입니다.");
@@ -50,15 +50,15 @@ class MemberServiceTest {
         Member mockMember = getMember(); // 동일 객체 사용
 
         doReturn(Optional.of(mockMember)).when(memberRepository).findByEmail(any(String.class));
-        doReturn(new LoginDataResDto("test@test.com", "GOLD"))
+        doReturn(new LoginDataResDto("test@test.com"))
                 .when(typeChange).MemberToMyEmailAndRoleDto(mockMember); // 동등성 비교
 
         // when
-        LoginDataResDto result = memberService.getMyEmailAndRole("test@test.com");
+        LoginDataResDto result = memberService.getMyName("test@test.com");
 
         // then
-        assertThat(result.email()).isNotNull();
-        assertThat(result.role()).isEqualTo(Role.GOLD.name());
+        assertThat(result.name()).isNotNull();
+
 
         // verify
         verify(memberRepository, times(1)).findByEmail("test@test.com");

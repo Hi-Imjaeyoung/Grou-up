@@ -397,4 +397,10 @@ public class MarginService {
                 .data(simpleMarginResponseDtos)
                 .build();
     }
+
+    public LocalDate findLatestMarginDateByEmail(String email) {
+        return marginRepository
+                .findLatestMarginDateByEmail(email)
+                .orElseGet(LocalDate::now);
+    }
 }

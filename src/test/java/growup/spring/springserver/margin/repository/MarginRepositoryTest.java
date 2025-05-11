@@ -18,7 +18,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -165,7 +167,7 @@ class MarginRepositoryTest {
     }
 
     @Test
-    @DisplayName("findTotalMarginByDateRangeAndEmail() : SuccessCase")
+    @DisplayName("findTotalMarginByDateRangeAndEmail() : successCase")
     void test5() {
         LocalDate start = LocalDate.of(2024, 11, 8);
         LocalDate end = LocalDate.of(2024, 11, 10);
@@ -189,6 +191,38 @@ class MarginRepositoryTest {
         assertThat(totalMarginByDateRangeAndEmail.get(0).getMarReturnCost()).isEqualTo(130.0);
     }
 
+    @Test
+    @DisplayName("findLatestMarginDateByEmail() : SuccessCase")
+    void test6() {
+        String email = "test@test.com";
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 8), campaign1, 100.0, 100.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 5), campaign1, 20.0, 25.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign1, 30.0, 25.0));
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 1), campaign2, 50.0, 30.0));
+
+        Optional<LocalDate> latestMarginDateByEmail = marginRepository.findLatestMarginDateByEmail(email);
+
+        assertThat(latestMarginDateByEmail).contains(LocalDate.of(2024, 11, 10));
+    }
+
+    @Test
+    @DisplayName("findLatestMarginDateByEmail() : failCase")
+    void test7() {
+        String email = "nodata@test.com";
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 8), campaign1, 100.0, 100.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 5), campaign1, 20.0, 25.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign1, 30.0, 25.0));
+
+        Optional<LocalDate> latestMarginDateByEmail = marginRepository.findLatestMarginDateByEmail(email);
+
+        assertThat(latestMarginDateByEmail).isEmpty();
+
+
+
+    }
     private Member newMember() {
         return Member.builder().email("test@test.com").build();
     }

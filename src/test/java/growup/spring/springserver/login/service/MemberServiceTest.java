@@ -31,7 +31,7 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("getMyEmailAndRole(): ErrorCase1. 해당 멤버를 찾지 못할 때")
-    void test1(){
+    void test1() {
         // given
         doReturn(Optional.empty()).when(memberRepository).findByEmail(any(String.class));
         // when
@@ -64,7 +64,39 @@ class MemberServiceTest {
         verify(memberRepository, times(1)).findByEmail("test@test.com");
         verify(typeChange, times(1)).MemberToMyEmailAndRoleDto(mockMember);
     }
-    public Member getMember(){
+
+    @Test
+    @DisplayName("getMySun() : SuccessCase1. MemberNotFoundException")
+    void getMySun_SuccessCase1() {
+
+        String email = "nodata@test.com";
+
+        when(memberRepository.findByEmail(email)).thenThrow(MemberNotFoundException.class);
+
+        assertThrows(MemberNotFoundException.class, () -> memberService.getMyName(email));
+
+        verify(memberRepository, times(1)).findByEmail(email);
+
+    }
+
+    @Test
+    @DisplayName("getMySun() : SuccessCase2.")
+    void getMySun_SuccessCase2() {
+        Member member = Member.builder()
+                .email("test@test.com")
+                .sunshine(100L)
+                .build();
+
+        String email = "test@test.com";
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+        Long result = memberService.getMySun(email);
+        assertThat(result).isEqualTo(100L);
+        verify(memberRepository, times(1)).findByEmail(email);
+
+    }
+    public Member getMember() {
         return Member.builder()
                 .email("test@test.com")
                 .role(Role.GOLD)

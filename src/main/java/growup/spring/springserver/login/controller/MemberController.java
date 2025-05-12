@@ -98,4 +98,16 @@ public class MemberController {
                 .build(), HttpStatus.OK
         );
     }
+
+    @GetMapping("/getMySun")
+    public ResponseEntity<CommonResponse<Long>> getMySun(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("start getMySun");
+        Long mySun = memberService.getMySun(userDetails.getUsername());
+
+        return new ResponseEntity<>(CommonResponse
+                .<Long>builder("getMySun Success")
+                .data(mySun)
+                .build(), HttpStatus.OK
+        );
+    }
 }

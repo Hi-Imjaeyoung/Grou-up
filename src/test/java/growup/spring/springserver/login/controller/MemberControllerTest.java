@@ -70,4 +70,26 @@ public class MemberControllerTest {
                 jsonPath("data.role").value("USER")                    // "data.role" 필드 검증
         ).andDo(print());
     }
+    @Test
+    @DisplayName("getMySun() : SuccessCase")
+    @WithAuthUser
+    void test3() throws Exception {
+        Gson gson = new Gson();
+
+        final String url = "/api/members/getMySun";
+
+        Long Response = 10L;
+        doReturn(Response).when(memberService).getMySun(any());
+
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(new ArrayList<String>())));
+
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("getMySun Success"),
+                jsonPath("data").value(Response)
+        ).andDo(print());
+    }
 }

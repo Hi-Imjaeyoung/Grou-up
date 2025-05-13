@@ -31,13 +31,13 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("getMyEmailAndRole(): ErrorCase1. 해당 멤버를 찾지 못할 때")
-    void test1(){
+    void test1() {
         // given
         doReturn(Optional.empty()).when(memberRepository).findByEmail(any(String.class));
         // when
         MemberNotFoundException ex = assertThrows(
                 MemberNotFoundException.class,
-                () -> memberService.getMyEmailAndRole("test@test.com")
+                () -> memberService.getMyName("test@test.com")
         );
         //then
         assertThat(ex.getMessage()).isEqualTo("존재하지 않는 회원입니다.");
@@ -50,21 +50,53 @@ class MemberServiceTest {
         Member mockMember = getMember(); // 동일 객체 사용
 
         doReturn(Optional.of(mockMember)).when(memberRepository).findByEmail(any(String.class));
-        doReturn(new LoginDataResDto("test@test.com", "GOLD"))
+        doReturn(new LoginDataResDto("test@test.com"))
                 .when(typeChange).MemberToMyEmailAndRoleDto(mockMember); // 동등성 비교
 
         // when
-        LoginDataResDto result = memberService.getMyEmailAndRole("test@test.com");
+        LoginDataResDto result = memberService.getMyName("test@test.com");
 
         // then
-        assertThat(result.email()).isNotNull();
-        assertThat(result.role()).isEqualTo(Role.GOLD.name());
+        assertThat(result.name()).isNotNull();
+
 
         // verify
         verify(memberRepository, times(1)).findByEmail("test@test.com");
         verify(typeChange, times(1)).MemberToMyEmailAndRoleDto(mockMember);
     }
-    public Member getMember(){
+
+    @Test
+    @DisplayName("getMySun() : SuccessCase1. MemberNotFoundException")
+    void getMySun_SuccessCase1() {
+
+        String email = "nodata@test.com";
+
+        when(memberRepository.findByEmail(email)).thenThrow(MemberNotFoundException.class);
+
+        assertThrows(MemberNotFoundException.class, () -> memberService.getMyName(email));
+
+        verify(memberRepository, times(1)).findByEmail(email);
+
+    }
+
+    @Test
+    @DisplayName("getMySun() : SuccessCase2.")
+    void getMySun_SuccessCase2() {
+        Member member = Member.builder()
+                .email("test@test.com")
+                .sunshine(100L)
+                .build();
+
+        String email = "test@test.com";
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+        Long result = memberService.getMySun(email);
+        assertThat(result).isEqualTo(100L);
+        verify(memberRepository, times(1)).findByEmail(email);
+
+    }
+    public Member getMember() {
         return Member.builder()
                 .email("test@test.com")
                 .role(Role.GOLD)

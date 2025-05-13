@@ -74,13 +74,15 @@ public class MemberService {
     }
 
     public LoginDataResDto getMyName(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(
-                MemberNotFoundException::new);
-
+        Member member = getMemberByEmail(email);
         return typeChange.MemberToMyEmailAndRoleDto(member);
     }
     public Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
+    }
+
+    public Long getMySun(String email) {
+        return getMemberByEmail(email).getSunshine();
     }
 }

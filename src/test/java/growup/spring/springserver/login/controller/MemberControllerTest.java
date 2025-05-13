@@ -53,8 +53,8 @@ public class MemberControllerTest {
         Gson gson = new Gson();
         final String url = "/api/members/getMyEmailAndRole";
 
-        LoginDataResDto mockResponse = new LoginDataResDto("fa7271@naver.com", "USER");
-        doReturn(mockResponse).when(memberService).getMyEmailAndRole(any());
+        LoginDataResDto mockResponse = new LoginDataResDto("fa7271@naver.com");
+        doReturn(mockResponse).when(memberService).getMyName(any());
 
         // MockMvc 요청
         final ResultActions resultActions = mockMvc.perform(
@@ -68,6 +68,28 @@ public class MemberControllerTest {
                 jsonPath("message").value("getMyEmailAndRole Success"), // "message" 필드 검증
                 jsonPath("data.email").value("fa7271@naver.com"),       // "data.email" 필드 검증
                 jsonPath("data.role").value("USER")                    // "data.role" 필드 검증
+        ).andDo(print());
+    }
+    @Test
+    @DisplayName("getMySun() : SuccessCase")
+    @WithAuthUser
+    void test3() throws Exception {
+        Gson gson = new Gson();
+
+        final String url = "/api/members/getMySun";
+
+        Long Response = 10L;
+        doReturn(Response).when(memberService).getMySun(any());
+
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(new ArrayList<String>())));
+
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("getMySun Success"),
+                jsonPath("data").value(Response)
         ).andDo(print());
     }
 }

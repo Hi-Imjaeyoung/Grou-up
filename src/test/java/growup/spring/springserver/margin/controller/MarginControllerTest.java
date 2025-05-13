@@ -370,4 +370,27 @@ class MarginControllerTest {
 
         verify(marginService).createMarginTable(any(LocalDate.class), any(Long.class), any(String.class));
     }
+    @Test
+    @DisplayName("findLatestMarginDateByEmail() : successCase")
+    @WithAuthUser
+    void findLatestMarginDateByEmail_successCase() throws Exception {
+        // Given
+        Gson gson = GsonConfig.getGson();
+        final String url = "/api/margin/findLatestMarginDateByEmail";
+        LocalDate mockDate = LocalDate.of(2024, 12, 1);
+
+        doReturn(mockDate).when(marginService).findLatestMarginDateByEmail(any(String.class));
+
+        // When
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url));
+
+        // Then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : findLatestMarginDateByEmail"))
+                .andExpect(jsonPath("$.data").value(mockDate.toString()));
+
+        verify(marginService).findLatestMarginDateByEmail(any(String.class));
+    }
 }

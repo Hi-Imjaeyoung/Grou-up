@@ -981,6 +981,34 @@ class MarginServiceTest {
         verify(campaignService).getMyCampaign(campaignId, email);
     }
 
+    @Test
+    @DisplayName("findLatestMarginDateByEmail_successCase ")
+    void findLatestMarginDateByEmail_successCase() {
+        String email = "test@test.com";
+
+        LocalDate LatestMarginDate = LocalDate.of(2025, 11, 12);
+
+        when(marginRepository.findLatestMarginDateByEmail(email)).thenReturn(Optional.of(LatestMarginDate));
+
+        LocalDate result = marginService.findLatestMarginDateByEmail(email);
+
+        assertThat(result).isEqualTo(LatestMarginDate);
+        verify(marginRepository).findLatestMarginDateByEmail(email);
+
+    }
+
+    @Test
+    @DisplayName("findLatestMarginDateByEmail_failCase ")
+    void findLatestMarginDateByEmail_failCase() {
+        String email =  "noData@test.com";
+
+        when(marginRepository.findLatestMarginDateByEmail(email)).thenReturn(Optional.empty());
+
+        LocalDate result = marginService.findLatestMarginDateByEmail(email);
+
+        assertThat(result).isEqualTo(LocalDate.now());
+
+    }
 
     private Margin newMargin(LocalDate date, Campaign campaign, Double marsale) {
         return Margin.builder()

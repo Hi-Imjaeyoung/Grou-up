@@ -27,10 +27,10 @@ public class MarginController {
     private final MarginService marginService;
 
     /*
-    * TODO
-    *  매출보고서(3사분)
-    *  실패시 빈 리스트 리턴
-    * */
+     * TODO
+     *  매출보고서(3사분)
+     *  실패시 빈 리스트 리턴
+     * */
     @GetMapping("/getCampaignAllSales")
     public ResponseEntity<CommonResponse<List<MarginSummaryResponseDto>>> getCampaignAllSales(@RequestParam("date") LocalDate date,
                                                                                               @AuthenticationPrincipal UserDetails userDetails) {
@@ -96,9 +96,10 @@ public class MarginController {
                 .data("Margin update successful")  // 성공 메시지 반환
                 .build());
     }
+
     /*TODO
-    *  마진보고서 (4사분면)
-    *  실패시 빈 리스트 리턴*/
+     *  마진보고서 (4사분면)
+     *  실패시 빈 리스트 리턴*/
     @GetMapping("getDailyMarginSummary")
     public ResponseEntity<CommonResponse<List<DailyMarginSummary>>> getDailyMarginSummary(@RequestParam("date") LocalDate date,
                                                                                           @AuthenticationPrincipal UserDetails userDetails) {
@@ -115,6 +116,7 @@ public class MarginController {
                 .data(dailyMarginSummary)
                 .build(), HttpStatus.OK);
     }
+
     // 일자별 모든 캠페인의 마진을더한 총 마진 및 반품
     @GetMapping("/getNetProfitAndReturnCost")
     public ResponseEntity<CommonResponse<List<DailyNetProfitResponseDto>>> getNetProfit(@RequestParam("startDate") LocalDate start,
@@ -142,6 +144,7 @@ public class MarginController {
 
     /**
      * 마진 테이블 사용자가 생성
+     *
      * @param targetDate
      * @param campaignId
      * @return margin_ID
@@ -180,6 +183,15 @@ public class MarginController {
         return ResponseEntity.ok(CommonResponse
                 .<SimpleMarginResponseForStaticGraph3Dto>builder("success : getMarginSimple")
                 .data(simpleMargins)
+                .build());
+    }
+
+    @GetMapping("/findLatestMarginDateByEmail")
+    public ResponseEntity<CommonResponse<LocalDate>> findLatestMarginDateByEmail(@AuthenticationPrincipal UserDetails userDetails) {
+        LocalDate latestMarginDate = marginService.findLatestMarginDateByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(CommonResponse
+                .<LocalDate>builder("success : findLatestMarginDateByEmail")
+                .data(latestMarginDate)
                 .build());
     }
 }

@@ -209,8 +209,7 @@ def aggregate_data(excel, member):
         if pd.isna(key_keyword):
             key_keyword = "-"
         else:
-            # 공백 제거 및 띄어쓰기 없이 처리
-            key_keyword = str(key_keyword).replace(" ", "")
+            key_keyword = str(key_keyword)
 
         keyword_key = (cop_date, campaign.campaign_id, key_keyword)
         update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type)
@@ -261,6 +260,7 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_actual_sales': 0,
             'mar_sales': 0,
             'mar_return_cost' : 0,
+            'mar_return_count' : 0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
@@ -391,7 +391,7 @@ def save_margin(margin_data):
 
 
             # existing_margin.mar_actual_sales = data['mar_actual_sales']
-            # existing_margin.mar_return_count = data['mar_return_count']
+            existing_margin.mar_return_count = data['mar_return_count']
             buffer_update.append(existing_margin)
         else:
             # 새 Margin 생성
@@ -409,6 +409,7 @@ def save_margin(margin_data):
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
                 mar_return_cost =data['mar_return_cost'],
+                mar_return_count = data['mar_return_count'],
                 mar_sales=data['mar_sales'],
             ))
 

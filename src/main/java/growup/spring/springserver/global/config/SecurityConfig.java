@@ -6,6 +6,7 @@ import growup.spring.springserver.global.error.UserAccessDeniedHandler;
 import growup.spring.springserver.global.error.UserAuthenticationEntryPoint;
 import growup.spring.springserver.global.fillter.JwtAuthFilter;
 import growup.spring.springserver.login.service.Oauth2UserService;
+import jakarta.servlet.GenericFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,7 @@ import java.util.List;
 //@EnableGlobalMethodSecurity(prePostEnabled = true) // PreAuthorize
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+    private final GenericFilter jwtAuthFilter;
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler successHandler;
 

@@ -29,127 +29,6 @@ def upload_excel(request):
     return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
-
-
-@csrf_exempt
-def upload_margin(request):
-    if request.method == 'POST':
-        form = ExcelFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            # handle_upload_margin에서 반환된 값을 그대로 반환
-            return handle_upload_margin(request, form)
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Failed to upload margin file.'}, status=500)
-
-    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
-
-
-
-
-
-def handle_upload_margin(request, form):
-    uploaded_file = request.FILES['file']
-
-    # 1️⃣ 파일명에서 날짜 추출
-    file_name = uploaded_file.name
-    date_pattern = r'(\d{4}-\d{2}-\d{2})|(\d{8})'
-    date_match = re.search(date_pattern, file_name)
-
-    file_all_count = 0
-    file_new_count = 0
-    file_duplicate_count = 0
-
-    if date_match:
-        date_str = date_match.group()
-        # 날짜 형식에 따라 파싱
-        if '-' in date_str:
-            net_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        else:
-            net_date = datetime.strptime(date_str, '%Y%m%d').date()
-    # 2️⃣ 엑셀 파일 읽기
-    df = pd.read_excel(uploaded_file)
-    df = df.iloc[:-1]
-
-    # 3️⃣ 옵션명+상품타입 기준으로 순판매금액과 순판매수 합산
-    df_grouped = df.groupby(['옵션명', '상품타입'], as_index=False).agg({
-        '순 판매 금액(전체 거래 금액 - 취소 금액)': 'sum',
-        '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum',
-        '총 취소 상품 수': 'sum'
-    })
-
-    file_all_count += len(df_grouped)
-
-    # 4️⃣ 로그인한 유저 가져오기
-    email = some_protected_view(request)
-    member = get_object_or_404(Member, email=email)
-
-    # 5️⃣ 데이터베이스 저장 (업데이트 or 새로 생성)
-    for _, row in df_grouped.iterrows():
-        product_name = row['옵션명']
-        product_type = row['상품타입']
-        total_sales_amount = row['순 판매 금액(전체 거래 금액 - 취소 금액)']
-        total_sales_count = row['순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)']
-        total_return_count = row['총 취소 상품 수']
-        file_type = FileType.NET_SALES_REPORT.value
-
-        if total_sales_count == 0 and total_return_count ==0:
-            continue
-        # 상품 타입을 데이터베이스에 저장할 형식으로 변환
-        if product_type == '로켓그로스':
-            net_type = MarginType.ROCKET_GROWTH.value
-        elif product_type == '판매자배송':
-            net_type = MarginType.SELLER_DELIVERY.value
-        else:
-            continue  # 알 수 없는 상품 타입은 무시
-        # 같은 날짜 + 옵션명+상품타입이 있는지 확인
-        try:
-            net_sales = NetSales.objects.get(
-                net_product_name=product_name,
-                net_type=net_type,
-                net_date=net_date,
-                email=member
-            )
-            # 이미 존재하는 경우 업데이트
-            net_sales.net_sales_count = total_sales_count
-            net_sales.net_sales_amount = total_sales_amount
-            net_sales.net_return_count = total_return_count
-            net_sales.net_type = net_type
-            net_sales.save()
-            file_duplicate_count += 1
-
-        except NetSales.DoesNotExist:
-            # 존재하지 않으면 새로 생성
-            net_sales = NetSales(
-                net_product_name=product_name,
-                net_type=net_type,
-                net_sales_count=total_sales_count,
-                net_sales_amount=total_sales_amount,
-                net_return_count=total_return_count,
-                net_date=net_date,
-                email=member
-            )
-            net_sales.save()
-            file_new_count += 1
-
-
-
-    save_file(email,member, file_name, file_all_count, file_new_count, file_duplicate_count, file_type)
-
-    # 데이터를 'data'로 추가하여 render할 때 반환
-    return JsonResponse({
-        'status': 'success',
-        'message': 'Margin file uploaded successfully.',
-        'data': {
-            'file_all_count': file_all_count,
-            'upload_new_count': file_new_count,
-            'upload_duplicate_count': file_duplicate_count
-        }
-    }, status=200)
-
-
-
-
-
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위
     uploaded_file = request.FILES['file']
@@ -181,7 +60,7 @@ def handle_excel_upload(request, form):
 
     file_type = FileType.ADVERTISING_REPORT.value
 
-    save_file(email,member,file_name,total_count,insert_count,duplicate_count,file_type)
+    save_file(member,file_name,total_count,insert_count,duplicate_count,file_type)
 
     return JsonResponse({'status': 'success',
                          'data' : {
@@ -468,19 +347,27 @@ def save_keywords(keyword_data):
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
 
-def save_file(email,member, file_name, file_all_count, file_new_count, file_duplicate_count,file_type):
-    file_record = File.objects.create(
-        file_name=file_name,
-        file_upload_date=timezone.now(),
-        file_all_count=file_all_count,
-        file_new_count=file_new_count,
-        file_duplicate_count=file_duplicate_count,
+
+def save_file(member, file_name,
+              file_all_count, file_new_count,
+              file_duplicate_count, file_type):
+    """
+    member+file_type+file_name 조합으로 파일 레코드를 조회해서,
+    - 없으면 새로 만들고 created=True
+    - 있으면 그냥 조회만 하고 created=False
+    """
+    file_record, created = File.objects.get_or_create(
+        email     = member,
         file_type = file_type,
-        email=member
+        file_name = file_name,
+        defaults={
+            'file_upload_date'     : timezone.localdate(),
+            'file_all_count'       : file_all_count,
+            'file_new_count'       : file_new_count,
+            'file_duplicate_count' : file_duplicate_count,
+        }
     )
-    return file_record
-
-
+    return file_record, created
 
 def get_or_create_campaign(row, member):
     campaign_id = row['캠페인 ID']

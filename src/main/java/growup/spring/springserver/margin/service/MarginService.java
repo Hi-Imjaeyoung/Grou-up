@@ -153,7 +153,6 @@ public class MarginService {
         fullMargins.addAll(newMargins);
 
         List<Margin> calculateMargin = calculateMargin(fullMargins, campaignId, email);
-
         // 전략패턴 적용
         MarginConverter<MarginResultDto> converter = marginConverterFactory.getResultConverter();
 
@@ -177,7 +176,8 @@ public class MarginService {
         for (Margin margin : margins) {
             // marAdMargin과 marNetProfit이 모두 0일 때 netSales를 호출
             // A 에 대해서 마진이 없음 => A에 대해서 업데이트 쳐야함
-            if (margin.getMarAdMargin() == 0 && margin.getMarNetProfit() == 0.0 || margin.getMarReturnCost() == 0) {
+            if ((margin.getMarAdMargin() == 0 && margin.getMarNetProfit() == 0.0) || ( margin.getMarReturnCost() == null ||margin.getMarReturnCost() == 0.0 )) {
+
                 Margin updateMargin = callNetSales(margin, campaignId, margin.getMarDate(), email);
                 datas.add(updateMargin);
             } else {

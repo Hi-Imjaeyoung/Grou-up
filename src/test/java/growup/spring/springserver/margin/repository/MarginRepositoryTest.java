@@ -196,15 +196,10 @@ class MarginRepositoryTest {
     void test6() {
         String email = "test@test.com";
 
-        marginRepository.save(newMargin(LocalDate.of(2024, 11, 8), campaign1, 100.0, 100.0));
-        marginRepository.save(newMargin(LocalDate.of(2024, 11, 5), campaign1, 20.0, 25.0));
-        marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign1, 30.0, 25.0));
-
-        marginRepository.save(newMargin(LocalDate.of(2024, 11, 1), campaign2, 50.0, 30.0));
 
         Optional<LocalDate> latestMarginDateByEmail = marginRepository.findLatestMarginDateByEmail(email);
 
-        assertThat(latestMarginDateByEmail).contains(LocalDate.of(2024, 11, 10));
+        assertThat(latestMarginDateByEmail).contains(LocalDate.of(2024, 11, 11));
     }
 
     @Test

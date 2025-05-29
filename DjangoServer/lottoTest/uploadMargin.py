@@ -60,9 +60,12 @@ def _handle_upload_margin(request, form):
     file_name_date = uploaded.name.split('_')[0]
 
     # 파일 읽고 그룹화
-    df = pd.read_excel(uploaded).iloc[:-1]
-    df_grouped = df.groupby(GROUP_BY_FIELDS, as_index=False).agg(AGG_COLS)
+    df = pd.read_excel(uploaded)
+    if len(df) > 1:
+        df = df.iloc[:-1]
 
+    df_grouped = df.groupby(GROUP_BY_FIELDS, as_index=False).agg(AGG_COLS)
+    print(df_grouped)
     total_groups = len(df_grouped)
 
     # 2️⃣ 회원 조회

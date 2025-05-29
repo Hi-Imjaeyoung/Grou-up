@@ -1,6 +1,5 @@
 package growup.spring.springserver.file.controller;
 
-import growup.spring.springserver.file.FileType;
 import growup.spring.springserver.file.dto.FileResDto;
 import growup.spring.springserver.file.service.FileService;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/file")
@@ -23,17 +22,16 @@ public class FileController {
 
     private final FileService fileService;
 
-    // 타입별 파일 내역 보기
-    // 프론트에서 파일타입이 넘어옴
-    @GetMapping("/history")
-    public ResponseEntity<CommonResponse<List<FileResDto>>> getFileHistory(
+    @GetMapping("/getHistory")
+    public ResponseEntity<CommonResponse<FileResDto>> getFileHistory(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam FileType fileType) {
+            @RequestParam("startDate") LocalDate start,
+            @RequestParam("endDate") LocalDate end) {
 
-        List<FileResDto> fileHistory = fileService.getFileHistory(fileType, userDetails.getUsername());
+        FileResDto fileHistory = fileService.getFileHistory(userDetails.getUsername(), start, end);
 
         return new ResponseEntity<>(CommonResponse
-                .<List<FileResDto>>builder("success :getFileHistory")
+                .<FileResDto>builder("success :getFileHistory")
                 .data(fileHistory)
                 .build(), HttpStatus.OK);
     }

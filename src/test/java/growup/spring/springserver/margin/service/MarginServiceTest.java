@@ -8,8 +8,10 @@ import growup.spring.springserver.exception.netsales.NetSalesNotFoundProductName
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.login.service.MemberService;
+import growup.spring.springserver.margin.converter.MarginConverter;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.*;
+import growup.spring.springserver.margin.factory.MarginConverterFactory;
 import growup.spring.springserver.margin.repository.MarginRepository;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
 import growup.spring.springserver.marginforcampaign.dto.MfcDto;
@@ -56,6 +58,8 @@ class MarginServiceTest {
     private NetRepository netRepository;
     @Mock
     private MarginForCampaignRepository marginForCampaignRepository;
+    @Mock
+    private MarginConverterFactory marginConverterFactory;
 
     @Test
     @DisplayName("getCampaignAllSales(): ErrorCase1.캠패인 목록이 없을 때")
@@ -423,7 +427,7 @@ class MarginServiceTest {
 
     @DisplayName("getALLMargin() - failCase 1 : NetSales 데이터가 없는 경우")
     @Test
-    void getALLMargin_failCase2() {
+    void getALLMargin_failCase1() {
         LocalDate start = LocalDate.of(2024, 11, 8);
         LocalDate end = LocalDate.of(2024, 11, 10);
         String email = "test@test.com";
@@ -444,13 +448,18 @@ class MarginServiceTest {
                 .when(netRepository)
                 .findDatesWithNetSalesByEmailAndDateRange(email, start, end);
 
+        @SuppressWarnings("unchecked")
+        MarginConverter<MarginResultDto> dummyConverter = mock(MarginConverter.class);
+        when(marginConverterFactory.getResultConverter())
+                .thenReturn(dummyConverter);
+
         List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);
         assertThat(result.get(0).getData()).isEmpty();
     }
 
-    @DisplayName("getALLMargin() - 실패 케이스 2: MarginForCampaign 데이터 없음")
+    @DisplayName("getALLMargin() - failCase 2: MarginForCampaign 데이터 없음")
     @Test
-    void getALLMargin_failCase_noMarginForCampaign() {
+    void getALLMargin_failCase2() {
         LocalDate start = LocalDate.of(2024, 11, 8);
         LocalDate end = LocalDate.of(2024, 11, 10);
         String email = "test@test.com";
@@ -464,6 +473,12 @@ class MarginServiceTest {
                 .marAdMargin(0L)
                 .marNetProfit(0.0)
                 .marAdCost(0.0).build();
+
+        @SuppressWarnings("unchecked")
+        MarginConverter<MarginResultDto> dummyConverter = mock(MarginConverter.class);
+
+        when(marginConverterFactory.getResultConverter())
+                .thenReturn(dummyConverter);
 
         doReturn(List.of(margin))
                 .when(marginRepository)
@@ -481,10 +496,26 @@ class MarginServiceTest {
                 .when(marginForCampaignRepository)
                 .MarginForCampaignByCampaignId(campaignId);
 
-        List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);
+        when(dummyConverter.convert(any(Margin.class)))
+                .thenAnswer(invocation -> {
+                    Margin m = invocation.getArgument(0);
+                    return MarginResultDto.builder()
+                            .marDate(m.getMarDate())
+                            .marAdMargin(m.getMarAdMargin())
+                            .marNetProfit(m.getMarNetProfit())
+                            .marReturnCost(m.getMarReturnCost())
+                            .build();
+                });
 
+        List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);
+        System.out.println("result = " + result);
+        assertThat(result).hasSize(1);
         assertThat(result.get(0).getData())
-                .allMatch(m -> m.getMarAdMargin() == 0 && m.getMarNetProfit() == 0.0);
+                .allMatch(dto ->
+                        dto.getMarAdMargin() == 0L &&
+                                dto.getMarNetProfit() == 0.0 &&
+                                dto.getMarReturnCost() == 0.0
+                );
     }
 
     @DisplayName("getALLMargin() - failCase 3 : 기존 마진도 없고 NetSales도 없으면 빈 리스트 반환, ")
@@ -509,6 +540,10 @@ class MarginServiceTest {
                 .when(netRepository)
                 .findDatesWithNetSalesByEmailAndDateRange(email, start, end);
 
+        @SuppressWarnings("unchecked")
+        MarginConverter<MarginResultDto> dummyConverter = mock(MarginConverter.class);
+        when(marginConverterFactory.getResultConverter())
+                .thenReturn(dummyConverter);
         // when
         List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);
 
@@ -759,6 +794,22 @@ class MarginServiceTest {
                 newMargin
         );
 
+        @SuppressWarnings("unchecked")
+        MarginConverter<MarginResultDto> dummyConverter = mock(MarginConverter.class);
+        when(marginConverterFactory.getResultConverter())
+                .thenReturn(dummyConverter);
+
+        when(dummyConverter.convert(any(Margin.class)))
+                .thenAnswer(invocation -> {
+                    Margin m = invocation.getArgument(0);
+                    return MarginResultDto.builder()
+                            .marDate(m.getMarDate())
+                            .marAdMargin(m.getMarAdMargin())
+                            .marNetProfit(m.getMarNetProfit())
+                            .marReturnCost(m.getMarReturnCost())
+                            .build();
+                });
+
 
         // when stub 세팅
         when(marginRepository.findByCampaignIdAndDates(campaignId, start, end)).thenReturn(existingMargins);
@@ -766,6 +817,7 @@ class MarginServiceTest {
         when(netRepository.findDatesWithNetSalesByEmailAndDateRange(email, start, end)).thenReturn(netSalesDates);
         when(marginRepository.saveAll(anyList())).thenReturn(List.of(newMargin));
         doReturn(calculatedMargins).when(marginService).calculateMargin(anyList(), eq(campaignId), eq(email));
+
 
         // 실행
         List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);

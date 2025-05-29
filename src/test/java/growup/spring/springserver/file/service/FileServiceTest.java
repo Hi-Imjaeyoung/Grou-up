@@ -1,21 +1,25 @@
 package growup.spring.springserver.file.service;
 
+import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.file.FileType;
 import growup.spring.springserver.file.domian.File;
 import growup.spring.springserver.file.dto.FileResDto;
+import growup.spring.springserver.file.dto.FileResponseDto;
 import growup.spring.springserver.file.repository.FileRepository;
+import growup.spring.springserver.login.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -31,57 +35,68 @@ class FileServiceTest {
 
 
     @Test
-    void getFileHistory_Success() {
-        // given
-        String email = "test@example.com";
-        FileType fileType = FileType.ADVERTISING_REPORT;
-        File mockFile = new File(1L, "testFile", LocalDateTime.now(), 10L, 5L, 2L, fileType, null);
+    @DisplayName("getFileHistory_getFileTypeMapMap: 성공 케이스")
+    void getFileHistory_getFileTypeMapMap_success() {
+        Member member = getMember();
+        List<File> files = List.of(
+                File.builder().id(1L).member(member).fileName("file1.txt").fileUploadDate(LocalDate.of(2024,11,11)).fileType(FileType.ADVERTISING_REPORT).build(),
+                File.builder().id(2L).member(member).fileName("file2.txt").fileUploadDate(LocalDate.of(2024,11,11)).fileType(FileType.NET_SALES_REPORT).build(),
+                File.builder().id(1L).member(member).fileName("file3.txt").fileUploadDate(LocalDate.of(2024,11,12)).fileType(FileType.ADVERTISING_REPORT).build(),
+                File.builder().id(2L).member(member).fileName("file4.txt").fileUploadDate(LocalDate.of(2024,11,13)).fileType(FileType.NET_SALES_REPORT).build(),
+                File.builder().id(1L).member(member).fileName("file5.txt").fileUploadDate(LocalDate.of(2024,11,13)).fileType(FileType.ADVERTISING_REPORT).build()
+        );
+//        Ad = 3개 Net = 2개
 
-        when(fileRepository.findByFileTypeAndMember_Email(fileType, email))
-                .thenReturn(List.of(mockFile));
+        Map<FileType, Map<LocalDate, List<FileResponseDto>>> grouped =
+                fileService.getFileTypeMapMap(files);
 
-        // when
-        List<FileResDto> result = fileService.getFileHistory(fileType, email);
+        assertThat(grouped).hasSize(2);
+        assertThat(grouped.get(FileType.ADVERTISING_REPORT)).hasSize(3);
+        assertThat(grouped.get(FileType.NET_SALES_REPORT)).hasSize(2);
 
-        // then
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("testFile", result.get(0).getFileName());
-        verify(fileRepository, times(1)).findByFileTypeAndMember_Email(fileType, email);
+        Map<LocalDate, List<FileResponseDto>> adv = grouped.get(FileType.ADVERTISING_REPORT);
+
+        assertThat(adv.keySet()).containsExactlyInAnyOrder(
+                LocalDate.of(2024,11,11),
+                LocalDate.of(2024,11,12),
+                LocalDate.of(2024,11,13)
+        );
     }
 
     @Test
-    void getFileHistory_EmptyResult() {
-        // given
-        String email = "test@example.com";
-        FileType fileType = FileType.ADVERTISING_REPORT;
-        when(fileRepository.findByFileTypeAndMember_Email(fileType, email))
-                .thenReturn(Collections.emptyList());
+    @DisplayName("getFileHistory: All suceess")
+    void getFileHistory() {
+        Member member = getMember();
 
-        // when
-        List<FileResDto> result = fileService.getFileHistory(fileType, email);
+        when(fileRepository.findByMember_EmailAndFileUploadDateBetween(
+                member.getEmail(), LocalDate.of(2024,11,11), LocalDate.of(2024,11,13)))
+                .thenReturn(List.of(
+                        File.builder().id(1L).member(member).fileName("file1.txt").fileUploadDate(LocalDate.of(2024,11,11)).fileType(FileType.ADVERTISING_REPORT).build(),
+                        File.builder().id(2L).member(member).fileName("file2.txt").fileUploadDate(LocalDate.of(2024,11,11)).fileType(FileType.NET_SALES_REPORT).build(),
+                        File.builder().id(3L).member(member).fileName("file3.txt").fileUploadDate(LocalDate.of(2024,11,12)).fileType(FileType.ADVERTISING_REPORT).build(),
+                        File.builder().id(4L).member(member).fileName("file4.txt").fileUploadDate(LocalDate.of(2024,11,13)).fileType(FileType.NET_SALES_REPORT).build(),
+                        File.builder().id(5L).member(member).fileName("file5.txt").fileUploadDate(LocalDate.of(2024,11,13)).fileType(FileType.ADVERTISING_REPORT).build()
+                ));
 
-        // then
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(fileRepository, times(1)).findByFileTypeAndMember_Email(fileType, email);
+        FileResDto result = fileService.getFileHistory(member.getEmail(), LocalDate.of(2024,11,11), LocalDate.of(2024,11,13));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getAdvertisingReport()).hasSize(3);
+        assertThat(result.getNetSalesReport()).hasSize(2);
+        assertThat(result.getAdvertisingReport().keySet()).containsExactlyInAnyOrder(
+                LocalDate.of(2024,11,11),
+                LocalDate.of(2024,11,12),
+                LocalDate.of(2024,11,13)
+        );
+        assertThat(result.getNetSalesReport().keySet()).containsExactlyInAnyOrder(
+                LocalDate.of(2024,11,11),
+                LocalDate.of(2024,11,13)
+        );
+
     }
-
-    @Test
-    void getFileHistory_Exception() {
-        // given
-        String email = "test@example.com";
-        FileType fileType = FileType.ADVERTISING_REPORT;
-
-        when(fileRepository.findByFileTypeAndMember_Email(fileType, email))
-                .thenThrow(new RuntimeException("Database error"));
-
-        // when
-        List<FileResDto> result = fileService.getFileHistory(fileType, email);
-
-        // then
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(fileRepository, times(1)).findByFileTypeAndMember_Email(fileType, email);
+    public Member getMember() {
+        return Member.builder()
+                .email("test@test.com")
+                .build();
     }
 }

@@ -1,4 +1,10 @@
+import os
 from django.http import HttpResponse
 
 def index(request):
-    return HttpResponse("Hello, world!")
+
+    response_text = f"""
+    Hello, world!
+    """
+
+    return HttpResponse(response_text, content_type="text/plain")

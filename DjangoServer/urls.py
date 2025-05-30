@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from DjangoServer.lottoTest.views import upload_excel, upload_margin
+
+from DjangoServer.lottoTest.uploadMargin import upload_margin
+from DjangoServer.lottoTest.views import upload_excel
 from DjangoServer.views import  index
 
 urlpatterns = [

@@ -176,7 +176,7 @@ class Margin(models.Model):
         db_table = 'margin'
 
 class Category(models.Model):
-    cat_option_id = models.BigIntegerField(max_length=255,primary_key=True)
+    cat_option_id = models.BigIntegerField(primary_key=True)
     cat_ad_product_name = models.CharField(max_length=255)
     cat_detail = models.CharField(max_length=255)
 
@@ -184,3 +184,24 @@ class Category(models.Model):
         return f"Category ID: {self.id}"
     class Meta:
         db_table = 'category'
+
+
+class FileType(models.TextChoices):
+    ADVERTISING_REPORT = 'ADVERTISING_REPORT', '광고보고서'
+    NET_SALES_REPORT = 'NET_SALES_REPORT', '마진보고서'
+
+class File(models.Model):
+    id = models.AutoField(primary_key=True)
+    file_name = models.CharField(max_length=255)
+    file_upload_date = models.DateField()  # ✅ 변경됨
+    file_all_count = models.BigIntegerField()
+    file_new_count = models.BigIntegerField()
+    file_duplicate_count = models.BigIntegerField()
+    file_type = models.CharField(max_length=20, choices=FileType.choices)
+    email = models.ForeignKey(Member, on_delete=models.CASCADE, db_column='email')
+
+    def __str__(self):
+        return f"File ID: {self.id}"
+    class Meta:
+        db_table = 'file'
+

@@ -1,5 +1,5 @@
+from django.utils import timezone
 import json
-from csv import excel
 from datetime import datetime
 import time
 import re
@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail, \
-    Margin, NetSales, MarginType
+    Margin, NetSales, MarginType, File, FileType
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
@@ -29,108 +29,19 @@ def upload_excel(request):
     return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
-
-
-@csrf_exempt
-def upload_margin(request):
-    if request.method == 'POST':
-        form = ExcelFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            # handle_upload_margin에서 반환된 값을 그대로 반환
-            return handle_upload_margin(request, form)
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Failed to upload margin file.'}, status=500)
-
-    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
-
-
-def handle_upload_margin(request, form):
-    uploaded_file = request.FILES['file']
-
-    # 1️⃣ 파일명에서 날짜 추출
-    file_name = uploaded_file.name
-    date_pattern = r'(\d{4}-\d{2}-\d{2})|(\d{8})'
-    date_match = re.search(date_pattern, file_name)
-
-    if date_match:
-        date_str = date_match.group()
-        # 날짜 형식에 따라 파싱
-        if '-' in date_str:
-            net_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        else:
-            net_date = datetime.strptime(date_str, '%Y%m%d').date()
-    print(net_date)
-    # 2️⃣ 엑셀 파일 읽기
-    df = pd.read_excel(uploaded_file)
-    df = df.iloc[:-1]
-
-    # 3️⃣ 옵션명+상품타입 기준으로 순판매금액과 순판매수 합산
-    df_grouped = df.groupby(['옵션명', '상품타입'], as_index=False).agg({
-        '순 판매 금액(전체 거래 금액 - 취소 금액)': 'sum',
-        '순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)': 'sum',
-        '총 취소 상품 수': 'sum'
-    })
-
-    # 4️⃣ 로그인한 유저 가져오기
-    email = some_protected_view(request)
-    member = get_object_or_404(Member, email=email)
-
-    # 5️⃣ 데이터베이스 저장 (업데이트 or 새로 생성)
-    for _, row in df_grouped.iterrows():
-        product_name = row['옵션명']
-        product_type = row['상품타입']
-        total_sales_amount = row['순 판매 금액(전체 거래 금액 - 취소 금액)']
-        total_sales_count = row['순 판매 상품 수(전체 거래 상품 수 - 취소 상품 수)']
-        total_return_count = row['총 취소 상품 수']
-
-        if total_sales_count == 0 and total_return_count ==0:
-            continue
-        # 상품 타입을 데이터베이스에 저장할 형식으로 변환
-        if product_type == '로켓그로스':
-            net_type = MarginType.ROCKET_GROWTH.value
-        elif product_type == '판매자배송':
-            net_type = MarginType.SELLER_DELIVERY.value
-        else:
-            continue  # 알 수 없는 상품 타입은 무시
-        # 같은 날짜 + 옵션명+상품타입이 있는지 확인
-        try:
-            net_sales = NetSales.objects.get(
-                net_product_name=product_name,
-                net_type=net_type,
-                net_date=net_date,
-                email=member
-            )
-            # 이미 존재하는 경우 업데이트
-            net_sales.net_sales_count = total_sales_count
-            net_sales.net_sales_amount = total_sales_amount
-            net_sales.net_return_count = total_return_count
-            net_sales.net_type = net_type
-            net_sales.save()
-        except NetSales.DoesNotExist:
-            # 존재하지 않으면 새로 생성
-            net_sales = NetSales(
-                net_product_name=product_name,
-                net_type=net_type,
-                net_sales_count=total_sales_count,
-                net_sales_amount=total_sales_amount,
-                net_return_count=total_return_count,
-                net_date=net_date,
-                email=member
-            )
-            net_sales.save()
-
-    # 데이터를 'data'로 추가하여 render할 때 반환
-    return JsonResponse({'status': 'success', 'message': 'Margin file uploaded successfully.'}, status=200)
-
-
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위
+    uploaded_file = request.FILES['file']
+
+    file_name = uploaded_file.name
 
     email = some_protected_view(request)
     member = get_object_or_404(Member, email=email)
+
     logger.info(f"Member Info: Email={member.email}")
 
-    excel = pd.read_excel(request.FILES['file'], dtype={'날짜': str})
+    excel = pd.read_excel(uploaded_file, dtype={'날짜': str})
+
     aggregated_data, keyword_data, margin_data = aggregate_data(excel, member)
     with transaction.atomic():  # 트랜잭션 시작
         save_campaign_option_details(aggregated_data)
@@ -140,21 +51,24 @@ def handle_excel_upload(request, form):
     time_taken = end_time - start_time
 
     total_count = excel.shape[0]
+
     print(f"엑셀 총 row = {total_count}")
     print(f"합쳐저서 들어간 총 데이터 = {insert_count}")
     print(f"중복 데이터 = {duplicate_count}")
 
     print(f"Time taken: {time_taken} milliseconds")
 
-    return render(request, 'upload_excel.html',
-                  {'form': form,
-                   'data': excel.to_html(),
-                   'summary': {
-                       'total_count': total_count,
-                       'insert_count': insert_count,
-                       'duplicate_count': duplicate_count,
-                   }})
+    file_type = FileType.ADVERTISING_REPORT.value
 
+    save_file(member,file_name,total_count,insert_count,duplicate_count,file_type)
+
+    return JsonResponse({'status': 'success',
+                         'data' : {
+                             'total_count' : total_count,
+                             'insert_count' : insert_count,
+                             'duplicate_count' : duplicate_count,
+                         },
+                         'message': 'Margin file uploaded successfully.'}, status=200)
 
 def aggregate_data(excel, member):
     aggregated_data = {}
@@ -174,8 +88,7 @@ def aggregate_data(excel, member):
         if pd.isna(key_keyword):
             key_keyword = "-"
         else:
-            # 공백 제거 및 띄어쓰기 없이 처리
-            key_keyword = str(key_keyword).replace(" ", "")
+            key_keyword = str(key_keyword)
 
         keyword_key = (cop_date, campaign.campaign_id, key_keyword)
         update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type)
@@ -226,6 +139,7 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
             'mar_actual_sales': 0,
             'mar_sales': 0,
             'mar_return_cost' : 0,
+            'mar_return_count' : 0,
             'campaign': campaign,
         }
     margin_data[margin_key]['mar_impressions'] += row['노출수']
@@ -337,8 +251,9 @@ def save_margin(margin_data):
     for key, data in margin_data.items():
         existing_margin = existing_margins_map.get((data['mar_date'], data['campaign'].campaign_id))
         if existing_margin:
+
             # 기존 Margin 업데이트
-            existing_margin.mar_ad_budget = data['mar_ad_budget']
+            # existing_margin.mar_ad_budget = data['mar_ad_budget']
             existing_margin.mar_impressions = data['mar_impressions']
             existing_margin.mar_clicks = data['mar_clicks']
             existing_margin.mar_ad_conversion_sales = data['mar_ad_conversion_sales']
@@ -346,7 +261,7 @@ def save_margin(margin_data):
             existing_margin.mar_ad_cost = data['mar_ad_cost']
             # existing_margin.mar_ad_margin = data['mar_ad_margin']
             # existing_margin.mar_net_profit = data['mar_net_profit']
-            existing_margin.mar_target_efficiency = data['mar_target_efficiency']
+            # existing_margin.mar_target_efficiency = data['mar_target_efficiency']
             existing_margin.mar_sales = data['mar_sales']
 
             existing_margin.mar_return_cost = existing_margin.mar_return_cost
@@ -355,9 +270,8 @@ def save_margin(margin_data):
 
 
             # existing_margin.mar_actual_sales = data['mar_actual_sales']
-            # existing_margin.mar_return_count = data['mar_return_count']
+            existing_margin.mar_return_count = data['mar_return_count']
             buffer_update.append(existing_margin)
-
         else:
             # 새 Margin 생성
             buffer_create.append(Margin(
@@ -374,6 +288,7 @@ def save_margin(margin_data):
                 mar_target_efficiency=data['mar_target_efficiency'],
                 mar_actual_sales=data['mar_actual_sales'],
                 mar_return_cost =data['mar_return_cost'],
+                mar_return_count = data['mar_return_count'],
                 mar_sales=data['mar_sales'],
             ))
 
@@ -432,6 +347,27 @@ def save_keywords(keyword_data):
     Keyword.objects.bulk_create(buffer)
     return insert_count, duplicate_count
 
+
+def save_file(member, file_name,
+              file_all_count, file_new_count,
+              file_duplicate_count, file_type):
+    """
+    member+file_type+file_name 조합으로 파일 레코드를 조회해서,
+    - 없으면 새로 만들고 created=True
+    - 있으면 그냥 조회만 하고 created=False
+    """
+    file_record, created = File.objects.get_or_create(
+        email     = member,
+        file_type = file_type,
+        file_name = file_name,
+        defaults={
+            'file_upload_date'     : timezone.localdate(),
+            'file_all_count'       : file_all_count,
+            'file_new_count'       : file_new_count,
+            'file_duplicate_count' : file_duplicate_count,
+        }
+    )
+    return file_record, created
 
 def get_or_create_campaign(row, member):
     campaign_id = row['캠페인 ID']

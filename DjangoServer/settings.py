@@ -2,18 +2,16 @@ from pathlib import Path
 import os
 import environ
 
-# BASE_DIR 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 환경 변수 설정
+# .env 파일 로드
 env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-db_engine = os.environ["DB_ENGINE"]
-db_host = os.environ["DB_HOST"]
-db_name = os.environ["DB_NAME"]
-db_user = os.environ["DB_USER"]
-db_password = os.environ["DB_PASSWORD"]
-db_port = os.environ["DB_PORT"]
+# 환경 변수
+DEBUG = env("DEBUG")
+SECRET_KEY = env("SECRET_KEY")
+ALLOWED_HOSTS = ["*"]  # 배포 시 도메인 제한 권장
 
 # 환경 변수에서 값 가져오기 (없으면 기본값 사용)
 DEBUG = os.environ.get("DEBUG", env("DEBUG", default=False))
@@ -48,21 +46,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "DjangoServer.urls"
 
-# 데이터베이스 설정
+
+# 데이터베이스 설정 (MySQL 기준)
 DATABASES = {
     "default": {
         "ENGINE": env("DB_ENGINE", default="django.db.backends.mysql"),
-        "NAME": env("DB_NAME", default="grouup"),
-        "USER": env("DB_USER", default="grouup"),
-        "PASSWORD": env("DB_PASSWORD", default=""),
-        "HOST": env("DB_HOST", default="localhost"),
-        "PORT": env("DB_PORT", default="3306"),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'collation': 'utf8mb4_general_ci',
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "collation": "utf8mb4_general_ci",
         },
     }
-
 }
 
 TEMPLATES = [

@@ -1,7 +1,7 @@
 {
     "dev": {
         "aws_region": "ap-northeast-2",
-        "django_settings": "DjangoServer.settings",
+        "django_settings": "DjangoServer.settingsdev",
         "exclude": [
             "boto3",
             "dateutil",

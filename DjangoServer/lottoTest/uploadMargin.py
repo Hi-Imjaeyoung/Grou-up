@@ -17,18 +17,18 @@ logger = logging.getLogger(__name__)
 
 # 옵션별 집계에 사용할 컬럼명 상수
 GROUP_BY_FIELDS = [
-    '옵션명/Option Name/选项名称',
-    '판매방식/Sales Method/销售方式',
+    '옵션명',
+    '판매방식',
 ]
 
 AGG_COLS = {
-    '총 매출(원)/Total Transaction amount(₩)/总销售额(₩)': 'sum',
-    '총 판매수/Total Units Sold/购买总量': 'sum',
-    '총 취소된 상품수/Total Number of Cancellation Units/取消销售数量': 'sum',
-    '판매량/Units Sold/购买数量': 'sum',
-    '방문자/Visitors/商品页面访问人数': 'sum',
-    '조회/Page Views/商品页面浏览次数': 'sum',
-    '장바구니/Add to Cart/加购数量': 'sum',
+    '총 매출(원)': 'sum',
+    '총 판매수': 'sum',
+    '총 취소된 상품수': 'sum',
+    '판매량': 'sum',
+    '방문자': 'sum',
+    '조회': 'sum',
+    '장바구니': 'sum',
 }
 
 # 판매방식 → DB enum 매핑
@@ -65,7 +65,6 @@ def _handle_upload_margin(request, form):
         df = df.iloc[:-1]
 
     df_grouped = df.groupby(GROUP_BY_FIELDS, as_index=False).agg(AGG_COLS)
-    print(df_grouped)
     total_groups = len(df_grouped)
 
     # 2️⃣ 회원 조회
@@ -85,15 +84,15 @@ def _handle_upload_margin(request, form):
 
     # 4️⃣ 반복문 돌면서 누적/생성 로직
     for _, row in df_grouped.iterrows():
-        name = row['옵션명/Option Name/选项名称']
-        raw_type = row['판매방식/Sales Method/销售方式']
-        sold = row['총 판매수/Total Units Sold/购买总量']
-        amount = row['총 매출(원)/Total Transaction amount(₩)/总销售额(₩)']
-        ret = row['총 취소된 상품수/Total Number of Cancellation Units/取消销售数量']
-        # units = row['판매량/Units Sold/购买数量']
-        # visitors = row['방문자/Visitors/商品页面访问人数']
-        # views = row['조회/Page Views/商品页面浏览次数']
-        # carts = row['장바구니/Add to Cart/加购数量']
+        name = row['옵션명']
+        raw_type = row['판매방식']
+        sold = row['총 판매수']
+        amount = row['총 매출(원)']
+        ret = row['총 취소된 상품수']
+        # units = row['판매량']
+        # visitors = row['방문자']
+        # views = row['조회']
+        # carts = row['장바구니']
         # 모두 0건이면 skip
         if sold == 0 and ret == 0:
             continue

@@ -1,5 +1,6 @@
 package growup.spring.springserver.login.controller;
 
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.global.error.ErrorResponseDto;
 import growup.spring.springserver.login.dto.request.LoginSignInReqDto;
@@ -57,7 +58,7 @@ public class MemberController {
     public ResponseEntity<CommonResponse<String>> signup(@Valid @RequestBody LoginSignUpReqDto loginCreateReqDto, BindingResult bindingResult) throws BindException {
         log.info("start signup");
         if (bindingResult.hasErrors()) {
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         memberService.signup(loginCreateReqDto);
 
@@ -77,7 +78,7 @@ public class MemberController {
     public ResponseEntity<CommonResponse<LoginResDto>> login(@Valid @RequestBody LoginSignInReqDto loginSignInReqDto, BindingResult bindingResult) throws BindException {
         log.info("start login check");
         if (bindingResult.hasErrors()) {
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         LoginResDto loginresDto = memberService.login(loginSignInReqDto);
 

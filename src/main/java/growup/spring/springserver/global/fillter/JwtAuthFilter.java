@@ -1,6 +1,7 @@
 package growup.spring.springserver.global.fillter;
 
 import growup.spring.springserver.global.config.JwtTokenProvider;
+import growup.spring.springserver.global.config.JwtTokenProviderImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends GenericFilter {
     private final transient JwtTokenProvider jwtTokenProvider;

@@ -77,31 +77,6 @@ public class KeywordServiceTest {
         }
     }
 
-    //기존 method 에서 분리
-    @Test
-    @DisplayName("checkDateFormat(): Error 1. 조회 시작날과 끝의 순서가 이상할 때")
-    void test2_1(){
-        //when
-        final LocalDate start = LocalDate.of(2024,12,14);
-        final LocalDate end = LocalDate.of(2023,1,14);
-        //given
-        final boolean result  = keywordService.checkDateFormat(start,end);
-        //then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    @DisplayName("checkDateFormat(): Success")
-    void test2_2(){
-        //when
-        final LocalDate start = LocalDate.of(2024,12,14);
-        final LocalDate end = LocalDate.of(2025,1,14);
-        //given
-        final boolean result  = keywordService.checkDateFormat(start,end);
-        //then
-        assertThat(result).isTrue();
-    }
-
     @DisplayName("getExclusionKeywordsToSet(): Error1. 제외키워드가 없을 경우")
     @Test
     void test3_1(){

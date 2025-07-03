@@ -252,7 +252,7 @@ class MarginControllerTest {
                 .with(csrf()));
         result.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.errorMessage").value("캠페인 ID를 입력해주세요.")
+                jsonPath("$.errorMessage").value("잘못된 요청 형식입니다.")
         );
     }
 
@@ -274,7 +274,7 @@ class MarginControllerTest {
                 .with(csrf()));
         result.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.errorMessage").value("1개 이상 수정해주세요.")
+                jsonPath("$.errorMessage").value("잘못된 요청 형식입니다.")
         );
     }
 

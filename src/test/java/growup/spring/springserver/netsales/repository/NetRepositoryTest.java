@@ -4,6 +4,7 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.netsales.domain.NetSales;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,13 @@ class NetRepositoryTest {
         netRepository.save(newNetSales(member, "방한마스크2", MarginType.ROCKET_GROWTH, 90L, 90L, 14L, LocalDate.of(2025, 01, 03)));
 
         netRepository.save(newNetSales(notmember, "방방마스크1", MarginType.ROCKET_GROWTH, 80L, 80L, 1L, LocalDate.of(2025, 01, 01)));
+
+        // 5개 중 4 개 삭제 되어야함
+        netRepository.save(newNetSales(member, "1", MarginType.SELLER_DELIVERY, 90L, 90L, 14L, LocalDate.of(2025, 01, 11)));
+        netRepository.save(newNetSales(member, "2", MarginType.SELLER_DELIVERY, 90L, 90L, 14L, LocalDate.of(2025, 01, 11)));
+        netRepository.save(newNetSales(member, "3", MarginType.SELLER_DELIVERY, 90L, 90L, 14L, LocalDate.of(2025, 01, 11)));
+        netRepository.save(newNetSales(member, "4", MarginType.SELLER_DELIVERY, 90L, 90L, 14L, LocalDate.of(2025, 01, 11)));
+        netRepository.save(newNetSales(member, "5", MarginType.SELLER_DELIVERY, 90L, 90L, 14L, LocalDate.of(2025, 01, 21)));
 
     }
 
@@ -121,6 +129,28 @@ class NetRepositoryTest {
                         LocalDate.of(2025, 1, 3)
                 )
         );
+    }
+
+    @Test
+    @DisplayName("deleteByMemberEmailAndNetDate - successCase")
+    void deleteByMemberEmailAndNetDate_successCase1() {
+        String email = "fa7271@naver.com";
+        LocalDate target = LocalDate.of(2025, 1, 11);
+
+        int result = netRepository.deleteByMemberEmailAndNetDate(email, target);
+
+        assertThat(result).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("deleteByMemberEmailAndNetDate - successCase2")
+    void deleteByMemberEmailAndNetDate_successCase2() {
+        String email = "fa7271@naver.com";
+        LocalDate target = LocalDate.of(2025, 1, 20);
+
+        int result = netRepository.deleteByMemberEmailAndNetDate(email, target);
+
+        assertThat(result).isZero();
     }
 
     private Member newMember(String email) {

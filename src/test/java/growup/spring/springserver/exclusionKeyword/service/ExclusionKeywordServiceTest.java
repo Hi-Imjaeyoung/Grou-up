@@ -72,6 +72,27 @@ public class ExclusionKeywordServiceTest {
         assertThat(result.getRequestData()).isEqualTo(2L);
     }
 
+    @DisplayName("addExclusionKeyword() : Success 2. null 키워드가 넘어올시 실패 처리")
+    @Test
+    void test1_4(){
+        //when
+        doReturn(getCampaign(1L,"campaign1")).when(campaignService).getMyCampaign(any(Long.class),any(String.class));
+        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword1");
+        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword2");
+        doReturn(getExclusionKeyword(1L,"exclusionKeyword1",getCampaign(1L,"campaign1")))
+                .when(exclusionKeywordRepository)
+                .save(any(ExclusionKeyword.class));
+        final List<String> keywords = new ArrayList<>();
+        keywords.add("exclusionKeyword1");
+        keywords.add("exclusionKeyword2");
+        keywords.add(null);
+        //given
+        final ExclusionKeywordResponseDto result = exclusionKeywordService.addExclusionKeyword(getExclusionRequestDto(keywords,1L),"Email");
+        //then
+        assertThat(result.getResponseData()).isEqualTo(1L);
+        assertThat(result.getRequestData()).isEqualTo(3L);
+    }
+
     @DisplayName("deleteExclusionKeyword() : Error1. 해당 제외키워드가 존재하지 않음")
     @Test
     void test2_1(){

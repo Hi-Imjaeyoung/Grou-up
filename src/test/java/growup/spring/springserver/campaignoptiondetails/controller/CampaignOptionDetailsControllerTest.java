@@ -1,29 +1,24 @@
 package growup.spring.springserver.campaignoptiondetails.controller;
 
-import com.nimbusds.jose.shaded.gson.Gson;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.campaignoptiondetails.dto.CampaignOptionDetailsResponseDto;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.global.config.JwtTokenProvider;
-import growup.spring.springserver.keyword.controller.KeywordController;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -52,17 +47,26 @@ class CampaignOptionDetailsControllerTest {
     @MockBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-    private Gson gson;
-
     @ParameterizedTest
-    @DisplayName("getCampaignDetails() : 파라미터 값 누락")
+    @DisplayName("getCampaignDetails() : 시작, 끝 날짜 관련 오류 검증")
     @WithAuthUser
-    @MethodSource("invalidGetCampaignDetailsUrl")
+    @CsvSource(value = {"/api/cod/getMyCampaignDetails?campaignId=1&startDate=2025-06-10&endDate=2024-06-11"
+            ,"/api/cod/getMyCampaignDetails?campaignId=1&startDate=2025-06-10&endDate=123"})
     void test(String url) throws Exception {
-
         ResultActions resultActions = mockMvc.perform(get(url)
                 .with(csrf()));
+        resultActions.andExpectAll(
+                status().isOk()
+        ).andDo(print());
+    }
 
+    @ParameterizedTest
+    @MethodSource("invalidGetCampaignDetailsUrl")
+    @DisplayName("getCampaignDetails() : campaignId누락")
+    @WithAuthUser
+    void test3(String url) throws Exception {
+        ResultActions resultActions = mockMvc.perform(get(url)
+                .with(csrf()));
         resultActions.andExpectAll(
                 status().isBadRequest()
         ).andDo(print());
@@ -70,10 +74,8 @@ class CampaignOptionDetailsControllerTest {
 
     static Stream<String> invalidGetCampaignDetailsUrl() {
         return Stream.of(
-                "/api/cod/getMyCampaignDetails",
-                "/api/cod/getMyCampaignDetails?start=2024-01-01",
-                "/api/cod/getMyCampaignDetails?campaignId=1",
-                "/api/cod/getMyCampaignDetails?start=2024-11-01&end=2024-12-31&campaignId=송보석"
+                "/api/cod/getMyCampaignDetails?start=2025-06-10&end=2026-06-11",
+                "/api/cod/getMyCampaignDetails?campaignId=송보석&start=2025-06-10&end=2026-06-11"
         );
     }
 
@@ -81,14 +83,11 @@ class CampaignOptionDetailsControllerTest {
     @Test
     @WithAuthUser
     void test2() throws Exception {
-        final String url = "/api/cod/getMyCampaignDetails?start=2024-01-01&end=2024-12-31&campaignId=1";
-
+        final String url = "/api/cod/getMyCampaignDetails?campaignId=1&start=2025-06-10&end=2025-06-11";
         doReturn(List.of(getCampaignOptionDetailsResponseDto()))
                 .when(campaignOptionDetailsService).getCampaignDetailsByCampaignsIds(any(LocalDate.class), any(LocalDate.class), any(Long.class));
-
         //given
         ResultActions resultActions = mockMvc.perform(get(url));
-
         //then
         resultActions.andDo(print());
 

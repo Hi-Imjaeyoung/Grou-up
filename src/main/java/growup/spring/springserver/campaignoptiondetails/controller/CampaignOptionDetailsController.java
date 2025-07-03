@@ -3,39 +3,45 @@ package growup.spring.springserver.campaignoptiondetails.controller;
 import growup.spring.springserver.campaignoptiondetails.dto.CampaignOptionDetailsResponseDto;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.global.common.CommonResponse;
-import lombok.AllArgsConstructor;
+import growup.spring.springserver.global.dto.req.DateRangeRequest;
+import jakarta.validation.Valid;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
+@Validated  // @ValidDateRange 검증 동작
 @RestController
-@AllArgsConstructor
-@RequestMapping("/api/cod")
+@RequestMapping("/api/cod/")
+@RequiredArgsConstructor
 public class CampaignOptionDetailsController {
 
     private final CampaignOptionDetailsService campaignOptionDetailsService;
 
     @GetMapping("/getMyCampaignDetails")
-    public ResponseEntity<CommonResponse<?>> getKeywordAboutCampaign(@RequestParam("start") LocalDate start,
-                                                                     @RequestParam("end") LocalDate end,
-                                                                     @RequestParam("campaignId") Long campaignId,
-                                                                     @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<CommonResponse<List<CampaignOptionDetailsResponseDto>>> getKeywordAboutCampaign(
+            @Valid @ModelAttribute DateRangeRequest dateRangeReq, // DTO 바인딩 + 검증
+            @RequestParam("campaignId") @NonNull Long campaignId
+    ) {
+        List<CampaignOptionDetailsResponseDto> campaignDetails =
+                campaignOptionDetailsService.getCampaignDetailsByCampaignsIds(
+                        dateRangeReq.getStart(),
+                        dateRangeReq.getEnd(),
+                        campaignId
+                );
 
-        List<CampaignOptionDetailsResponseDto> campaignDetailsByCampaignsIds = campaignOptionDetailsService.getCampaignDetailsByCampaignsIds(start, end, campaignId);
-
-        return new ResponseEntity<>(CommonResponse
-                .<List<CampaignOptionDetailsResponseDto>>builder("success : getMyCampaignDetails")
-                .data(campaignDetailsByCampaignsIds)
-                .build(), HttpStatus.OK);
-
+        return new ResponseEntity<>(
+                CommonResponse.<List<CampaignOptionDetailsResponseDto>>builder("success : getMyCampaignDetails")
+                        .data(campaignDetails)
+                        .build(),
+                HttpStatus.OK
+        );
     }
 }
 

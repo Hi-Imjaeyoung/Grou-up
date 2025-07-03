@@ -8,12 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/file")
@@ -33,6 +32,20 @@ public class FileController {
         return new ResponseEntity<>(CommonResponse
                 .<FileResDto>builder("success :getFileHistory")
                 .data(fileHistory)
+                .build(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteNetSalesFile")
+    public ResponseEntity<CommonResponse<List<Map<String,Integer>>>> deleteCampaign(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("id") Long id
+    ) {
+
+        List<Map<String, Integer>> maps = fileService.deleteNetSalesFile(userDetails.getUsername(), id);
+
+        return new ResponseEntity<>(CommonResponse
+                .<List<Map<String,Integer>>>builder("success : deleteNetSalesReport")
+                .data(maps)
                 .build(), HttpStatus.OK);
     }
 }

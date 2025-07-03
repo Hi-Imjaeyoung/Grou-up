@@ -16,9 +16,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class FileResDto {
     // 광고 리포트 (ADVERTISING_REPORT)
-    private Map<LocalDate, List<FileResponseDto>> advertisingReport;
-
+    private List<LocalDate> advertisingReport;
 
     // 순매출 리포트 (NET_SALES_REPORT)
-    private Map<LocalDate, List<FileResponseDto>> netSalesReport;
+    private Map<LocalDate, FileResponseDto> netSalesReport;
 }

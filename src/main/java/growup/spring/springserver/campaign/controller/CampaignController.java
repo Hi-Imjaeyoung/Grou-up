@@ -5,6 +5,7 @@ import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
 import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -15,7 +16,6 @@ import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.memo.service.MemoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,11 +65,11 @@ public class CampaignController {
     }
 
     @DeleteMapping("/deleteCampaign")
-    public ResponseEntity<CommonResponse<Integer>> deleteCampaign(@RequestBody @NotEmpty List<Long> campaignIds,
+    public ResponseEntity<CommonResponse<Integer>> deleteCampaign(@RequestBody List<Long> campaignIds,
                                                                  BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors() || campaignIds.isEmpty()){
             log.error(bindingResult.toString());
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         int deletedCampaignNumber = campaignService.deleteCampaign(campaignIds);
         return new ResponseEntity<>(CommonResponse.<Integer>builder("success delete")
@@ -82,7 +82,7 @@ public class CampaignController {
                                                                       BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors()){
             log.error(bindingResult.toString());
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         if(campaignDeleteDto.getEnd().isBefore(campaignDeleteDto.getStart())) throw new GrouException(ErrorCode.INVALID_DATE_FORMAT);
         Map<String,Integer> result = new HashMap<>();

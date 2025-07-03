@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,4 +72,5 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
     @Query("SELECT MAX(m.marDate) FROM Margin m WHERE m.campaign.member.email = :email")
     Optional<LocalDate> findLatestMarginDateByEmail(@Param("email") String email);
 
+    List<Margin> findAllByCampaignCampaignIdInAndMarDate(List<Long> campaignIds, LocalDate marDate);
 }

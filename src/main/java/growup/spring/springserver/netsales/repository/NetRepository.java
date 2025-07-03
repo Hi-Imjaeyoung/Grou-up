@@ -29,4 +29,6 @@ public interface NetRepository extends JpaRepository<NetSales, Long> {
             @Param("email") String email,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    int deleteByMemberEmailAndNetDate(String email, LocalDate netDate);
 }

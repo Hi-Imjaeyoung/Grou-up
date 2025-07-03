@@ -74,7 +74,7 @@ public class MemoControllerTest {
                 .with(csrf())); // 403 에러 해결을 위해 추가
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("메모할 캠패인 id를 보내야합니다.")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
     @DisplayName("메모 post 성공")
@@ -163,7 +163,7 @@ public class MemoControllerTest {
                 .with(csrf()));
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("수정할 내용을 보내야합니다.")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 
@@ -217,7 +217,7 @@ public class MemoControllerTest {
         );
     }
 
-    @DisplayName("특정 기간 내 메모 조회 실패 : 요청 값 누락")
+    @DisplayName("특정 기간 내 메모 조회 실패 : 요청 값 누락 (날짜 관련)")
     @ParameterizedTest
     @WithAuthUser
     @MethodSource("GetMemoByDateIncorrectParam")
@@ -235,15 +235,25 @@ public class MemoControllerTest {
                     .param("campaignId", String.valueOf(campaignId)));
         }
         resultActions.andExpectAll(
-                status().isBadRequest(),
-                jsonPath("errorMessage").value("잘못된 요청값 입니다.")
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
         ).andDo(print());
     }
     public static Stream<Arguments> GetMemoByDateIncorrectParam(){
         return Stream.of(
                 Arguments.of("","2012-01-01",1L),
-                Arguments.of("2012-01-01","",1L),
-                Arguments.of("2012-01-01","2012-01-05",null));
+                Arguments.of("2012-01-01","",1L));
+    }
+    @DisplayName("특정 기간 내 메모 조회 실패 : 요청 값 누락 (Id 누락)")
+    @Test
+    @WithAuthUser
+    void findMemoByDateAndCampaignId_2() throws Exception {
+        String url = "/api/memo/getMemoByDate?start=2012-01-01&&end=2012-01-05";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url));
+        resultActions.andExpectAll(
+                status().isBadRequest() ,
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
+        ).andDo(print());
     }
     @DisplayName("특정 기간 내 메모 조회 성공")
     @Test

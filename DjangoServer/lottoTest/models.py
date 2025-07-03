@@ -167,6 +167,8 @@ class Margin(models.Model):
     mar_target_efficiency = models.FloatField()  # 목표 효율성
 
     mar_actual_sales = models.BigIntegerField()  # 실제 판매 수
+    mar_updated = models.BooleanField(default=False)  # 업데이트 여부
+
 
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, db_column='campaign_id')
 
@@ -193,7 +195,9 @@ class FileType(models.TextChoices):
 class File(models.Model):
     id = models.AutoField(primary_key=True)
     file_name = models.CharField(max_length=255)
-    file_upload_date = models.DateField()  # ✅ 변경됨
+    file_upload_date = models.DateField()  # ✅ 데이터 넣은날
+    file_start_date = models.DateField()  # ✅ 데이터 시작날
+    file_end_date = models.DateField()  # ✅ 데이터 끝나는날
     file_all_count = models.BigIntegerField()
     file_new_count = models.BigIntegerField()
     file_duplicate_count = models.BigIntegerField()

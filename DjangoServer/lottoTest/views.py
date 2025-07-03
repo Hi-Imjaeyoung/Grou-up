@@ -1,3 +1,5 @@
+import os
+
 from django.utils import timezone
 import json
 from datetime import datetime
@@ -29,11 +31,29 @@ def upload_excel(request):
     return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
 
 
+def extract(file_name):
+    base = os.path.splitext(os.path.basename(file_name))[0]
+
+    # 2️⃣ 정규식으로 마지막 두 개의 8자리 숫자 그룹 찾기
+    m = re.search(r'_(\d{8})_(\d{8})$', base)
+    if not m:
+        return JsonResponse({'status': 'error', 'message': 'Failed to upload Excel file.'}, status=500)
+
+    start_str, end_str = m.group(1), m.group(2)
+
+    # 3️⃣ 문자열 → date 객체
+    start_date = datetime.strptime(start_str, '%Y%m%d').date()
+    end_date = datetime.strptime(end_str, '%Y%m%d').date()
+
+    return start_date, end_date
+
+
 def handle_excel_upload(request, form):
     start_time = time.time() * 1000  # 밀리세컨드 단위
     uploaded_file = request.FILES['file']
 
     file_name = uploaded_file.name
+    start, end = extract(file_name)
 
     email = some_protected_view(request)
     member = get_object_or_404(Member, email=email)
@@ -60,7 +80,13 @@ def handle_excel_upload(request, form):
 
     file_type = FileType.ADVERTISING_REPORT.value
 
-    save_file(member,file_name,total_count,insert_count,duplicate_count,file_type)
+    save_file(member,file_name,total_count,insert_count,duplicate_count,file_type, start, end)
+
+    Margin.objects.filter(
+        mar_date__range=(start, end),
+        campaign__email=member
+    ).update(mar_updated=True)
+
 
     return JsonResponse({'status': 'success',
                          'data' : {
@@ -152,7 +178,7 @@ def update_margin_data(margin_data, margin_key, row, campaign, cop_date):
 
 def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_keyword, cop_search_type):
     key_exclude_flag = row.get('제외여부', False)
-    cv_option_id = row['광고전환매출발생 상품명']  
+    cv_option_id = row['광고전환매출발생 상품명']
     orders = row['총 판매수량(14일)']  # 판매 수량
     if keyword_key not in keyword_data:
         keyword_data[keyword_key] = {
@@ -253,24 +279,13 @@ def save_margin(margin_data):
         if existing_margin:
 
             # 기존 Margin 업데이트
-            # existing_margin.mar_ad_budget = data['mar_ad_budget']
             existing_margin.mar_impressions = data['mar_impressions']
             existing_margin.mar_clicks = data['mar_clicks']
             existing_margin.mar_ad_conversion_sales = data['mar_ad_conversion_sales']
             existing_margin.mar_ad_conversion_sales_count = data['mar_ad_conversion_sales_count']
             existing_margin.mar_ad_cost = data['mar_ad_cost']
-            # existing_margin.mar_ad_margin = data['mar_ad_margin']
-            # existing_margin.mar_net_profit = data['mar_net_profit']
-            # existing_margin.mar_target_efficiency = data['mar_target_efficiency']
             existing_margin.mar_sales = data['mar_sales']
 
-            existing_margin.mar_return_cost = existing_margin.mar_return_cost
-            existing_margin.mar_net_profit = existing_margin.mar_net_profit
-            existing_margin.mar_ad_margin = existing_margin.mar_ad_margin
-
-
-            # existing_margin.mar_actual_sales = data['mar_actual_sales']
-            existing_margin.mar_return_count = data['mar_return_count']
             buffer_update.append(existing_margin)
         else:
             # 새 Margin 생성
@@ -350,13 +365,9 @@ def save_keywords(keyword_data):
 
 def save_file(member, file_name,
               file_all_count, file_new_count,
-              file_duplicate_count, file_type):
-    """
-    member+file_type+file_name 조합으로 파일 레코드를 조회해서,
-    - 없으면 새로 만들고 created=True
-    - 있으면 그냥 조회만 하고 created=False
-    """
-    file_record, created = File.objects.get_or_create(
+              file_duplicate_count, file_type,
+              start_date, end_date):
+    file_record, created = File.objects.update_or_create(
         email     = member,
         file_type = file_type,
         file_name = file_name,
@@ -365,9 +376,30 @@ def save_file(member, file_name,
             'file_all_count'       : file_all_count,
             'file_new_count'       : file_new_count,
             'file_duplicate_count' : file_duplicate_count,
+            'file_start_date'           : start_date,
+            'file_end_date'             : end_date
         }
     )
     return file_record, created
+def save_file_for_netSales(member, start_date, end_date,
+                        file_all_count, file_new_count,
+                        file_duplicate_count, file_type, file_name):
+    """
+    이메일, 파일타입, 시작일, 종료일로 조회해서 update_or_create
+    """
+    return File.objects.update_or_create(
+        email           = member,
+        file_type       = file_type,
+        file_start_date = start_date,
+        file_end_date   = end_date,
+        defaults        = {
+            'file_name' : file_name,
+            'file_upload_date'     : timezone.localdate(),
+            'file_all_count'       : file_all_count,
+            'file_new_count'       : file_new_count,
+            'file_duplicate_count' : file_duplicate_count,
+        }
+    )
 
 def get_or_create_campaign(row, member):
     campaign_id = row['캠페인 ID']

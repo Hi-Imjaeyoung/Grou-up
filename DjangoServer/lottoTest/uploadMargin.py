@@ -5,13 +5,13 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from .models import Member, \
-    NetSales, MarginType, FileType
+    NetSales, MarginType, FileType, Margin
 from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
 import logging
 
-from .views import some_protected_view, save_file
+from .views import some_protected_view, save_file, save_file_for_netSales
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,7 @@ def upload_margin(request):
 def _handle_upload_margin(request, form):
     # 1️⃣ 파일 읽고 DataFrame 준비
     uploaded = form.cleaned_data['file']
+
     # 1️⃣.1 날짜 추출
     file_name_date = uploaded.name.split('_')[0]
 
@@ -73,14 +74,12 @@ def _handle_upload_margin(request, form):
 
     # 3️⃣ 기존 레코드 매핑
     net_date = datetime.strptime(file_name_date, '%Y-%m-%d').date()
-    existing = NetSales.objects.filter(net_date=net_date, email=member)
-    exist_map = {
-        (o.net_product_name, o.net_type): o
-        for o in existing
-    }
+
+    # 3.1️⃣ 기존 NetSales 전부 삭제
+    NetSales.objects.filter(net_date=net_date, email=member).delete()
+
     to_create = []
-    to_update = []
-    new_count = updated_count = 0
+    new_count = 0
 
     # 4️⃣ 반복문 돌면서 누적/생성 로직
     for _, row in df_grouped.iterrows():
@@ -98,55 +97,45 @@ def _handle_upload_margin(request, form):
             continue
 
         net_type = TYPE_MAP.get(raw_type)
+
         if not net_type:
             continue
-        key = (name, net_type)
-        if key in exist_map:
-            # 기존 레코드 덮어쓰기
-            obj = exist_map[key]
-            obj.net_sales_count = sold
-            obj.net_sales_amount = amount
-            obj.net_return_count = abs(ret)
-            # obj.units_sold =  units
-            # obj.visitors =  visitors
-            # obj.page_views =  views
-            # obj.cart_adds =  carts
 
-            to_update.append(obj)
-            updated_count += 1
-        else:
-            to_create.append(NetSales(
-                net_product_name=name,
-                net_type=net_type,
-                net_sales_count=sold,
-                net_sales_amount=amount,
-                net_return_count=abs(ret),
-                # units_sold=units,
-                # visitors=visitors,
-                # page_views=views,
-                # cart_adds=carts,
-                net_date=net_date,
-                email=member,
-            ))
-            new_count += 1
+        to_create.append(NetSales(
+            net_product_name=name,
+            net_type=net_type,
+            net_sales_count=sold,
+            net_sales_amount=amount,
+            net_return_count=abs(ret),
+            # units_sold=units,
+            # visitors=visitors,
+            # page_views=views,
+            # cart_adds=carts,
+            net_date=net_date,
+            email=member,
+        ))
+        new_count += 1
 
     # 5️⃣ bulk 작업
     with transaction.atomic():
         for i in range(0, len(to_create), CHUNK_SIZE):
             NetSales.objects.bulk_create(to_create[i:i + CHUNK_SIZE])
-
-        if to_update:
-            NetSales.objects.bulk_update(
-                to_update,
-                [
-                    'net_sales_count', 'net_sales_amount', 'net_return_count'
-                    # 'units_sold', 'visitors', 'page_views', 'cart_adds'
-                ]
-            )
-
-    file_record, created  = (
-        save_file(member, uploaded.name, total_groups, new_count, updated_count, FileType.NET_SALES_REPORT.value)
+    file_record, created = (
+        save_file_for_netSales(member,
+                               net_date,
+                               net_date,
+                               total_groups,
+                               new_count,
+                               new_count,
+                               FileType.NET_SALES_REPORT.value,
+                               uploaded)
+                               
     )
+
+    Margin.objects.filter(
+        mar_date=net_date,
+        campaign__email=member
+    ).update(mar_updated=True)
 
     if created:
         # 첫 등록된 파일
@@ -155,15 +144,13 @@ def _handle_upload_margin(request, form):
         # 이미 있던 파일
         message = "새로운 파일로 덮어쓰였습니다."
 
-    # 6️⃣ 결과 반환
-    preview = df_grouped.head(10).to_dict(orient='records')
     return JsonResponse({
         'status': 'success',
         'message': message,
         'data': {
             'file_all_count': total_groups,
             'upload_new_count': new_count,
-            'upload_duplicate_count': updated_count
+            'upload_duplicate_count': new_count
 
         }
     }, status=200)

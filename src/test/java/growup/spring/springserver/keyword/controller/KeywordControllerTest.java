@@ -45,7 +45,10 @@ public class KeywordControllerTest {
         final String url = "/api/keyword/getKeywordsAboutCampaign?start=2024-12-01&campaignId=1";
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
+        );
     }
 
     @Test
@@ -55,7 +58,11 @@ public class KeywordControllerTest {
         final String url = "/api/keyword/getKeywordsAboutCampaign?start=2024-12-01&end=20-11-01&campaignId=1";
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
+        );
+        resultActions.andDo(print());
     }
 
     @Test

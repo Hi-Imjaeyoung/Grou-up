@@ -4,9 +4,8 @@ import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.campaign.service.CampaignService;
-import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
-import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.exception.ErrorCode;
+import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.login.service.MemberService;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static growup.spring.springserver.keywordBid.service.KeywordBidServiceTest.getCampaign;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +45,7 @@ class CampaignServiceTest {
         doReturn(getMember()).when(memberService).getMemberByEmail(any(String.class));
         doReturn(new ArrayList<Campaign>()).when(campaignRepository).findAllByMember(any(Member.class));
         //when
-        final Exception result = assertThrows(CampaignNotFoundException.class,
+        final Exception result = assertThrows(GrouException.class,
                 ()->campaignService.getMyCampaigns("test@test.com"));
         //then
         assertThat(result.getMessage()).isEqualTo("현재 등록된 캠페인이 없습니다.");
@@ -57,9 +55,9 @@ class CampaignServiceTest {
     @DisplayName("getMyCampaigns(): ErrorCase2.해당 멤버를 찾지 못 할때")
     void test2(){
         //given
-        doThrow(new MemberNotFoundException()).when(memberService).getMemberByEmail(any(String.class));
+        doThrow(new GrouException(ErrorCode.MEMBER_NOT_FOUND)).when(memberService).getMemberByEmail(any(String.class));
         //when
-        final MemberNotFoundException result = assertThrows(MemberNotFoundException.class,
+        final GrouException result = assertThrows(GrouException.class,
                ()-> campaignService.getMyCampaigns("test@test.com"));
         //then
         assertThat(result.getMessage()).isEqualTo("존재하지 않는 회원입니다.");
@@ -94,7 +92,7 @@ class CampaignServiceTest {
         //given
         doReturn(Optional.empty()).when(campaignRepository).findByCampaignIdANDEmail(1L,"test@test.com");
         //when
-        CampaignNotFoundException result = assertThrows(CampaignNotFoundException.class,
+        GrouException result = assertThrows(GrouException.class,
                 ()-> campaignService.getMyCampaign(1L,"test@test.com"));
         //then
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.CAMPAIGN_NOT_FOUND);

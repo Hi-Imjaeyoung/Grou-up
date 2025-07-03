@@ -1,7 +1,8 @@
 package growup.spring.springserver.keyword.service;
 
-import growup.spring.springserver.exception.InvalidDateFormatException;
+import growup.spring.springserver.exception.global.InvalidDateFormatException;
 import growup.spring.springserver.exception.exclusionKeyword.ExclusionKeyNotFound;
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.keyword.CampaignKeywordNotFoundException;
 import growup.spring.springserver.exclusionKeyword.dto.ExclusionKeywordResponseDto;
 import growup.spring.springserver.exclusionKeyword.service.ExclusionKeywordService;
@@ -17,7 +18,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -33,7 +33,6 @@ public class KeywordService {
     @Autowired
     private KeywordBidService keywordBidService;
     public List<KeywordResponseDto> getKeywordsByCampaignId(LocalDate start, LocalDate end , Long campaignId){
-        if(!checkDateFormat(start,end)) throw new InvalidDateFormatException();
         List<Keyword> data = keywordRepository.findAllByDateANDCampaign(start,end,campaignId);
         List<KeywordResponseDto> result = checkKeyTypeExclusion(summeryKeywordData(data),getExclusionKeywordToSet(campaignId));
         checkKeyTypeKeywordBid(result,getBidKeywrodToSet(campaignId));
@@ -50,15 +49,6 @@ public class KeywordService {
         return exclusionKeywordResponseDtos.stream()
                 .map(ExclusionKeywordResponseDto::getExclusionKeyword)
                 .collect(Collectors.toSet());
-    }
-
-    public boolean checkDateFormat(LocalDate start , LocalDate end){
-        try{
-            if(start.isAfter(end)) throw new DataFormatException();
-        }catch (DateTimeParseException | DataFormatException e){
-           return false;
-        }
-        return true;
     }
 
     public HashMap<String,KeywordResponseDto> summeryKeywordData(List<Keyword> data){
@@ -107,7 +97,6 @@ public class KeywordService {
                                                                           LocalDate end,
                                                                           Long campaignId,
                                                                           List<KeywordBidDto> keys){
-        if(!checkDateFormat(start,end)) throw new InvalidDateFormatException();
         List<Keyword> data =
                 keywordRepository.findKeywordsByDateAndCampaignIdAndKeys(start,end,campaignId,keys.stream().map(KeywordBidDto::getKeyword).toList());
         return addBids(summeryKeywordData(data),keys);

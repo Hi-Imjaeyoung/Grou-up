@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @DataJpaTest
 class FileRepositoryTest {
@@ -29,54 +28,50 @@ class FileRepositoryTest {
         Member member = memberRepository.save(newMember("fa7271@naver.com"));
         Member member2 = memberRepository.save(newMember("windy7271@naver.com"));
 
-        fileRepository.save(newFile("test.txt", member, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 1)));
-        fileRepository.save(newFile("test3.txt", member, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 2)));
-        fileRepository.save(newFile("test2.txt", member, FileType.ADVERTISING_REPORT, LocalDate.of(2022, 10, 3)));
+        fileRepository.save(newFile("test4.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 4),LocalDate.of(2023, 10, 20)));
+        fileRepository.save(newFile("test5.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 5),LocalDate.of(2023, 10, 5)));
+        fileRepository.save(newFile("test6.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 6),LocalDate.of(2023, 10, 6)));
 
-        fileRepository.save(newFile("test4.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 4)));
-        fileRepository.save(newFile("test5.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 5)));
-        fileRepository.save(newFile("test6.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 6)));
+        fileRepository.save(newFile("test7.txt", member2, FileType.ADVERTISING_REPORT, LocalDate.of(2023, 10, 1),LocalDate.of(2023, 10,5)));
+        fileRepository.save(newFile("test8.txt", member2, FileType.NET_SALES_REPORT, LocalDate.of(2023, 10, 2),LocalDate.of(2023, 10, 2)));
+        fileRepository.save(newFile("test9.txt", member2, FileType.NET_SALES_REPORT, LocalDate.of(2023, 10, 6),LocalDate.of(2023, 10, 6)));
 
     }
 
     @Test
-    @DisplayName("findByFileTypeAndMember_Email(): Success case")
-    void test1() {
-        List<File> result = fileRepository.findByMember_EmailAndFileUploadDateBetween("fa7271@naver.com",LocalDate.of(2023,10,1),LocalDate.of(2023,11,29));
-        System.out.println("result = " + Arrays.toString(result.toArray()));
-        assertThat(result).hasSize(2);
+    @DisplayName("findByFileUploadDateBetween - successCase1")
+    void findByFileUploadDateBetween_success() {
+        LocalDate startDate = LocalDate.of(2023, 10, 3);
+        LocalDate endDate = LocalDate.of(2023, 10, 5);
 
-        assertAll(
-                () -> assertThat(result.get(0).getFileName()).isEqualTo("test.txt"),
-                () -> assertThat(result.get(1).getFileName()).isEqualTo("test3.txt")
+        List<File> result = fileRepository.findByMemberEmailAndFileTypeAndFileStartDateLessThanEqualAndFileEndDateGreaterThanEqual(
+                "windy7271@naver.com",
+                FileType.ADVERTISING_REPORT,
+                endDate,
+                startDate
         );
+
+        assertThat(result)
+                .hasSize(3)
+                .allSatisfy(file -> {
+                    assertThat(file.getFileStartDate())
+                            .isBeforeOrEqualTo(endDate);
+                    assertThat(file.getFileEndDate())
+                            .isAfterOrEqualTo(startDate);
+                });
     }
 
-    @Test
-    @DisplayName("findByFileTypeAndMember_Email(): Failcase 1. 없는 아이디")
-    void test2() {
-        List<File> result = fileRepository.findByMember_EmailAndFileUploadDateBetween("nonexistent@naver.com", LocalDate.of(2023, 10, 1), LocalDate.of(2023, 11, 29));
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("findByFileTypeAndMember_Email(): Failcase 1. 데이터 없음")
-    void test3() {
-        List<File> result = fileRepository.findByMember_EmailAndFileUploadDateBetween("fa7271@naver.com", LocalDate.of(2024, 10, 1), LocalDate.of(2024, 11, 29));
-
-        assertThat(result).isEmpty();
-    }
 
     private Member newMember(String email) {
         return Member.builder().email(email).build();
     }
 
-    private File newFile(String fileName, Member member, FileType fileType, LocalDate localDate) {
+    private File newFile(String fileName, Member member, FileType fileType, LocalDate startDate, LocalDate endDate) {
         return File.builder()
                 .fileName(fileName)
                 .fileType(fileType)
-                .fileUploadDate(localDate)
+                .fileStartDate(startDate)
+                .fileEndDate(endDate)
                 .member(member)
                 .build();
     }

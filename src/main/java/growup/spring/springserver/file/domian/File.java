@@ -25,6 +25,12 @@ public class File {
     // 파일 업로드한 날짜
     private LocalDate fileUploadDate;
 
+    // 파일 시작 날짜
+    private LocalDate fileStartDate;
+
+    // 파일 종료 날짜
+    private LocalDate fileEndDate;
+
     // 엑셀파일 총 갯수
     private Long fileAllCount;
 

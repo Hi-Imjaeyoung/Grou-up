@@ -42,8 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(CampaignController.class)
@@ -119,7 +118,7 @@ public class CampaignControllerTest {
                         .with(csrf()));
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("잘못된 요청값 입니다.")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 

@@ -218,6 +218,35 @@ class MarginRepositoryTest {
 
 
     }
+
+    @Test
+    @DisplayName("findAllByCampaignCampaignIdInAndMarDate() : SuccessCase")
+    void findAllByCampaignCampaignIdInAndMarDate() {
+        // Given
+        List<Long> campaignIds = List.of(campaign1.getCampaignId(), campaign2.getCampaignId());
+        LocalDate marDate = LocalDate.of(2024, 11, 10);
+
+        // When
+        List<Margin> margins = marginRepository.findAllByCampaignCampaignIdInAndMarDate(campaignIds, marDate);
+
+        // Then
+        assertAll(
+                () -> assertThat(margins).hasSize(2),
+                () -> assertThat(margins).anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign1.getCampaignId())),
+                () -> assertThat(margins).anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign2.getCampaignId()))
+        );
+    }
+    @Test
+    @DisplayName("findAllByCampaignCampaignIdInAndMarDate() : SuccessCase2")
+    void findAllByCampaignCampaignIdInAndMarDate2() {
+        List<Long> campaignIds = List.of(campaign1.getCampaignId(), campaign2.getCampaignId());
+        LocalDate marDate = LocalDate.of(2024, 11, 29);
+        // When
+        List<Margin> margins = marginRepository.findAllByCampaignCampaignIdInAndMarDate(campaignIds, marDate);
+        // Then
+        assertThat(margins).isEmpty();
+        System.out.println("margins = " + margins);
+    }
     private Member newMember() {
         return Member.builder().email("test@test.com").build();
     }

@@ -1,6 +1,7 @@
 package growup.spring.springserver.margin.controller;
 
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.margin.dto.*;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -87,8 +89,11 @@ public class MarginController {
     // 기간 별 마진, 반품 비용 없데이트
     @PatchMapping("/marginUpdatesByPeriod")
     public ResponseEntity<CommonResponse<String>> marginUpdatesByPeriod(@Valid @RequestBody MfcRequestWithDatesDto mfcRequestWithDatesDto,
-                                                                        @AuthenticationPrincipal UserDetails userDetails) {
-
+                                                                        @AuthenticationPrincipal UserDetails userDetails,
+                                                                        BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new RequestException();
+        }
         marginService.marginUpdatesByPeriod(mfcRequestWithDatesDto, userDetails.getUsername());
 
         return ResponseEntity.ok(CommonResponse
@@ -133,7 +138,12 @@ public class MarginController {
     // 목표효율, 광고 예산 업데이트
     @PostMapping("/updateEfficiencyAndAdBudget")
     public ResponseEntity<CommonResponse<MarginUpdateResponseDto>> updateEfficiencyAndAdBudget(@Valid @RequestBody MarginUpdateRequestDtos marginUpdateRequestDtos,
-                                                                                               @AuthenticationPrincipal UserDetails userDetails) {
+                                                                                               @AuthenticationPrincipal UserDetails userDetails,
+                                                                                               BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new RequestException();
+        }
+
         MarginUpdateResponseDto marginUpdateResponseDto = marginService.updateEfficiencyAndAdBudget(marginUpdateRequestDtos);
 
         return new ResponseEntity<>(CommonResponse

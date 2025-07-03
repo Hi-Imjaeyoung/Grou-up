@@ -2,8 +2,10 @@ package growup.spring.springserver.memo.controller;
 
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.service.CampaignService;
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.memo.MemoNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
+import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.memo.*;
 import growup.spring.springserver.memo.domain.Memo;
 import growup.spring.springserver.memo.dto.MemoRequestDto;
@@ -21,7 +23,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class MemoController {
                                                                     @AuthenticationPrincipal UserDetails userDetails) throws BindException {
         if (bindingResult.hasErrors()) {
             log.info("bindExceptions is throw");
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         Campaign campaign = campaignService.getMyCampaign(memoRequestDto.getCampaignId(),userDetails.getUsername());
         Memo result = memoService.makeMemo(campaign,memoRequestDto);
@@ -65,7 +66,7 @@ public class MemoController {
     public ResponseEntity<CommonResponse<MemoResponseDto>> updateMemo(@Valid @RequestBody MemoUpdateRequestDto memoRequestDto,
                                                                       BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors()){
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         Memo result = memoService.updateMemo(memoRequestDto);
         return new ResponseEntity<>(CommonResponse.<MemoResponseDto>builder("update success")
@@ -87,10 +88,9 @@ public class MemoController {
     }
 
     @GetMapping("/getMemoByDate")
-    public ResponseEntity<CommonResponse<Map<String,List<String>>>> getMemoByDate(@RequestParam("start")LocalDate start,
-                                                                @RequestParam("end") LocalDate end,
-                                                                @RequestParam("campaignId") Long campaignId){
-        final Map<String,List<String>> map = memoService.getMemoByDateAndCampaign(start,end,campaignId);
+    public ResponseEntity<CommonResponse<Map<String,List<String>>>> getMemoByDate(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
+                                                                                  @RequestParam("campaignId") Long campaignId){
+        final Map<String,List<String>> map = memoService.getMemoByDateAndCampaign(dateRangeRequest.getStart(),dateRangeRequest.getEnd(),campaignId);
         return new ResponseEntity<>(CommonResponse.<Map<String,List<String>>>builder("get success")
                 .data(map)
                 .build(),HttpStatus.OK);

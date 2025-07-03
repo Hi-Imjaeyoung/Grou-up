@@ -81,4 +81,10 @@ public class TypeChangeMargin {
                 .marNetProfit(marginData.getMarNetProfit())
                 .build();
     }
+    public static MarginResponseDto createMarginResponseDto(Long campaignId, List<MarginResultDto> data) {
+        return MarginResponseDto.builder()
+                .campaignId(campaignId)
+                .data(data)
+                .build();
+    }
 }

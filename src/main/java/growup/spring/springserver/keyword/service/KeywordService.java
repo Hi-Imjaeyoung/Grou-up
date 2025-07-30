@@ -34,6 +34,7 @@ public class KeywordService {
     private KeywordBidService keywordBidService;
     public List<KeywordResponseDto> getKeywordsByCampaignId(LocalDate start, LocalDate end , Long campaignId){
         List<Keyword> data = keywordRepository.findAllByDateANDCampaign(start,end,campaignId);
+        System.out.println(data.toString());
         List<KeywordResponseDto> result = checkKeyTypeExclusion(summeryKeywordData(data),getExclusionKeywordToSet(campaignId));
         checkKeyTypeKeywordBid(result,getBidKeywrodToSet(campaignId));
         return result;
@@ -87,8 +88,11 @@ public class KeywordService {
     public List<KeywordResponseDto> addBids(HashMap<String,KeywordResponseDto> map,List<KeywordBidDto> keys){
         List<KeywordResponseDto> keywordResponseDtos = new ArrayList<>();
         for(KeywordBidDto dto : keys){
-            map.get(dto.getKeyword()).setBid(dto.getBid());
-            keywordResponseDtos.add(map.get(dto.getKeyword()));
+            // map에 없는 키워드를 찾아 null 발생
+            if(map.containsKey(dto.getKeyword())){
+                map.get(dto.getKeyword()).setBid(dto.getBid());
+                keywordResponseDtos.add(map.get(dto.getKeyword()));
+            }
         }
         return keywordResponseDtos;
     }
@@ -97,9 +101,13 @@ public class KeywordService {
                                                                           LocalDate end,
                                                                           Long campaignId,
                                                                           List<KeywordBidDto> keys){
-        List<Keyword> data =
-                keywordRepository.findKeywordsByDateAndCampaignIdAndKeys(start,end,campaignId,keys.stream().map(KeywordBidDto::getKeyword).toList());
-        return addBids(summeryKeywordData(data),keys);
+        try {
+            List<Keyword> data =
+                    keywordRepository.findKeywordsByDateAndCampaignIdAndKeys(start,end,campaignId,keys.stream().map(KeywordBidDto::getKeyword).toList());
+            return addBids(summeryKeywordData(data),keys);
+        }catch (CampaignKeywordNotFoundException e){
+            return List.of();
+        }
     }
 
     public Set<String > getBidKeywrodToSet(Long campaignId){
@@ -111,35 +119,6 @@ public class KeywordService {
         for(KeywordResponseDto key : data){
             if(!bidKey.isEmpty() && bidKey.contains(key.getKeyKeyword())) key.setKeyBidFlag(true);
         }
-    }
-
-    public KeywordTotalDataResDto getTotalData(LocalDate start,
-                                               LocalDate end,
-                                               Long campaignId){
-        List<Keyword> data = keywordRepository.findAllByDateANDCampaign(start,end,campaignId);
-        Map<LocalDate,KeywordResponseDto> search = new HashMap<>();
-        Map<LocalDate,KeywordResponseDto> nonSearch = new HashMap<>();
-        for(Keyword keyword : data){
-            //nonSearch
-            if(keyword.getKeyKeyword().equals("-")){
-                if(nonSearch.containsKey(keyword.getKeyDate())){
-                    nonSearch.get(keyword.getKeyDate()).update(keyword);
-                    continue;
-                }
-                nonSearch.put(keyword.getKeyDate(),TypeChangeKeyword.entityToResponseDto(keyword));
-                continue;
-            }
-            //search
-            if(search.containsKey(keyword.getKeyDate())){
-                search.get(keyword.getKeyDate()).update(keyword);
-                continue;
-            }
-            search.put(keyword.getKeyDate(),TypeChangeKeyword.entityToResponseDto(keyword));
-        }
-        return KeywordTotalDataResDto.builder()
-                .search(search)
-                .nonSearch(nonSearch)
-                .build();
     }
     @Transactional
     public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds,LocalDate start, LocalDate end){

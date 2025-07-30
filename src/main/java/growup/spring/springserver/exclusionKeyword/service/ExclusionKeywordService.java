@@ -52,8 +52,11 @@ public class ExclusionKeywordService {
                 .build();
     }
     public void saveNoExistExclusionKeyword(String keyword,Campaign campaign){
-        if(exclusionKeywordRepository.existsByExclusionKeyword(keyword))
+        if(exclusionKeywordRepository.existsByExclusionKeyword(keyword,campaign.getCampaignId())){
+            System.out.println(keyword);
             throw new ExistExclusionKeyword();
+        }
+
         ExclusionKeyword exclusionKeyword = ExclusionKeyword.builder()
                 .exclusionKeyword(keyword)
                 .campaign(campaign)

@@ -1,12 +1,13 @@
 package growup.spring.springserver.keywordBid.controller;
 
-import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.*;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.global.InvalidDateFormatException;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.global.RequestException;
+import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
 import growup.spring.springserver.keyword.service.KeywordService;
@@ -31,6 +32,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -65,7 +69,7 @@ public class KeywordBidControllerTest {
 
     @BeforeEach
     void set(){
-        gson = new Gson();
+         gson = GsonConfig.getGson();
     }
 
     @WithAuthUser
@@ -279,17 +283,31 @@ public class KeywordBidControllerTest {
     public KeywordResponseDto getKeywordResDto(){
         return KeywordResponseDto.builder()
                 .keyKeyword("keyword")
-                .keyAdcost(1.0)
-                .keyClickRate(0.8)
-                .keyClicks(10L)
-                .keyAdsales(1.0)
-                .keyCpc(1.0)
-                .keyCvr(1.0)
-                .keyImpressions(1L)
-                .keyRoas(1.0)
+                .adCost(1.0)
+                .clickRate(0.8)
+                .clicks(10L)
+                .adSales(1.0)
+                .cpc(1.0)
+                .cvr(1.0)
+                .impressions(1L)
+                .roas(1.0)
                 .keySearchType("test")
-                .keyTotalSales(1L)
+                .totalSales(1L)
                 .bid(100L)
                 .build();
+    }
+    class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        @Override
+        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(date.format(formatter));
+        }
+
+        @Override
+        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
+            return LocalDate.parse(json.getAsString(), formatter);
+        }
     }
 }

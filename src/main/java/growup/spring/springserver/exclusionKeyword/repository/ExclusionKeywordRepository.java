@@ -13,7 +13,9 @@ import java.util.List;
 @Repository
 public interface ExclusionKeywordRepository extends JpaRepository<ExclusionKeyword,Long> {
     List<ExclusionKeyword> findAllByCampaign_campaignId(Long campaignId);
-    Boolean existsByExclusionKeyword(String keyword);
+
+    @Query("SELECT count(e) > 0 FROM ExclusionKeyword e WHERE e.exclusionKeyword = :keyword AND e.campaign.campaignId = :campaignId")
+    boolean existsByExclusionKeyword(@Param("keyword") String keyword, @Param("campaignId") Long campaignId);
 
 
     @Modifying

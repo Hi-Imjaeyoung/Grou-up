@@ -2,6 +2,7 @@ package growup.spring.springserver.margin.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import growup.spring.springserver.annotation.WithAuthUser;
+import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.margin.dto.*;
@@ -44,6 +45,8 @@ class MarginControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MarginService marginService;
+    @MockBean
+    private CampaignService campaignService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
@@ -211,9 +214,9 @@ class MarginControllerTest {
                 new DailyMarginSummary("방한마스크2", 1100L, 100.0)
         );
 
-        doReturn(ResponsDto).when(marginService).getDailyMarginSummary(any(String.class), any(LocalDate.class));
+        doReturn(ResponsDto).when(marginService).getDailyMarginSummary(any(List.class), any(LocalDate.class), any(LocalDate.class));
 
-        final String url = "/api/margin/getDailyMarginSummary?date=2025-01-01";
+        final String url = "/api/margin/getDailyMarginSummary?start=2025-01-01&end=2025-01-31";
 
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));

@@ -1,19 +1,24 @@
 package growup.spring.springserver.campaign;
 
 import com.nimbusds.jose.shaded.gson.*;
+import growup.spring.springserver.campaign.service.CampaignAnalysisService;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.campaign.controller.CampaignController;
+import growup.spring.springserver.campaign.domain.Campaign;
+import growup.spring.springserver.campaign.dto.CampaignAnalysisDto;
 import growup.spring.springserver.campaign.dto.CampaignDeleteDto;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
+import growup.spring.springserver.campaign.dto.TotalCampaignsData;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
-import growup.spring.springserver.execution.dto.ExecutionResponseDto;
 import growup.spring.springserver.execution.service.ExecutionService;
+import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.keyword.service.KeywordService;
+import growup.spring.springserver.login.domain.Member;
+import growup.spring.springserver.login.service.MemberService;
 import growup.spring.springserver.margin.service.MarginService;
-import growup.spring.springserver.memo.MemoControllerTest;
 import growup.spring.springserver.memo.service.MemoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,11 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CampaignControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
+    @MockBean
+    private MemberService memberService;
     @MockBean
     private CampaignService campaignService;
     @MockBean
@@ -66,6 +72,8 @@ public class CampaignControllerTest {
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+    @MockBean
+    private CampaignAnalysisService campaignAnalysisService;
 
     @Test
     @DisplayName("getMyCampaigns : ErrorCase1.인가되지 않은 사용자 접근")
@@ -81,11 +89,12 @@ public class CampaignControllerTest {
     void test2() throws Exception {
         Gson gson = new Gson();
         final String url = "/api/campaign/getMyCampaigns";
+        doReturn(Member.builder().build()).when(memberService).getMemberByEmail(any(String.class));
         doReturn(List.of(
-                getCampaignResDto("name1",1L),
-                getCampaignResDto("name2",2L),
-                getCampaignResDto("name3",3L)
-        )).when(campaignService).getMyCampaigns("test@test.com");
+                Campaign.builder().campaignId(1L).camCampaignName("name1").build(),
+                Campaign.builder().campaignId(2L).camCampaignName("name2").build(),
+                Campaign.builder().campaignId(3L).camCampaignName("name3").build())
+        ).when(campaignService).getCampaignsByMember(any(Member.class));
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +106,7 @@ public class CampaignControllerTest {
                 jsonPath("data").isArray(), // data가 배열인지 확인
                 jsonPath("data[0].title").value("name1"), // 첫 번째 요소 검증
                 jsonPath("data[1].title").value("name2"), // 두 번째 요소 검증
-                jsonPath("data[2].title").value("name3") , // 세 번째 요소 검증
+                jsonPath("data[2].title").value("name3"), // 세 번째 요소 검증
                 jsonPath("data[0].campaignId").value(1L), // 첫 번째 요소 검증
                 jsonPath("data[1].campaignId").value(2L), // 두 번째 요소 검증
                 jsonPath("data[2].campaignId").value(3L)  // 세 번째 요소 검증
@@ -129,7 +138,7 @@ public class CampaignControllerTest {
         Gson gson = new Gson();
         doReturn(2).when(campaignService).deleteCampaign(any());
         final String url = "/api/campaign/deleteCampaign";
-        final List<Long> campaignIds = List.of(1L,2L);
+        final List<Long> campaignIds = List.of(1L, 2L);
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.delete(url)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -146,7 +155,7 @@ public class CampaignControllerTest {
     @DisplayName("캠패인 데이터 기간 삭제 API : 실패 body 값 누락")
     @MethodSource("provideInvalidCampaignDeleteRequests")
     void deleteCampaignData1(CampaignDeleteDto body) throws Exception {
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        Gson gson = GsonConfig.getGson();
         String url = "/api/campaign/deleteCampaignData";
 
         ResultActions resultActions = mockMvc.perform(
@@ -175,11 +184,12 @@ public class CampaignControllerTest {
                         .build())
         );
     }
+
     @Test
     @WithAuthUser
     @DisplayName("캠패인 데이터 기간 삭제 API : 실패 조회 기간 오류")
     void deleteCampaignData2() throws Exception {
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        Gson gson = GsonConfig.getGson();
         String url = "/api/campaign/deleteCampaignData";
         CampaignDeleteDto body = CampaignDeleteDto.builder()
                 .start(LocalDate.now())
@@ -203,13 +213,13 @@ public class CampaignControllerTest {
     @WithAuthUser
     @DisplayName("캠패인 데이터 기간 삭제 API : 성공")
     void deleteCampaignData3() throws Exception {
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        Gson gson = GsonConfig.getGson();
         String url = "/api/campaign/deleteCampaignData";
-        doReturn(1).when(keywordService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
-        doReturn(1).when(memoService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
-        doReturn(1).when(marginService).deleteKeywordByCampaignIdsAndDate(any(),any(),any());
+        doReturn(1).when(keywordService).deleteKeywordByCampaignIdsAndDate(any(), any(), any());
+        doReturn(1).when(memoService).deleteKeywordByCampaignIdsAndDate(any(), any(), any());
+        doReturn(1).when(marginService).deleteKeywordByCampaignIdsAndDate(any(), any(), any());
         doReturn(List.of(ExecutionMarginResDto.builder().build())).when(executionService).getMyExecutionData(any());
-        doReturn(1).when(campaignOptionDetailsService).deleteKeywordByExecutionIdsAndDate(any(),any(),any());
+        doReturn(1).when(campaignOptionDetailsService).deleteKeywordByExecutionIdsAndDate(any(), any(), any());
 
         CampaignDeleteDto body = CampaignDeleteDto.builder()
                 .start(LocalDate.now().minusDays(1))
@@ -232,25 +242,70 @@ public class CampaignControllerTest {
         ).andDo(print());
     }
 
-    public CampaignResponseDto getCampaignResDto(String name,Long id){
+    @Test
+    @WithAuthUser
+    void campaignAnalysisAPI() throws Exception {
+        doReturn(Member.builder()
+                .name("test")
+                .email("test@test.com")
+                .build())
+                .when(memberService).getMemberByEmail(any(String.class));
+        doReturn(makeTotalCampaignData())
+                .when(campaignAnalysisService)
+                .getMyAllCampaignsDataByDate(any(LocalDate.class), any(LocalDate.class), any(List.class));
+        String url = "/api/campaign/get/campaignTotalAnalysisData?start=2025-07-01&end=2025-07-26";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url));
+        resultActions.andExpectAll(status().isOk()).andDo(print());
+    }
+
+    public CampaignResponseDto getCampaignResDto(String name, Long id) {
         return CampaignResponseDto.builder()
                 .title(name)
                 .campaignId(id)
                 .build();
 
     }
-    class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
 
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        @Override
-        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(date.format(formatter));
-        }
-
-        @Override
-        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
-            return LocalDate.parse(json.getAsString(), formatter);
-        }
+    public TotalCampaignsData makeTotalCampaignData() {
+        Map<String, CampaignAnalysisDto> map = new HashMap<>();
+        map.put("CampaignAdType1", CampaignAnalysisDto.builder()
+                .adCost(100.0)
+                .adSales(200.0)
+                .build());
+        map.put("CampaignAdType2", CampaignAnalysisDto.builder()
+                .adCost(100.0)
+                .adSales(200.0)
+                .build());
+        map.put("CampaignAdType3", CampaignAnalysisDto.builder()
+                .adCost(100.0)
+                .adSales(200.0)
+                .build());
+        map.put("CampaignAdType4", CampaignAnalysisDto.builder()
+                .adCost(100.0)
+                .adSales(200.0)
+                .build());
+        Map<String, CampaignAnalysisDto> map2 = new HashMap<>();
+        map2.put("CampaignName1", CampaignAnalysisDto.builder()
+                .adCost(100.0)
+                .adSales(200.0)
+                .campAdType("campaignType1")
+                .build());
+        map2.put("CampaignName2", CampaignAnalysisDto.builder()
+                .adCost(50.0)
+                .adSales(250.0)
+                .campAdType("campaignType2")
+                .build());
+        map2.put("CampaignName3", CampaignAnalysisDto.builder()
+                .adCost(10.0)
+                .adSales(20.0)
+                .campAdType("campaignType3")
+                .build());
+        map2.put("CampaignName4", CampaignAnalysisDto.builder()
+                .adCost(1000.0)
+                .adSales(2000.0)
+                .campAdType("campaignType4")
+                .build());
+        return new TotalCampaignsData(map, map2);
     }
+
 }

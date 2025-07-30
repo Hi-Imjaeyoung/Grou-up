@@ -6,6 +6,7 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.margin.domain.Margin;
 import growup.spring.springserver.margin.dto.DailyAdSummaryDto;
+import growup.spring.springserver.margin.dto.MarginOverviewResponseDto;
 import jakarta.transaction.Transactional;
 import growup.spring.springserver.margin.dto.DailyNetProfitResponseDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +17,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -247,6 +246,60 @@ class MarginRepositoryTest {
         assertThat(margins).isEmpty();
         System.out.println("margins = " + margins);
     }
+
+    @Test
+    @DisplayName("findMarginOverviewByCampaignIdsAndDate () : successCase")
+    void findMarginOverviewByCampaignIdsAndDate_success() {
+
+        List<Long> campaignIds = List.of(
+                campaign1.getCampaignId(), campaign2.getCampaignId(),
+                campaign3.getCampaignId(), campaign4.getCampaignId()
+        );
+
+        LocalDate startDate = LocalDate.of(2024, 12,1 );
+        LocalDate endDate = LocalDate.of(2024, 12, 30);
+
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,1),campaign1,100.0,200.0,50L,100.0,30L,100.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,3),campaign2,100.0,200.0,50L,100.0,30L,500.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,5),campaign3,100.0,200.0,50L,100.0,30L,700.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,12),campaign1,100.0,200.0,50L,100.0,30L,600.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,11),campaign1,100.0,200.0,50L,100.0,30L,400.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,1,25),campaign4,100.0,200.0,50L,100.0,30L,700.0));
+
+
+        // 1일꺼 빼고 다 나옴
+
+        List<MarginOverviewResponseDto> marginOverviewByCampaignIdsAndDate = marginRepository.findMarginOverviewByCampaignIdsAndDate(startDate, endDate, campaignIds);
+
+        assertThat(marginOverviewByCampaignIdsAndDate)
+                .hasSize(3)
+                .extracting(MarginOverviewResponseDto::getCampaignId)
+                .containsExactly(campaign1.getCampaignId(), campaign3.getCampaignId(), campaign2.getCampaignId()); //
+
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getCampaignId()).
+                isEqualTo(campaign1.getCampaignId());
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarNetProfit()).isEqualTo(300.0);
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarReturnCost()).isEqualTo(600.0);
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarAdCost()).isEqualTo(300.0);
+        // 순이익 / 집행광고비 * 100
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarRoi()).isEqualTo(
+                (300.0 / 300.0) * 100);
+        assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarReturnRate()).isEqualTo(166.67);
+
+    }
+    private Margin dashBoardMargin(LocalDate date, Campaign campaign, Double marNetProfit, Double marReturnCost, Long marReturnCount, Double marAdCost, Long marAdConversionSalesCount, Double marSales) {
+        return Margin.builder()
+                .marDate(date)
+                .campaign(campaign)
+                .marReturnCost(marReturnCost)
+                .marNetProfit(marNetProfit)
+                .marReturnCount(marReturnCount)
+                .marAdCost(marAdCost)
+                .marAdConversionSalesCount(marAdConversionSalesCount)
+                .marSales(marSales)
+                .build();
+    }
+
     private Member newMember() {
         return Member.builder().email("test@test.com").build();
     }

@@ -12,6 +12,8 @@ import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -392,5 +395,54 @@ class MarginControllerTest {
                 .andExpect(jsonPath("$.data").value(mockDate.toString()));
 
         verify(marginService).findLatestMarginDateByEmail(any(String.class));
+    }
+
+    @ParameterizedTest
+    @DisplayName("getMarginOverview() : 날짜 검증 실패 케이스")
+    @WithAuthUser
+    @MethodSource("invalidDateRange")
+    void getMarginOverview_invalidDateRange(String url) throws Exception {
+        // When
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .with(csrf()));
+
+        // Then
+        result.andDo(print())
+                .andExpectAll(
+                status().isOk(),
+                jsonPath("$.message").value("요청 날짜 형식 오류로 인한 빈 값 리턴."));
+    }
+    static Stream<String> invalidDateRange() {
+        return Stream.of(
+                "/api/margin/getMarginOverview?start=2025-06-15&end=2025-06-09",
+                "/api/margin/getMarginOverview?start=2025-06-15"
+        );
+    }
+
+    @DisplayName("getMarginOverview() : 성공 케이스")
+    @WithAuthUser
+    @Test
+    void getMarginOverview_successCase() throws Exception {
+        final String url = "/api/margin/getMarginOverview?start=2025-06-15&end=2025-06-21";
+
+        List<MarginOverviewResponseDto> mockResponse = List.of(
+                new MarginOverviewResponseDto(1L, "Campaign 1", 1500.0, 200.0, 20.0, 50.0, 300.0, 10L, 50.0, 5L, 10.0),
+                new MarginOverviewResponseDto(2L, "Campaign 2", 1000.0, 300.0, 20.0, 60.0, 400.0, 15L, 60.0, 8L, 12.5)
+        );
+        doReturn(mockResponse).when(marginService).getMarginOverview(any(LocalDate.class), any(LocalDate.class), any(String.class));
+
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .with(csrf()));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : getMarginOverview"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].campaignId").value(1L))
+                .andExpect(jsonPath("$.data[1].campaignId").value(2L));
+
+
     }
 }

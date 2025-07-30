@@ -4,6 +4,7 @@ import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
+import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
@@ -15,12 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/margin")
 @Slf4j
@@ -202,6 +205,18 @@ public class MarginController {
         return ResponseEntity.ok(CommonResponse
                 .<LocalDate>builder("success : findLatestMarginDateByEmail")
                 .data(latestMarginDate)
+                .build());
+    }
+    @GetMapping("/getMarginOverview")
+    public ResponseEntity<CommonResponse<List<MarginOverviewResponseDto>>> getMarginOverview(
+            @Valid @ModelAttribute DateRangeRequest dateRangeReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<MarginOverviewResponseDto> marginOverview = marginService.getMarginOverview(dateRangeReq.getStart(), dateRangeReq.getEnd(), userDetails.getUsername());
+
+        return ResponseEntity.ok(CommonResponse
+                .<List<MarginOverviewResponseDto>>builder("success : getMarginOverview")
+                .data(marginOverview)
                 .build());
     }
 }

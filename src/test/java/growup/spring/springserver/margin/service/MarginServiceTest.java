@@ -280,7 +280,7 @@ class MarginServiceTest {
         LocalDate targetDate = LocalDate.of(2024, 11, 11);
         //when
         final CampaignNotFoundException result = assertThrows(CampaignNotFoundException.class,
-                () -> marginService.getCampaignAllSales(email,targetDate));
+                () -> marginService.getCampaignAllSales(email, targetDate));
         //then
         assertThat(result.getMessage()).isEqualTo("현재 등록된 캠페인이 없습니다.");
 
@@ -1305,6 +1305,139 @@ class MarginServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("getMarginOverview() - 캠페인이 5개 이하일 때 그대로 반환한다")
+    void getMarginOverview_Success_WhenSizeIsLessThanOrEqualTo5() {
+        // given: 테스트 기본 데이터 설정
+        LocalDate start = LocalDate.of(2024, 3, 1);
+        LocalDate end = LocalDate.of(2024, 3, 31);
+        String userEmail = "test@test.com";
+
+        List<Campaign> mockCampaigns = List.of(
+                Campaign.builder().campaignId(1L).build(),
+                Campaign.builder().campaignId(2L).build(),
+                Campaign.builder().campaignId(3L).build()
+        );
+        List<Long> campaignIds = List.of(1L, 2L, 3L);
+
+        List<MarginOverviewResponseDto> mockOverviewDtos = List.of(
+                new MarginOverviewResponseDto(1L, "Campaign 1", 1000.0, 500.0, 50.0, 500.0, 100.0, 1L, 50.0, 1L, 10.0),
+                new MarginOverviewResponseDto(2L, "Campaign 2", 2000.0, 800.0, 40.0, 400.0, 200.0, 2L, 100.0, 2L, 15.0),
+                new MarginOverviewResponseDto(3L, "Campaign 3", 1500.0, 600.0, 40.0, 300.0, 200.0, 3L, 80.0, 3L, 12.0)
+        );
+
+        when(campaignService.getCampaignsByEmail(userEmail)).thenReturn(mockCampaigns);
+        when(marginRepository.findMarginOverviewByCampaignIdsAndDate(start, end, campaignIds))
+                .thenReturn(mockOverviewDtos);
+
+        List<MarginOverviewResponseDto> marginOverview = marginService.getMarginOverview(start, end, userEmail);
+
+        assertThat(marginOverview)
+                .isNotNull()
+                .hasSize(3);
+        assertThat(marginOverview)
+                .extracting(
+                        MarginOverviewResponseDto::getCampaignId,
+                        MarginOverviewResponseDto::getCampaignName,
+                        MarginOverviewResponseDto::getMarSales
+                )
+                .containsExactlyInAnyOrder(
+                        tuple(1L, "Campaign 1", 1000.0),
+                        tuple(2L, "Campaign 2", 2000.0),
+                        tuple(3L, "Campaign 3", 1500.0)
+                );
+    }
+
+    @Test
+    @DisplayName("getMarginOverview().createOthersSummary() - 캠페인 5개 이상일때 나머지 합치기")
+    void getMarginOverView_ETC() {
+        // given: 테스트 기본 데이터 설정
+        List<MarginOverviewResponseDto> etcDto = List.of(
+                new MarginOverviewResponseDto(6L, "기타 캠페인1", 5000.0, 2000.0, 100.0, 1000.0, 500.0, 6L, 300.0, 1L, 50.0),
+                new MarginOverviewResponseDto(11L, "기타 캠페인2", 5000.0, 2000.0, 100.0, 1000.0, 500.0, 6L, 300.0, 1L, 50.0),
+                new MarginOverviewResponseDto(7L, "기타 캠페인3", 5000.0, 2000.0, 100.0, 1000.0, 500.0, 6L, 300.0, 1L, 50.0),
+                new MarginOverviewResponseDto(8L, "기타 캠페인4", 5000.0, 2000.0, 100.0, 1000.0, 500.0, 6L, 300.0, 1L, 50.0),
+                new MarginOverviewResponseDto(9L, "기타 캠페인5", 5000.0, 2000.0, 100.0, 1000.0, 500.0, 6L, 300.0, 1L, 50.0)
+        );
+        MarginOverviewResponseDto result = TypeChangeMargin.createOthersSummary(etcDto);
+
+
+        assertThat(result)
+                .isNotNull()
+                .extracting(
+                        MarginOverviewResponseDto::getCampaignId,
+                        MarginOverviewResponseDto::getCampaignName,
+                        MarginOverviewResponseDto::getMarSales,
+                        MarginOverviewResponseDto::getMarNetProfit,
+                        MarginOverviewResponseDto::getMarMarginRate, // (getMarNetProfit/getMarSales) * 100
+                        MarginOverviewResponseDto::getMarRoi, // 순이익 / 집행광고비 * 100
+                        MarginOverviewResponseDto::getMarAdCost,
+                        MarginOverviewResponseDto::getMarReturnCount,
+                        MarginOverviewResponseDto::getMarReturnCost,
+                        MarginOverviewResponseDto::getMarAdConversionSalesCount,
+                        MarginOverviewResponseDto::getMarReturnRate // // 반품률: (반품갯수/광고전환주문수) * 100
+                )
+                .containsExactly(
+                        0L, "기타", 25000.0, 10000.0, 40.0, 400.0, 2500.0, 30L, 1500.0, 5L, 600.0
+                );
+    }
+
+    @Test
+    @DisplayName("getMarginOverview - 통합 테스트")
+    void getMarginOverview() {
+        // given: 테스트 기본 데이터 설정
+        LocalDate start = LocalDate.of(2024, 3, 1);
+        LocalDate end = LocalDate.of(2024, 3, 31);
+        String userEmail = "test@test.com";
+        Member member = getMember();
+
+        List<Campaign> mockCampaigns = List.of(
+                Campaign.builder().member(getMember()).campaignId(1L).build(),
+                Campaign.builder().member(getMember()).campaignId(2L).build(),
+                Campaign.builder().member(getMember()).campaignId(3L).build(),
+                Campaign.builder().member(getMember()).campaignId(4L).build(),
+                Campaign.builder().member(getMember()).campaignId(5L).build(),
+                Campaign.builder().member(getMember()).campaignId(6L).build(),
+                Campaign.builder().member(getMember()).campaignId(7L).build()
+        );
+
+        List<Long> ids = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L);
+
+        List<MarginOverviewResponseDto> mockOverviewDtos = List.of(
+                // 랭크
+                new MarginOverviewResponseDto(1L, "Campaign 1", 5000.0, 500.0, 50.0, 500.0, 100.0, 1L, 50.0, 1L, 10.0),
+                new MarginOverviewResponseDto(2L, "Campaign 2", 4000.0, 800.0, 40.0, 400.0, 200.0, 2L, 100.0, 2L, 15.0),
+                new MarginOverviewResponseDto(3L, "Campaign 3", 3000.0, 600.0, 40.0, 300.0, 200.0, 3L, 80.0, 3L, 12.0),
+                new MarginOverviewResponseDto(4L, "Campaign 4", 2000.0, 1000.0, 40.0, 500.0, 300.0, 4L, 150.0, 4L, 20.0),
+                new MarginOverviewResponseDto(5L, "Campaign 5", 1000.0, 1200.0, 40.0, 600.0, 400.0, 5L, 200.0, 5L, 25.0),
+
+                // 기타
+                new MarginOverviewResponseDto(6L, "Campaign6", 250.0, 14000.0, 40.0, 700.0, 500.0, 6L, 25000.0, 6L, 30.0),
+                new MarginOverviewResponseDto(7L, "Campaign8", 300.0, 14000.0, 40.0, 700.0, 500.0, 6L, 25000.0, 6L, 30.0)
+        );
+
+
+        when(campaignService.getCampaignsByEmail(userEmail)).thenReturn(mockCampaigns);
+        when(marginRepository.findMarginOverviewByCampaignIdsAndDate(start, end, ids))
+                .thenReturn(mockOverviewDtos);
+
+        List<MarginOverviewResponseDto> marginOverview = marginService.getMarginOverview(start, end, userEmail);
+
+        assertThat(marginOverview)
+                .isNotNull()
+                .hasSize(6)
+                .extracting(MarginOverviewResponseDto::getCampaignId)
+                .containsExactly(1L, 2L, 3L, 4L, 5L, 0L);
+
+        MarginOverviewResponseDto othersDto = marginOverview.get(5);
+
+        assertAll(
+                () -> assertThat(othersDto.getCampaignName()).isEqualTo("기타"),
+                () -> assertThat(othersDto.getMarSales()).isEqualTo(550.0),
+                () -> assertThat(othersDto.getCampaignId()).isZero()
+        );
+    }
+
     private Margin newMargin(LocalDate date, Campaign campaign, Double marsale) {
         return Margin.builder()
                 .marDate(date)
@@ -1356,5 +1489,4 @@ class MarginServiceTest {
                 .marTargetEfficiency(0.0)
                 .build();
     }
-
 }

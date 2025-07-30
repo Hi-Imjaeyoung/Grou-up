@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MarginService {
 
+    private static final int TOP_N = 5;
     private final MarginRepository marginRepository;
     private final CampaignService campaignService;
     private final MarginForCampaignRepository marginForCampaignRepository;
@@ -427,5 +428,29 @@ public class MarginService {
             count++;
         }
         return count;
+    }
+
+    public List<MarginOverviewResponseDto> getMarginOverview(LocalDate start, LocalDate end, String email) {
+
+        List<Campaign> campaignList = getCampaignsByEmail(email);
+
+        // 1. 내가 가진 캠페인 IDs 추출
+        List<Long> campaignIds = extractCampaignIds(campaignList);
+
+        // 2. 기간별 마진 오버뷰 전체 추출
+        List<MarginOverviewResponseDto> allMarginOverviewByCampaignIdsAndDate = marginRepository.findMarginOverviewByCampaignIdsAndDate(start, end, campaignIds);
+
+        // 2.1 사이즈가 6 이하면 그대로 보여주면 됨
+        if (allMarginOverviewByCampaignIdsAndDate.size() <= TOP_N) {
+            return allMarginOverviewByCampaignIdsAndDate;
+        }
+        // 3. top5 와, etc 분리,
+        List<MarginOverviewResponseDto> top5 = allMarginOverviewByCampaignIdsAndDate.stream().limit(TOP_N).toList();
+        List<MarginOverviewResponseDto> etcDto = allMarginOverviewByCampaignIdsAndDate.stream().skip(TOP_N).toList();
+
+        // 4. 기타 항목 전체 계산
+        MarginOverviewResponseDto othersSummary = TypeChangeMargin.createOthersSummary(etcDto);
+
+        return Stream.concat(top5.stream(), Stream.of(othersSummary)).toList();
     }
 }

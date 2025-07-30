@@ -29,7 +29,7 @@ public class Margin {
     private Long marReturnCount; // 반품 갯수
     private Double marReturnCost; // 반품 비용
     private Double marAdCost;
-    private Double marSales;
+    private Double marSales; // 매출
     // 계산필요
     private Long marAdMargin;  // 광고 머진 계산필요
     private Double marNetProfit;  // 순이익

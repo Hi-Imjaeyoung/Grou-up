@@ -23,7 +23,8 @@ public class Keyword extends CoupangExcelData {
 
     private String keyKeyword;  // 키워드
 
-    private Boolean keyExcludeFlag;  // 제외여부
+    @Builder.Default
+    private Boolean keyExcludeFlag = false;  // 제외여부
 
     private String keySearchType;  // 검색 비검색
 

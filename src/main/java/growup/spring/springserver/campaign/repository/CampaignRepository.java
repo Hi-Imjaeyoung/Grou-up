@@ -17,7 +17,7 @@ public interface CampaignRepository extends JpaRepository<Campaign,Long> {
 
     List<Campaign> findAllByMember(Member member);
     @Query("SELECT c FROM Campaign c WHERE c.member.email = :email")
-    List<Campaign> finalAllByEmail(@Param("email") String email);
+    List<Campaign> findAllByEmail(@Param("email") String email);
     @Query("SELECT c FROM Campaign c WHERE c.campaignId = :campaignId AND c.member.email = :email")
     Optional<Campaign> findByCampaignIdANDEmail(@Param("campaignId") Long campaignID,
                                                 @Param("email") String email);

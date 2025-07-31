@@ -253,17 +253,9 @@ public class CampaignControllerTest {
         doReturn(makeTotalCampaignData())
                 .when(campaignAnalysisService)
                 .getMyAllCampaignsDataByDate(any(LocalDate.class), any(LocalDate.class), any(List.class));
-        String url = "/api/campaign/get/campaignTotalAnalysisData?start=2025-07-01&end=2025-07-26";
+        String url = "/api/campaign/totalAnalysisData?start=2025-07-01&end=2025-07-26";
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url));
         resultActions.andExpectAll(status().isOk()).andDo(print());
-    }
-
-    public CampaignResponseDto getCampaignResDto(String name, Long id) {
-        return CampaignResponseDto.builder()
-                .title(name)
-                .campaignId(id)
-                .build();
-
     }
 
     public TotalCampaignsData makeTotalCampaignData() {

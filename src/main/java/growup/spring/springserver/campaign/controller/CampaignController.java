@@ -102,7 +102,7 @@ public class CampaignController {
                 .data(result)
                 .build(),HttpStatus.OK);
     }
-    @GetMapping("/get/campaignTotalAnalysisData")
+    @GetMapping("/totalAnalysisData")
     public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
                                       @AuthenticationPrincipal UserDetails userDetails){
         Member member = memberService.getMemberByEmail(userDetails.getUsername());

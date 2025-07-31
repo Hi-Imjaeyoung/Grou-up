@@ -90,15 +90,27 @@ public class TypeChangeMargin {
     public static MarginOverviewResponseDto createOthersSummary(List<MarginOverviewResponseDto> etcDto) {
 
         // type 바꾸는 곳 인데, 마진계산, 이동이 필요하다.
-        double othersTotalSales = etcDto.stream().mapToDouble(MarginOverviewResponseDto::getMarSales).sum();
-        double othersTotalAdCost = etcDto.stream().mapToDouble(MarginOverviewResponseDto::getMarAdCost).sum();
-        double othersTotalNetProfit = etcDto.stream().mapToDouble(MarginOverviewResponseDto::getMarNetProfit).sum();
-        double othersTotalReturnCost = etcDto.stream().mapToDouble(MarginOverviewResponseDto::getMarReturnCost).sum();
-        long othersTotalReturnCount = etcDto.stream().mapToLong(MarginOverviewResponseDto::getMarReturnCount).sum();
-        long othersTotalAdConversionSalesCount = etcDto.stream().mapToLong(MarginOverviewResponseDto::getMarAdConversionSalesCount).sum();
-        double othersTotalMarginRate = othersTotalSales == 0 ? 0 : Math.round((othersTotalNetProfit / othersTotalSales) * 10000.0) / 100.0;
-        double othersTotalROI = othersTotalAdCost == 0 ? 0 : Math.round((othersTotalNetProfit / othersTotalAdCost) * 10000.0) / 100.0;
-        double otherReturnsRate = othersTotalReturnCount == 0 ? 0 : Math.round(((double) othersTotalReturnCount / othersTotalAdConversionSalesCount) * 10000.0) / 100.0;
+        // 1. 모든 합계 계산 (for-each 사용, 단 1회 순회)
+        double othersTotalSales = 0;
+        double othersTotalAdCost = 0;
+        double othersTotalNetProfit = 0;
+        double othersTotalReturnCost = 0;
+        long othersTotalReturnCount = 0;
+        long othersTotalAdConversionSalesCount = 0;
+
+        for (MarginOverviewResponseDto dto : etcDto) {
+            othersTotalSales += dto.getMarSales();
+            othersTotalAdCost += dto.getMarAdCost();
+            othersTotalNetProfit += dto.getMarNetProfit();
+            othersTotalReturnCost += dto.getMarReturnCost();
+            othersTotalReturnCount += dto.getMarReturnCount();
+            othersTotalAdConversionSalesCount += dto.getMarAdConversionSalesCount();
+        }
+
+// 2. 합산된 값으로 비율 계산 (기존과 동일)
+        double othersTotalMarginRate = (othersTotalSales == 0) ? 0 : Math.round((othersTotalNetProfit / othersTotalSales) * 10000.0) / 100.0;
+        double othersTotalROI = (othersTotalAdCost == 0) ? 0 : Math.round((othersTotalNetProfit / othersTotalAdCost) * 10000.0) / 100.0;
+        double otherReturnsRate = (othersTotalAdConversionSalesCount == 0) ? 0 : Math.round(((double) othersTotalReturnCount / othersTotalAdConversionSalesCount) * 10000.0) / 100.0;
 
         return MarginOverviewResponseDto.builder()
                 .campaignId(0L)

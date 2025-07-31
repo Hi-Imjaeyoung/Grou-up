@@ -74,15 +74,6 @@ public class MarginService {
 
 
     private List<Campaign> getCampaignsByEmail(String email) {
-//        Member member = memberRepository.findByEmail(email).orElseThrow(
-//                MemberNotFoundException::new
-//        );
-//        List<Campaign> campaignList = campaignRepository.findAllByMember(member);
-//        if (campaignList.isEmpty()) {
-//            throw new CampaignNotFoundException();
-//        }
-//        List<Campaign> campaignList = campaignService.getCampaignsByEmail(email);
-//        return campainList;
         return campaignService.getCampaignsByEmail(email);
     }
 
@@ -432,13 +423,15 @@ public class MarginService {
             return allMarginOverviewByCampaignIdsAndDate;
         }
         // 3. top5 와, etc 분리,
-        List<MarginOverviewResponseDto> top5 = allMarginOverviewByCampaignIdsAndDate.stream().limit(TOP_N).toList();
-        List<MarginOverviewResponseDto> etcDto = allMarginOverviewByCampaignIdsAndDate.stream().skip(TOP_N).toList();
+        List<MarginOverviewResponseDto> top5 = allMarginOverviewByCampaignIdsAndDate.subList(0, TOP_N);
+        List<MarginOverviewResponseDto> etcDto = allMarginOverviewByCampaignIdsAndDate.subList(Math.min(TOP_N, allMarginOverviewByCampaignIdsAndDate.size()), allMarginOverviewByCampaignIdsAndDate.size());
 
         // 4. 기타 항목 전체 계산
         MarginOverviewResponseDto othersSummary = TypeChangeMargin.createOthersSummary(etcDto);
 
-        return Stream.concat(top5.stream(), Stream.of(othersSummary)).toList();
+        top5.add(othersSummary);
+
+        return top5;
     }
 
     public List<DailyAdSummaryDto> getMarginOverviewGraph(LocalDate start,LocalDate end, String email) {

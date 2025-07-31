@@ -20,6 +20,7 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 public class CampaignAnalysisService {
+    private static final String TOTAL_SALE_KEY = "총 매출";
     private final KeywordQueryService keywordQueryService;
 
     // 날짜 범위 내 캠패인의 검색, 비검색 구분하여 데이터 조회.
@@ -56,7 +57,7 @@ public class CampaignAnalysisService {
     public TotalCampaignsData getMyAllCampaignsDataByDate(LocalDate start, LocalDate end, List<Campaign> campaigns){
         Map<String,CampaignAnalysisDto> sumOfAdSalesAndAdCostByCampaignType = new HashMap<>();
         Map<String,CampaignAnalysisDto> adSalesAndAdCostByCampaignName = new HashMap<>();
-        sumOfAdSalesAndAdCostByCampaignType.put("총 매출",CampaignAnalysisDto.builder()
+        sumOfAdSalesAndAdCostByCampaignType.put(TOTAL_SALE_KEY,CampaignAnalysisDto.builder()
                 .adCost(0.0)
                 .adSales(0.0)
                 .build());
@@ -70,13 +71,16 @@ public class CampaignAnalysisService {
             }
             adSalesAndAdCostByCampaignName.put(campaign.getCamCampaignName(),
                     calculateAdCostAndAdSales(sumOfAdSalesAndAdCostByCampaignType.get(campaign.getCamAdType())
-                            ,sumOfAdSalesAndAdCostByCampaignType.get("총 매출")
+                            ,sumOfAdSalesAndAdCostByCampaignType.get(TOTAL_SALE_KEY)
                             ,campaign.getCampaignId()
                             ,campaign.getCamAdType()
                             ,keywordList));
         }
 
-        return new TotalCampaignsData(sumOfAdSalesAndAdCostByCampaignType,adSalesAndAdCostByCampaignName);
+        return TotalCampaignsData.builder()
+                .sumOfAdSalesAndAdCostByCampaignType(sumOfAdSalesAndAdCostByCampaignType)
+                .adSalesAndAdCostByCampaignName(adSalesAndAdCostByCampaignName)
+                .build();
     }
 
     public CampaignAnalysisDto calculateAdCostAndAdSales(CampaignAnalysisDto campaignAnalysisDto,

@@ -296,18 +296,4 @@ public class KeywordBidControllerTest {
                 .bid(100L)
                 .build();
     }
-    class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        @Override
-        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(date.format(formatter));
-        }
-
-        @Override
-        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
-            return LocalDate.parse(json.getAsString(), formatter);
-        }
-    }
 }

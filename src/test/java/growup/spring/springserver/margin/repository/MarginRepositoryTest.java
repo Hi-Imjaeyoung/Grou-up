@@ -72,8 +72,8 @@ class MarginRepositoryTest {
     }
 
     @Test
-    @DisplayName("find7daysTotalsByCampaignIds(): Success case 1")
-    void find7daysTotalsByCampaignIds_test1(){
+    @DisplayName("findMarginOverviewGraphByCampaignIdsAndDate(): Success case 1")
+    void findMarginOverviewGraphByCampaignIdsAndDate(){
         // Given
         List<Long> campaignIds = List.of(
                 campaign1.getCampaignId(),
@@ -84,12 +84,10 @@ class MarginRepositoryTest {
         LocalDate end = LocalDate.of(2024, 11, 10);
 
         // when
-        List<DailyAdSummaryDto> marginRepository7daysTotalsByCampaignIds = marginRepository.find7daysTotalsByCampaignIds(campaignIds, start, end);
+        List<DailyAdSummaryDto> marginRepository7daysTotalsByCampaignIds = marginRepository.findMarginOverviewGraphByCampaignIdsAndDate(campaignIds, start, end);
         // then
         assertThat(marginRepository7daysTotalsByCampaignIds).hasSize(1);
-        assertThat(marginRepository7daysTotalsByCampaignIds.get(0).getMarAdCost()).isEqualTo(500.0);
         assertThat(marginRepository7daysTotalsByCampaignIds.get(0).getMarSales()).isEqualTo(200.0);
-        assertThat(marginRepository7daysTotalsByCampaignIds.get(0).getMarRoas()).isEqualTo(40.0);
     }
     @Test
     @DisplayName("findByCampaignIdsAndDates(): error 1. No matching margins")

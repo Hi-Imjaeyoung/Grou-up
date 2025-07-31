@@ -225,33 +225,34 @@ class MarginServiceTest {
     }
 
     @Test
-    @DisplayName("findByCampaignIdsAndDates(): Success - 7일간 데이터 요약")
+    @DisplayName("findByCampaignIdsAndDates(): Success ")
     void test5_findByCampaignIdsAndDates() {
         // Given
-        LocalDate today = LocalDate.of(2024, 11, 11);
-        LocalDate sevenDaysAgo = today.minusDays(7);
+        LocalDate start = LocalDate.of(2024, 11, 11);
+        LocalDate end = LocalDate.of(2024, 11, 30);
 
         List<Campaign> campaigns = List.of(
                 Campaign.builder().campaignId(1L).camCampaignName("Campaign 1").build(),
                 Campaign.builder().campaignId(2L).camCampaignName("Campaign 2").build()
         );
+        List<Long> campaignIds = List.of(1L, 2L);
 
         // 7일 데이터를 생성 (DailyAdSummaryDto는 Mock된 결과로 사용)
         List<DailyAdSummaryDto> dailySummaries = List.of(
-                new DailyAdSummaryDto(today, 200.0, 200.0, 1.0), // 오늘 데이터
-                new DailyAdSummaryDto(sevenDaysAgo, 180.0, 180.0, 1.0) // 7일 전 데이터
+                new DailyAdSummaryDto(start, 200.0, 200.),
+                new DailyAdSummaryDto(end, 180.0, 180.0)
         );
 
         // Mock 설정
         doReturn(campaigns).when(campaignService).getCampaignsByEmail(any(String.class));
-        doReturn(dailySummaries).when(marginRepository).find7daysTotalsByCampaignIds(
-                campaigns.stream().map(Campaign::getCampaignId).toList(),
-                sevenDaysAgo,
-                today
+        doReturn(dailySummaries).when(marginRepository).findMarginOverviewGraphByCampaignIdsAndDate(
+                campaignIds,
+                start,
+                end
         );
 
         // When
-        List<DailyAdSummaryDto> result = marginService.findByCampaignIdsAndDates("test@test.com", today);
+        List<DailyAdSummaryDto> result = marginService.getMarginOverviewGraph(start, end, "test@test.com");
 
         // Then
         assertThat(result)
@@ -259,16 +260,12 @@ class MarginServiceTest {
                 .hasSize(2);
 
         DailyAdSummaryDto summary1 = result.get(0);
-        assertThat(summary1.getMarDate()).isEqualTo(today);
-        assertThat(summary1.getMarAdCost()).isEqualTo(200.0);
+        assertThat(summary1.getMarDate()).isEqualTo(start);
         assertThat(summary1.getMarSales()).isEqualTo(200.0);
-        assertThat(summary1.getMarRoas()).isEqualTo(1.0);
 
         DailyAdSummaryDto summary2 = result.get(1);
-        assertThat(summary2.getMarDate()).isEqualTo(sevenDaysAgo);
-        assertThat(summary2.getMarAdCost()).isEqualTo(180.0);
+        assertThat(summary2.getMarDate()).isEqualTo(end);
         assertThat(summary2.getMarSales()).isEqualTo(180.0);
-        assertThat(summary2.getMarRoas()).isEqualTo(1.0);
     }
 
     @Test

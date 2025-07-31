@@ -72,19 +72,6 @@ public class MarginService {
         return summaries;
     }
 
-    /*
-     * TODO
-     *  getDailyAdSummary()
-     *  1, 2 사분면
-     * */
-    public List<DailyAdSummaryDto> findByCampaignIdsAndDates(String email, LocalDate targetDate) {
-        LocalDate difTargetDate = targetDate.minusDays(7);
-
-        List<Campaign> campaignList = getCampaignsByEmail(email);
-        List<Long> campaignIds = extractCampaignIds(campaignList);
-
-        return marginRepository.find7daysTotalsByCampaignIds(campaignIds, difTargetDate, targetDate);
-    }
 
     private List<Campaign> getCampaignsByEmail(String email) {
 //        Member member = memberRepository.findByEmail(email).orElseThrow(
@@ -452,5 +439,15 @@ public class MarginService {
         MarginOverviewResponseDto othersSummary = TypeChangeMargin.createOthersSummary(etcDto);
 
         return Stream.concat(top5.stream(), Stream.of(othersSummary)).toList();
+    }
+
+    public List<DailyAdSummaryDto> getMarginOverviewGraph(LocalDate start,LocalDate end, String email) {
+
+        List<Campaign> campaignList = getCampaignsByEmail(email);
+
+        List<Long> campaignIds = extractCampaignIds(campaignList);
+
+
+        return marginRepository.findMarginOverviewGraphByCampaignIdsAndDate(campaignIds, start, end);
     }
 }

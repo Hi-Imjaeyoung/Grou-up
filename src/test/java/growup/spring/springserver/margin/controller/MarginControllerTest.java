@@ -115,20 +115,21 @@ class MarginControllerTest {
 
     @Test
     @WithAuthUser
-    @DisplayName("getDailyAdSummary() : 성공 케이스")
-    void getDailyAdSummary() throws Exception {
+    @DisplayName("getMarginOverviewGraph() : 성공 케이스")
+    void getMarginOverviewGraph() throws Exception {
         // Given
-        LocalDate date = LocalDate.of(2024, 12, 1);
+        LocalDate start = LocalDate.of(2024, 12, 1);
+        LocalDate end = LocalDate.of(2024, 12, 15);
         List<DailyAdSummaryDto> mockResponse = List.of(
-                new DailyAdSummaryDto(date.minusDays(1), 200.0, 400.0, 200.0),
-                new DailyAdSummaryDto(date, 300.0, 600.0, 200.0)
+                new DailyAdSummaryDto(start, 200.0, 400.0),
+                new DailyAdSummaryDto(end, 300.0, 600.0)
         );
 
         // Mocking 서비스 호출
-        doReturn(mockResponse).when(marginService).findByCampaignIdsAndDates(any(String.class), any(LocalDate.class));
+        doReturn(mockResponse).when(marginService).getMarginOverviewGraph(any(LocalDate.class), any(LocalDate.class),any(String.class));
 
         // API 호출 URL
-        final String url = "/api/margin/getDailyAdSummary?date=2024-12-01";
+        final String url = "/api/margin/getMarginOverviewGraph?start=2024-12-01&end=2024-12-15";
 
         // When & Then
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -136,18 +137,14 @@ class MarginControllerTest {
         resultActions.andDo(print());
         resultActions
                 .andExpect(status().isOk()) // HTTP 상태 코드 200
-                .andExpect(jsonPath("$.message").value("success: getDailyAdSummary")) // 응답 메시지 검증
+                .andExpect(jsonPath("$.message").value("success : getMarginOverviewGraph")) // 응답 메시지 검증
                 .andExpect(jsonPath("$.data").isArray()) // 데이터가 배열인지 확인
-                .andExpect(jsonPath("$.data[0].marDate").value("2024-11-30"))
-                .andExpect(jsonPath("$.data[0].marAdCost").value(200.0))
-                .andExpect(jsonPath("$.data[0].marSales").value(400.0))
-                .andExpect(jsonPath("$.data[0].marRoas").value(200.0))
-                .andExpect(jsonPath("$.data[1].marDate").value("2024-12-01"))
-                .andExpect(jsonPath("$.data[1].marAdCost").value(300.0))
-                .andExpect(jsonPath("$.data[1].marSales").value(600.0))
-                .andExpect(jsonPath("$.data[1].marRoas").value(200.0));
+                .andExpect(jsonPath("$.data[0].marDate").value("2024-12-01"))
+                .andExpect(jsonPath("$.data[0].marSales").value(200.0))
+                .andExpect(jsonPath("$.data[1].marDate").value("2024-12-15"))
+                .andExpect(jsonPath("$.data[1].marSales").value(300.0));
         // Verify 서비스 호출
-        verify(marginService).findByCampaignIdsAndDates(any(String.class), any(LocalDate.class));
+        verify(marginService).getMarginOverviewGraph(any(LocalDate.class), any(LocalDate.class),any(String.class));
     }
 
     @Test

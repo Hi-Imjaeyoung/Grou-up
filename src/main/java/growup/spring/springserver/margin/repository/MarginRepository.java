@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,17 +26,14 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
 
     @Query("SELECT new growup.spring.springserver.margin.dto.DailyAdSummaryDto(" +
             "m.marDate, " +
-            "CAST(COALESCE(SUM(m.marAdCost), 0) AS double), " + // 광고비 합계를 Double로 변환
-            "CAST(COALESCE(SUM(m.marSales), 0) AS double), " + // 매출 합계를 Double로 변환
-            "CAST(CASE WHEN COALESCE(SUM(m.marAdCost), 0) = 0 THEN 0.0 " +
-            "ELSE ROUND((COALESCE(SUM(m.marSales), 0) / COALESCE(SUM(m.marAdCost), 0)) * 10000) / 100.0 END AS double)" + // ROAS를 Double로 변환
-            ") " +
+            "CAST(COALESCE(SUM(m.marSales), 0) AS double), " +
+            "CAST(COALESCE(SUM(m.marNetProfit), 0) AS double))" +
             "FROM Margin m " +
             "WHERE m.campaign.campaignId IN :campaignIds " +
             "AND m.marDate BETWEEN :startDate AND :endDate " +
             "GROUP BY m.marDate " +
             "ORDER BY m.marDate")
-    List<DailyAdSummaryDto> find7daysTotalsByCampaignIds(
+    List<DailyAdSummaryDto> findMarginOverviewGraphByCampaignIdsAndDate(
             @Param("campaignIds") List<Long> campaignIds,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);

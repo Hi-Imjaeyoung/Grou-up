@@ -34,7 +34,6 @@ public class KeywordService {
     private KeywordBidService keywordBidService;
     public List<KeywordResponseDto> getKeywordsByCampaignId(LocalDate start, LocalDate end , Long campaignId){
         List<Keyword> data = keywordRepository.findAllByDateANDCampaign(start,end,campaignId);
-        System.out.println(data.toString());
         List<KeywordResponseDto> result = checkKeyTypeExclusion(summeryKeywordData(data),getExclusionKeywordToSet(campaignId));
         checkKeyTypeKeywordBid(result,getBidKeywrodToSet(campaignId));
         return result;

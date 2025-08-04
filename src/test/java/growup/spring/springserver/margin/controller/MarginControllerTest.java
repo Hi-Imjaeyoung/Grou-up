@@ -175,9 +175,9 @@ class MarginControllerTest {
     void getNetProfitAndReturnCost_success2() throws Exception {
         Gson gson = new Gson();
         List<DailyNetProfitResponseDto> ResponseDto = List.of(
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0, 10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0, 10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8., 100L)
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0, 10L,10.0),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0, 10L,20.0),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8., 100L,30.0)
         );
         doReturn(ResponseDto).when(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
 

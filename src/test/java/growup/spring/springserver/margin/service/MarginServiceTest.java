@@ -1400,7 +1400,7 @@ class MarginServiceTest {
 
         List<Long> ids = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L);
 
-        List<MarginOverviewResponseDto> mockOverviewDtos = List.of(
+        List<MarginOverviewResponseDto> mockOverviewDtos = new ArrayList<>(List.of(
                 // 랭크
                 new MarginOverviewResponseDto(1L, "Campaign 1", 5000.0, 500.0, 50.0, 500.0, 100.0, 1L, 50.0, 1L, 10.0),
                 new MarginOverviewResponseDto(2L, "Campaign 2", 4000.0, 800.0, 40.0, 400.0, 200.0, 2L, 100.0, 2L, 15.0),
@@ -1411,7 +1411,7 @@ class MarginServiceTest {
                 // 기타
                 new MarginOverviewResponseDto(6L, "Campaign6", 250.0, 14000.0, 40.0, 700.0, 500.0, 6L, 25000.0, 6L, 30.0),
                 new MarginOverviewResponseDto(7L, "Campaign8", 300.0, 14000.0, 40.0, 700.0, 500.0, 6L, 25000.0, 6L, 30.0)
-        );
+        ));
 
 
         when(campaignService.getCampaignsByEmail(userEmail)).thenReturn(mockCampaigns);

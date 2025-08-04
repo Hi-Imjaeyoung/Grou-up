@@ -50,7 +50,7 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
     Optional<Margin> findByCampaignIdAndDate(Long campaignId, LocalDate date);
 
     @Query("SELECT new growup.spring.springserver.margin.dto.DailyNetProfitResponseDto(" +
-            "m.marDate, SUM(m.marNetProfit),SUM(m.marReturnCost),sum(m.marReturnCount)) " +
+            "m.marDate, SUM(m.marNetProfit),SUM(m.marReturnCost),sum(m.marReturnCount),sum(m.marSales)) " +
             "FROM Margin m " +
             "WHERE m.campaign.member.email = :email " +  // 내 캠페인만 필터링
             "AND m.marDate BETWEEN :start AND :end " +

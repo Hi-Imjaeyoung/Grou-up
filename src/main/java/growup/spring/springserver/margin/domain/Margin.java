@@ -71,7 +71,7 @@ public class Margin {
     public void update(long adMargin, double returnPrice) {
         this.marAdMargin = adMargin;
         this.marReturnCost = returnPrice;
-        this.marNetProfit = adMargin - (this.marAdCost * 1.1) - this.marReturnCost;
+        this.marNetProfit = adMargin - (this.marAdCost * 1.1);
     }
 
     public void updateMarginData(double targetEfficiency, double adBudget) {

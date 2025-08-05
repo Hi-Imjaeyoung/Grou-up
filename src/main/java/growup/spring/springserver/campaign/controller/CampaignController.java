@@ -1,7 +1,11 @@
 package growup.spring.springserver.campaign.controller;
 
+import growup.spring.springserver.campaign.service.CampaignAnalysisService;
+import growup.spring.springserver.campaign.TypeChangeCampaign;
+import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.dto.CampaignDeleteDto;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
+import growup.spring.springserver.campaign.dto.TotalCampaignsData;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
@@ -9,15 +13,17 @@ import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
 import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.global.common.CommonResponse;
+import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.keyword.service.KeywordService;
+import growup.spring.springserver.login.domain.Member;
+import growup.spring.springserver.login.service.MemberService;
 import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.memo.service.MemoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,29 +40,27 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/campaign")
 @RestController
+@AllArgsConstructor
 public class CampaignController {
-    @Autowired
-    private CampaignService campaignService;
-    @Autowired
-    private KeywordService keywordService;
-    @Autowired
-    private MarginService marginService;
-    @Autowired
-    private MemoService memoService;
-    @Autowired
-    private ExecutionService executionService;
-    @Autowired
-    private CampaignOptionDetailsService campaignOptionDetailsService;
+    private final CampaignService campaignService;
+    private final KeywordService keywordService;
+    private final MarginService marginService;
+    private final MemoService memoService;
+    private final ExecutionService executionService;
+    private final CampaignOptionDetailsService campaignOptionDetailsService;
+    private final MemberService memberService;
+    private final CampaignAnalysisService campaignAnalysisService;
+
     @GetMapping("/getMyCampaigns")
     public ResponseEntity<CommonResponse<List<CampaignResponseDto>>> getMyCampaigns(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("Start getMyCampaigns API target is :" + userDetails.getUsername());
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
         List<CampaignResponseDto> data;
         try {
-            data = campaignService.getMyCampaigns(userDetails.getUsername());
+            data = campaignService.getCampaignsByMember(member).stream().map(TypeChangeCampaign::entityToResponseDto).toList();
         } catch (CampaignNotFoundException campaignNotFoundException){
             data = new ArrayList<>();
-        } // membernotException은 잡지 않음
-
+        }
         log.info("End getMyCampaigns API target is :" + userDetails.getUsername());
         return new ResponseEntity<>(CommonResponse
                 .<List<CampaignResponseDto>>builder("success : load campaign name list")
@@ -98,5 +102,16 @@ public class CampaignController {
                 .data(result)
                 .build(),HttpStatus.OK);
     }
+    @GetMapping("/totalAnalysisData")
+    public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
+                                      @AuthenticationPrincipal UserDetails userDetails){
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        List<Campaign> campaigns = campaignService.getCampaignsByMember(member);
+        TotalCampaignsData totalCampaignsData = campaignAnalysisService.getMyAllCampaignsDataByDate(dateRangeRequest.getStart(),dateRangeRequest.getEnd(),campaigns);
+        return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
+                .data(totalCampaignsData)
+                .build(),HttpStatus.OK);
+    }
+
 
 }

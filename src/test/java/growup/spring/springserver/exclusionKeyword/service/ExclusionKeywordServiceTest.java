@@ -59,8 +59,8 @@ public class ExclusionKeywordServiceTest {
     void test1_3(){
         //when
         doReturn(getCampaign(1L,"campaign1")).when(campaignService).getMyCampaign(any(Long.class),any(String.class));
-        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword1");
-        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword2");
+        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword1",1L);
+        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword2",1L);
         doReturn(getExclusionKeyword(1L,"exclusionKeyword1",getCampaign(1L,"campaign1")))
                 .when(exclusionKeywordRepository)
                 .save(any(ExclusionKeyword.class));
@@ -77,8 +77,8 @@ public class ExclusionKeywordServiceTest {
     void test1_4(){
         //when
         doReturn(getCampaign(1L,"campaign1")).when(campaignService).getMyCampaign(any(Long.class),any(String.class));
-        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword1");
-        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword2");
+        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword1",1L);
+        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword("exclusionKeyword2",1L);
         doReturn(getExclusionKeyword(1L,"exclusionKeyword1",getCampaign(1L,"campaign1")))
                 .when(exclusionKeywordRepository)
                 .save(any(ExclusionKeyword.class));
@@ -169,7 +169,7 @@ public class ExclusionKeywordServiceTest {
     @WithAuthUser
     void test4_1(){
         //W
-        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword(any(String.class));
+        doReturn(true).when(exclusionKeywordRepository).existsByExclusionKeyword(any(String.class),any(Long.class));
         //G
         final Exception result = assertThrows(ExistExclusionKeyword.class,()->
                 exclusionKeywordService.saveNoExistExclusionKeyword("key",getCampaign(1L,"camp"))
@@ -183,7 +183,7 @@ public class ExclusionKeywordServiceTest {
     @WithAuthUser
     void test4_2(){
         //W
-        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword(any(String.class));
+        doReturn(false).when(exclusionKeywordRepository).existsByExclusionKeyword(any(String.class),any(Long.class));
         //G
         exclusionKeywordService.saveNoExistExclusionKeyword("key",getCampaign(1L,"camp"));
         //T

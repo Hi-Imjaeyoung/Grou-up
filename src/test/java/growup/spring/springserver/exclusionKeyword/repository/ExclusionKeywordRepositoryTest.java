@@ -80,9 +80,22 @@ public class ExclusionKeywordRepositoryTest {
         exclusionKeywordRepository.save(getExclusionKeyword("exclusionKey2",campaign));
         exclusionKeywordRepository.save(getExclusionKeyword("exclusionKey3",campaign));
         //given
-        final boolean result = exclusionKeywordRepository.existsByExclusionKeyword("exclusionKey1");
+        final boolean result = exclusionKeywordRepository.existsByExclusionKeyword("exclusionKey1",1L);
         //then
         assertThat(result).isEqualTo(true);
+    }
+
+    @DisplayName("existsByExclusionKeyword() : 대소문자 구분? ")
+    @Test
+    // H2 DB 에서는 대소문자를 구분.
+    void test6(){
+        //when
+        final Campaign campaign = campaignRepository.save(getCampaign("campaign"));
+        exclusionKeywordRepository.save(getExclusionKeyword("A",campaign));
+        //given
+        final boolean result = exclusionKeywordRepository.existsByExclusionKeyword("a",1L);
+        //then
+        assertThat(result).isEqualTo(false);
     }
 
     public ExclusionKeyword getExclusionKeyword(String exclusionKeyword, Campaign campaign){

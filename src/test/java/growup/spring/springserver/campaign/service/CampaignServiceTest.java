@@ -1,14 +1,14 @@
-package growup.spring.springserver.campaign;
+package growup.spring.springserver.campaign.service;
 
+import growup.spring.springserver.campaign.TypeChangeCampaign;
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.dto.CampaignResponseDto;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
-import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
+import growup.spring.springserver.keyword.service.KeywordService;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
-import growup.spring.springserver.login.service.MemberService;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,9 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,49 +30,35 @@ class CampaignServiceTest {
     @InjectMocks
     private CampaignService campaignService;
     @Mock
-    private MemberService memberService;
-    @Mock
     private CampaignRepository campaignRepository;
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private KeywordService keywordService;
 
     @Test
     @DisplayName("getMyCampaigns(): ErrorCase1.캠패인 목록이 없을 때")
     void test1(){
         //given
-        doReturn(getMember()).when(memberService).getMemberByEmail(any(String.class));
         doReturn(new ArrayList<Campaign>()).when(campaignRepository).findAllByMember(any(Member.class));
         //when
         final Exception result = assertThrows(GrouException.class,
-                ()->campaignService.getMyCampaigns("test@test.com"));
+                ()->campaignService.getCampaignsByMember(getMember()));
         //then
         assertThat(result.getMessage()).isEqualTo("현재 등록된 캠페인이 없습니다.");
-    }
-
-    @Test
-    @DisplayName("getMyCampaigns(): ErrorCase2.해당 멤버를 찾지 못 할때")
-    void test2(){
-        //given
-        doThrow(new GrouException(ErrorCode.MEMBER_NOT_FOUND)).when(memberService).getMemberByEmail(any(String.class));
-        //when
-        final GrouException result = assertThrows(GrouException.class,
-               ()-> campaignService.getMyCampaigns("test@test.com"));
-        //then
-        assertThat(result.getMessage()).isEqualTo("존재하지 않는 회원입니다.");
     }
 
     @Test
     @DisplayName("getMyCampaigns(): Success")
     void test3(){
         //given
-        doReturn(getMember()).when(memberService).getMemberByEmail(any(String.class));
         doReturn(List.of(
                     Campaign.builder().camCampaignName("campaign1").campaignId(1L).build(),
                     Campaign.builder().camCampaignName("campaign2").campaignId(2L).build(),
                     Campaign.builder().camCampaignName("campaign3").campaignId(3L).build())
         ).when(campaignRepository).findAllByMember(any(Member.class));
         //when
-        List<CampaignResponseDto> result = campaignService.getMyCampaigns("test1@test.com");
+        List<CampaignResponseDto> result = campaignService.getCampaignsByMember(getMember()).stream().map(TypeChangeCampaign::entityToResponseDto).toList();
         //then
         //TODO: 한 번에 테스트 할 수는 없을까?
         assertThat(result.size()).isEqualTo(3);
@@ -124,6 +108,7 @@ class CampaignServiceTest {
         //then
         assertThat(result).isEqualTo(1);
     }
+
 
     public Member getMember(){
         return Member.builder()

@@ -131,7 +131,7 @@ public class KeywordRepositoryTest{
     }
     public Keyword getKeyword(String title, Campaign campaign,LocalDate localDate, boolean flag){
         return Keyword.builder()
-                .keyDate(localDate)
+                .date(localDate)
                 .keyKeyword(title)
                 .campaign(campaign)
                 .keyExcludeFlag(flag)

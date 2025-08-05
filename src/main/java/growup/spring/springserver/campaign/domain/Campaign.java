@@ -33,6 +33,7 @@ public class Campaign {
 
     private String camAdType;
 
+    @Builder.Default
     private Boolean camOpen = false;
 
     @Builder.Default

@@ -289,45 +289,44 @@ class MarginServiceTest {
     @Test
     @DisplayName("getDailyMarginSummary : failCase 2. 캠페인 리스트가 없는경우 ")
     void getDailyMarginSummary_failCase2() {
-        String email = "test@naver.com";
-        LocalDate targetDate = LocalDate.of(2025, 1, 1);
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 8);
 
         List<Campaign> campaigns = List.of(
                 Campaign.builder().campaignId(1L).camCampaignName("Campaign 1").build(),
                 Campaign.builder().campaignId(2L).camCampaignName("Campaign 2").build()
         );
 
-        // Mock 설정
-        doReturn(campaigns).when(campaignService).getCampaignsByEmail(any(String.class));
+        when(marginRepository.findByCampaignIdAndDates(eq(1L), eq(start),eq(end)))
+                .thenReturn(List.of());
+        when(marginRepository.findByCampaignIdAndDates(eq(2L), eq(start),eq(end)))
+                .thenReturn(List.of());;
 
-        when(marginRepository.findByCampaignIdAndDate(eq(1L), eq(targetDate)))
-                .thenReturn(Optional.empty());
-        when(marginRepository.findByCampaignIdAndDate(eq(2L), eq(targetDate)))
-                .thenReturn(Optional.empty());
+        List<DailyMarginSummary> result = marginService.getDailyMarginSummary(campaigns, start,end);
 
-        List<DailyMarginSummary> result = marginService.getDailyMarginSummary(email, targetDate);
-
-        assertThat(result).isEmpty();
-
+        for(DailyMarginSummary dailyMarginSummary : result){
+            assertThat(dailyMarginSummary.getMarAdMargin()).isEqualTo(0);
+            assertThat(dailyMarginSummary.getMarNetProfit()).isEqualTo(0);
+        }
     }
 
     @Test
     @DisplayName("getDailyMarginSummary : successCase. 성공")
     void getDailyMarginSummary_successCase() {
         String email = "test@naver.com";
-        LocalDate targetDate = LocalDate.of(2025, 1, 1);
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 8);
 
         List<Campaign> campaigns = List.of(
                 Campaign.builder().campaignId(1L).camCampaignName("Campaign 1").build(),
                 Campaign.builder().campaignId(2L).camCampaignName("Campaign 2").build()
         );
-        doReturn(campaigns).when(campaignService).getCampaignsByEmail(any(String.class));
 
         // marginRepository mock 설정
-        when(marginRepository.findByCampaignIdAndDate(eq(1L), eq(targetDate)))
-                .thenReturn(Optional.of(newMarginDto(100L, campaigns.get(0), 100.0)));
-        when(marginRepository.findByCampaignIdAndDate(eq(2L), eq(targetDate)))
-                .thenReturn(Optional.of(newMarginDto(100L, campaigns.get(1), 100.0)));
+        when(marginRepository.findByCampaignIdAndDates(eq(1L), eq(start),eq(end)))
+                .thenReturn(List.of(newMarginDto(100L, campaigns.get(0), 100.0),newMarginDto(100L, campaigns.get(0), 100.0)));
+        when(marginRepository.findByCampaignIdAndDates(eq(2L), eq(start),eq(end)))
+                .thenReturn(List.of(newMarginDto(100L, campaigns.get(1), 100.0),newMarginDto(100L, campaigns.get(0), 100.0)));
 
         List<DailyMarginSummary> expected = List.of(
                 DailyMarginSummary.builder()
@@ -343,12 +342,14 @@ class MarginServiceTest {
         );
 
         // when
-        List<DailyMarginSummary> result = marginService.getDailyMarginSummary(email, targetDate);
+        List<DailyMarginSummary> result = marginService.getDailyMarginSummary(campaigns, start,end);
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result).containsExactlyInAnyOrderElementsOf(expected);  // 순서에 상관없이 일치하는지 체크
-
+        for(DailyMarginSummary dailyMarginSummary : result){
+            assertThat(dailyMarginSummary.getMarAdMargin()).isEqualTo(200);
+            assertThat(dailyMarginSummary.getMarNetProfit()).isEqualTo(200);
+        }
 
     }
 

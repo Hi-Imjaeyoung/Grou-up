@@ -1,5 +1,6 @@
 package growup.spring.springserver.keyword.controller;
 
+import growup.spring.springserver.campaign.service.CampaignAnalysisService;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
@@ -33,6 +34,8 @@ public class KeywordControllerTest {
 
     @MockBean
     private KeywordService keywordService;
+    @MockBean
+    private CampaignAnalysisService campaignAnalysisService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
@@ -86,24 +89,24 @@ public class KeywordControllerTest {
                 status().isOk(),
                 jsonPath("data").isArray(),
                 jsonPath("data[0].keyKeyword").value("keyword"),
-                jsonPath("data[1].keyCpc").value(1.0),
-                jsonPath("data[2].keyClicks").value(10L)
+                jsonPath("data[1].cpc").value(1.0),
+                jsonPath("data[2].clicks").value(10L)
         );
     }
 
     public KeywordResponseDto getKeywordResDto(){
         return KeywordResponseDto.builder()
                 .keyKeyword("keyword")
-                .keyAdcost(1.0)
-                .keyClickRate(0.8)
-                .keyClicks(10L)
-                .keyAdsales(1.0)
-                .keyCpc(1.0)
-                .keyCvr(1.0)
-                .keyImpressions(1L)
-                .keyRoas(1.0)
+                .adCost(1.0)
+                .clickRate(0.8)
+                .clicks(10L)
+                .adSales(1.0)
+                .cpc(1.0)
+                .cvr(1.0)
+                .impressions(1L)
+                .roas(1.0)
                 .keySearchType("test")
-                .keyTotalSales(1L)
+                .totalSales(1L)
                 .build();
     }
 }

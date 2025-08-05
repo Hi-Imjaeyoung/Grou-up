@@ -299,23 +299,24 @@ public class MarginService {
         margin.update(adMargin, returnPrice);
     }
 
-    public List<DailyMarginSummary> getDailyMarginSummary(String email, LocalDate targetDate) {
+    public List<DailyMarginSummary> getDailyMarginSummary(List<Campaign> campaignList, LocalDate start,LocalDate end) {
 
         List<DailyMarginSummary> summaries = new ArrayList<>();
 
-        List<Campaign> campaignList = getCampaignsByEmail(email);
-
         // 보석, 재영, 은아
         for (Campaign campaign : campaignList) {
-            try {
-                Margin margin = getMargin(targetDate, campaign);
-                String productName = campaign.getCamCampaignName();
-
-                summaries.add(TypeChangeMargin.getDailyMarginSummary(margin, productName));
-            } catch (CampaignNotFoundException ex) {
-                continue;
-            }
-
+            List<Margin> margins = marginRepository.findByCampaignIdAndDates(campaign.getCampaignId(),start,end);
+            String productName = campaign.getCamCampaignName();
+            DailyMarginSummary dailyMarginSummary = DailyMarginSummary.builder()
+                    .marAdMargin(0L)
+                    .marNetProfit(0.0)
+                    .marProductName(productName)
+                    .build();
+           for(Margin margin : margins){
+               dailyMarginSummary.setMarAdMargin(margin.getMarAdMargin()+dailyMarginSummary.getMarAdMargin()) ;
+               dailyMarginSummary.setMarNetProfit(margin.getMarNetProfit()+dailyMarginSummary.getMarNetProfit()); ;
+           }
+           summaries.add(dailyMarginSummary);
         }
         return summaries;
     }

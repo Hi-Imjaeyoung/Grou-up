@@ -130,7 +130,7 @@ public class KeywordServiceTest {
         //then
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get("keyword1").getKeyKeyword()).isEqualTo("keyword1");
-        assertThat(result.get("keyword1").getKeyCvr()).isEqualTo(0.0);
+        assertThat(result.get("keyword1").getCvr()).isEqualTo(0.0);
     }
 
     @Test
@@ -144,9 +144,9 @@ public class KeywordServiceTest {
         final HashMap<String,KeywordResponseDto> result  = keywordService.summeryKeywordData(data);
         //then
         assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get("keyword1").getKeyClicks()).isEqualTo(30);
-        assertThat(result.get("keyword1").getKeyImpressions()).isEqualTo(369);
-        assertThat(result.get("keyword1").getKeyClickRate()).isEqualTo(((Math.round(((double)30/(double) 369)*10000))/100.0));
+        assertThat(result.get("keyword1").getClicks()).isEqualTo(30);
+        assertThat(result.get("keyword1").getImpressions()).isEqualTo(369);
+        assertThat(result.get("keyword1").getClickRate()).isEqualTo(((Math.round(((double)30/(double) 369)*10000))/100.0));
     }
 
     @Test
@@ -160,9 +160,9 @@ public class KeywordServiceTest {
         final HashMap<String,KeywordResponseDto> result  = keywordService.summeryKeywordData(data);
         //then
         assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get("keyword1").getKeyClicks()).isEqualTo(132);
-        assertThat(result.get("keyword1").getKeyTotalSales()).isEqualTo(40);
-        assertThat(result.get("keyword1").getKeyCvr()).isEqualTo(((Math.round(((double)40/(double) 132)*10000))/100.0));
+        assertThat(result.get("keyword1").getClicks()).isEqualTo(132);
+        assertThat(result.get("keyword1").getTotalSales()).isEqualTo(40);
+        assertThat(result.get("keyword1").getCvr()).isEqualTo(((Math.round(((double)40/(double) 132)*10000))/100.0));
     }
 
     @Test
@@ -176,9 +176,9 @@ public class KeywordServiceTest {
         final HashMap<String,KeywordResponseDto> result  = keywordService.summeryKeywordData(data);
         //then
         assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get("keyword1").getKeyClicks()).isEqualTo(132);
-        assertThat(result.get("keyword1").getKeyAdcost()).isEqualTo(1980);
-        assertThat(result.get("keyword1").getKeyCpc()).isEqualTo(((Math.round(((double)1980/(double) 132)*100))/100.0));
+        assertThat(result.get("keyword1").getClicks()).isEqualTo(132);
+        assertThat(result.get("keyword1").getAdCost()).isEqualTo(1980);
+        assertThat(result.get("keyword1").getCpc()).isEqualTo(((Math.round(((double)1980/(double) 132)*100))/100.0));
     }
 
     @DisplayName("checkKeyTypeExclusion() : Success")
@@ -342,17 +342,17 @@ public class KeywordServiceTest {
                               Long totalSale,
                               Double adSale){
         return Keyword.builder()
-                .keyCvr(0.0)
-                .keyClickRate(0.0)
-                .keyRoas(0.0)
-                .keyDate(LocalDate.of(2024,11,1))
+                .cvr(0.0)
+                .clickRate(0.0)
+                .roas(0.0)
+                .date(LocalDate.of(2024,11,1))
                 .keyKeyword(title)
-                .keyAdcost(adCost)
-                .keyCpc(cpc)
-                .keyClicks(clicks)
-                .keyImpressions(impression)
-                .keyTotalSales(totalSale)
-                .keyAdsales(adSale)
+                .adCost(adCost)
+                .cpc(cpc)
+                .clicks(clicks)
+                .impressions(impression)
+                .totalSales(totalSale)
+                .adSales(adSale)
                 .build();
     }
     public static KeywordBidDto getKeywordBidDto(String keyword, Long bid){

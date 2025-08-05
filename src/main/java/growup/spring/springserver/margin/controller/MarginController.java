@@ -1,9 +1,12 @@
 package growup.spring.springserver.margin.controller;
 
+import growup.spring.springserver.campaign.domain.Campaign;
+import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.login.MemberNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
+import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
@@ -27,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MarginController {
     private final MarginService marginService;
-
+    private final CampaignService campaignService;
     /*
      * TODO
      *  매출보고서(3사분)
@@ -105,13 +108,13 @@ public class MarginController {
     /*TODO
      *  마진보고서 (4사분면)
      *  실패시 빈 리스트 리턴*/
-    @GetMapping("getDailyMarginSummary")
-    public ResponseEntity<CommonResponse<List<DailyMarginSummary>>> getDailyMarginSummary(@RequestParam("date") LocalDate date,
+    @GetMapping("/getDailyMarginSummary")
+    public ResponseEntity<CommonResponse<List<DailyMarginSummary>>> getDailyMarginSummary(@Valid@ModelAttribute DateRangeRequest dateRangeRequest,
                                                                                           @AuthenticationPrincipal UserDetails userDetails) {
         List<DailyMarginSummary> dailyMarginSummary;
-
+        List<Campaign> campaigns = campaignService.getCampaignsByEmail(userDetails.getUsername());
         try {
-            dailyMarginSummary = marginService.getDailyMarginSummary(userDetails.getUsername(), date);
+            dailyMarginSummary = marginService.getDailyMarginSummary(campaigns, dateRangeRequest.getStart(),dateRangeRequest.getEnd());
         } catch (CampaignNotFoundException | MemberNotFoundException exception) {
             dailyMarginSummary = new ArrayList<>();
         }

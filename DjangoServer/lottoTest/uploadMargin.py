@@ -43,6 +43,7 @@ CHUNK_SIZE = 500  # bulk 처리 청크 크기
 @csrf_exempt
 def upload_margin(request):
     if request.method == 'POST':
+        print("마진 엑셀 업로드 시작")
         form = ExcelFileForm(request.POST, request.FILES)
         if form.is_valid():
             return _handle_upload_margin(request, form)

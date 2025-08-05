@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def upload_excel(request):
     if request.method == 'POST':
-        print("시작")
+        print("A 엑셀 업로드 시작")
         form = ExcelFileForm(request.POST, request.FILES)
         if form.is_valid():
             return handle_excel_upload(request, form)

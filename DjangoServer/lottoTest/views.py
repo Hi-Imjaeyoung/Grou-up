@@ -216,7 +216,7 @@ def save_campaign_option_details(aggregated_data):
     buffer = []
     for key, data in aggregated_data.items():
         if not CampaignOptionDetails.objects.filter(
-                execution__exe_id=data['execution'].exe_id,  # exe_id를 기준으로 필터링
+                execution__exe_id=data['execution'].execution_id,  # exe_id를 기준으로 필터링
                 cop_date=data['cop_date'],
                 cop_search_type=data['cop_search_type']
         ).exists():

@@ -184,26 +184,26 @@ def update_keyword_data(keyword_data, keyword_key, row, campaign, cop_date, key_
         keyword_data[keyword_key] = {
             'campaign': campaign,
             'key_keyword': key_keyword,
-            'key_impressions': 0,
-            'key_clicks': 0,
-            'key_click_rate': 0,
-            'key_total_sales': 0,
-            'key_cvr': 0,
-            'key_cpc': 0,
-            'key_adcost': 0,
-            'key_adsales': 0,
-            'key_roas': 0,
-            'key_date': cop_date,
+            'impressions': 0,
+            'clicks': 0,
+            'click_rate': 0,
+            'total_sales': 0,
+            'cvr': 0,
+            'cpc': 0,
+            'adCost': 0,
+            'adSales': 0,
+            'roas': 0,
+            'date': cop_date,
             'key_exclude_flag': key_exclude_flag,
             'key_search_type': cop_search_type,
             'key_product_sales': {},
         }
 
-    keyword_data[keyword_key]['key_impressions'] += row['노출수']
-    keyword_data[keyword_key]['key_clicks'] += row['클릭수']
-    keyword_data[keyword_key]['key_adcost'] += row['광고비']
-    keyword_data[keyword_key]['key_total_sales'] += row['총 판매수량(14일)']
-    keyword_data[keyword_key]['key_adsales'] += row['총 전환매출액(14일)']
+    keyword_data[keyword_key]['impressions'] += row['노출수']
+    keyword_data[keyword_key]['clicks'] += row['클릭수']
+    keyword_data[keyword_key]['adCost'] += row['광고비']
+    keyword_data[keyword_key]['total_sales'] += row['총 판매수량(14일)']
+    keyword_data[keyword_key]['adSales'] += row['총 전환매출액(14일)']
 
     # 전환발생매출ID로 keyProductSales 필드 업데이트
     if orders >= 1:
@@ -332,25 +332,25 @@ def save_keywords(keyword_data):
 
         if not Keyword.objects.filter(
                 key_keyword=data['key_keyword'],
-                key_date=data['key_date'],
+                date=data['date'],
                 campaign=data['campaign']
         ).exists():
             buffer.append(Keyword(
                 key_keyword=data['key_keyword'],
-                key_impressions=data['key_impressions'],
-                key_clicks=data['key_clicks'],
-                key_click_rate=round((data['key_clicks'] / data['key_impressions']) * 100, 2) if data[
-                                                                                                     'key_impressions'] > 0 else 0,
-                key_total_sales=data['key_total_sales'],
-                key_cvr=round((data['key_total_sales'] / data['key_clicks']) * 100, 2) if data[
-                                                                                              'key_clicks'] > 0 else 0,
-                key_cpc=round((data['key_adcost'] * 1.1) / data['key_clicks']) if data[
-                                                                                      'key_clicks'] > 0 else 0,
-                key_adcost=round(data['key_adcost'] * 1.1),
-                key_adsales=data['key_adsales'],
-                key_roas=round(data['key_adsales'] / (data['key_adcost'] * 1.1), 2) * 100 if data[
-                                                                                                 'key_adcost'] > 0 else 0,
-                key_date=data['key_date'],
+                impressions=data['impressions'],
+                clicks=data['clicks'],
+                click_rate=round((data['clicks'] / data['impressions']) * 100, 2) if data[
+                                                                                                     'impressions'] > 0 else 0,
+                total_sales=data['total_sales'],
+                cvr=round((data['total_sales'] / data['clicks']) * 100, 2) if data[
+                                                                                              'clicks'] > 0 else 0,
+                cpc=round((data['adCost'] * 1.1) / data['clicks']) if data[
+                                                                                      'clicks'] > 0 else 0,
+                ad_cost=round(data['adCost'] * 1.1),
+                ad_sales=data['adSales'],
+                roas=round(data['adSales'] / (data['adCost'] * 1.1), 2) * 100 if data[
+                                                                                                 'adCost'] > 0 else 0,
+                date=data['date'],
                 key_exclude_flag=data['key_exclude_flag'],
                 key_search_type=data['key_search_type'],
                 campaign=data['campaign'],

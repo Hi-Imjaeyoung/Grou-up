@@ -18,7 +18,7 @@ class Member(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False  # Django가 이 테이블을 관리하지 않도록 설정
+        # managed = False  # Django가 이 테이블을 관리하지 않도록 설정
         db_table = 'member'
 class MarginType(models.TextChoices):
     ROCKET_GROWTH = 'ROCKET_GROWTH', '로켓그로스'
@@ -73,16 +73,16 @@ class Execution(models.Model):
 class Keyword(models.Model):
     id = models.AutoField(primary_key=True)  # 기본 키로 설정
     key_keyword = models.CharField(max_length=255)  # 키워드
-    key_impressions = models.BigIntegerField()  # 노출수
-    key_clicks = models.BigIntegerField()  # 클릭수
-    key_click_rate = models.FloatField()  # 클릭률
-    key_total_sales = models.BigIntegerField()  # 총 주문수
-    key_cvr = models.FloatField()  # 전환율
-    key_cpc = models.FloatField()  # CPC
-    key_adcost = models.FloatField()  # 광고비
-    key_adsales = models.FloatField()  # 광고매출
-    key_roas = models.FloatField()  # ROAS
-    key_date = models.DateField()  # 날짜
+    impressions = models.BigIntegerField()  # 노출수
+    clicks = models.BigIntegerField()  # 클릭수
+    click_rate = models.FloatField()  # 클릭률
+    total_sales = models.BigIntegerField()  # 총 주문수
+    cvr = models.FloatField()  # 전환율
+    cpc = models.FloatField()  # CPC
+    ad_cost = models.FloatField()  # 광고비
+    ad_sales = models.FloatField()  # 광고매출
+    roas = models.FloatField()  # ROAS
+    date = models.DateField()  # 날짜
     key_search_type = models.CharField(max_length=255)  # 검색 비검색
     key_exclude_flag = models.BooleanField(default=False)  # 제외여부
 

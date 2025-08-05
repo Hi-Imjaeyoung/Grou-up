@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MarginService {
 
+    private static final int TOP_N = 5;
     private final MarginRepository marginRepository;
     private final CampaignService campaignService;
     private final MarginForCampaignRepository marginForCampaignRepository;
@@ -71,30 +72,8 @@ public class MarginService {
         return summaries;
     }
 
-    /*
-     * TODO
-     *  getDailyAdSummary()
-     *  1, 2 사분면
-     * */
-    public List<DailyAdSummaryDto> findByCampaignIdsAndDates(String email, LocalDate targetDate) {
-        LocalDate difTargetDate = targetDate.minusDays(7);
-
-        List<Campaign> campaignList = getCampaignsByEmail(email);
-        List<Long> campaignIds = extractCampaignIds(campaignList);
-
-        return marginRepository.find7daysTotalsByCampaignIds(campaignIds, difTargetDate, targetDate);
-    }
 
     private List<Campaign> getCampaignsByEmail(String email) {
-//        Member member = memberRepository.findByEmail(email).orElseThrow(
-//                MemberNotFoundException::new
-//        );
-//        List<Campaign> campaignList = campaignRepository.findAllByMember(member);
-//        if (campaignList.isEmpty()) {
-//            throw new CampaignNotFoundException();
-//        }
-//        List<Campaign> campaignList = campaignService.getCampaignsByEmail(email);
-//        return campainList;
         return campaignService.getCampaignsByEmail(email);
     }
 
@@ -428,5 +407,41 @@ public class MarginService {
             count++;
         }
         return count;
+    }
+
+    public List<MarginOverviewResponseDto> getMarginOverview(LocalDate start, LocalDate end, String email) {
+
+        List<Campaign> campaignList = getCampaignsByEmail(email);
+
+        // 1. 내가 가진 캠페인 IDs 추출
+        List<Long> campaignIds = extractCampaignIds(campaignList);
+
+        // 2. 기간별 마진 오버뷰 전체 추출
+        List<MarginOverviewResponseDto> allMarginOverviewByCampaignIdsAndDate = marginRepository.findMarginOverviewByCampaignIdsAndDate(start, end, campaignIds);
+
+        // 2.1 사이즈가 6 이하면 그대로 보여주면 됨
+        if (allMarginOverviewByCampaignIdsAndDate.size() <= TOP_N) {
+            return allMarginOverviewByCampaignIdsAndDate;
+        }
+        // 3. top5 와, etc 분리,
+        List<MarginOverviewResponseDto> top5 = allMarginOverviewByCampaignIdsAndDate.subList(0, TOP_N);
+        List<MarginOverviewResponseDto> etcDto = allMarginOverviewByCampaignIdsAndDate.subList(Math.min(TOP_N, allMarginOverviewByCampaignIdsAndDate.size()), allMarginOverviewByCampaignIdsAndDate.size());
+
+        // 4. 기타 항목 전체 계산
+        MarginOverviewResponseDto othersSummary = TypeChangeMargin.createOthersSummary(etcDto);
+
+        top5.add(othersSummary);
+
+        return top5;
+    }
+
+    public List<DailyAdSummaryDto> getMarginOverviewGraph(LocalDate start,LocalDate end, String email) {
+
+        List<Campaign> campaignList = getCampaignsByEmail(email);
+
+        List<Long> campaignIds = extractCampaignIds(campaignList);
+
+
+        return marginRepository.findMarginOverviewGraphByCampaignIdsAndDate(campaignIds, start, end);
     }
 }

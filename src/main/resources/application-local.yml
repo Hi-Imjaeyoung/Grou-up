@@ -15,10 +15,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-        highlight_sql: true
-    show-sql: true
+        show_sql: false
+        format_sql: false
+        highlight_sql: false
+    show-sql: false
   security:
     oauth2:
       client:
@@ -72,7 +72,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: "health,prometheus"  # health와 prometheus 엔드포인트만 외부에 노출
+  metrics:
+    tags: # 모든 메트릭에 공통 태그 추가 (나중에 서버 많아지면 구분하기 좋음)
+      application: grouUP
 springdoc:
   swagger-ui:
     groups-order: ASC

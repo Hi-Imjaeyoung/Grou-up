@@ -1,6 +1,7 @@
 package growup.spring.springserver.exclusionKeyword.controller;
 
 import growup.spring.springserver.exception.exclusionKeyword.ExclusionKeyNotFound;
+import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exclusionKeyword.dto.ExclusionKeywordRequestDto;
 import growup.spring.springserver.exclusionKeyword.dto.ExclusionKeywordResponseDto;
 import growup.spring.springserver.exclusionKeyword.service.ExclusionKeywordService;
@@ -34,7 +35,7 @@ public class ExclusionKeywordController {
         log.info("start addExclusionKeyword");
         if (bindingResult.hasErrors()) {
             log.info("bindExceptions is throw");
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         final ExclusionKeywordResponseDto result = exclusionKeywordService.addExclusionKeyword(exclusionKeywordRequestDto,userDetails.getUsername());
         log.info("end addExclusionKeyword");
@@ -51,7 +52,7 @@ public class ExclusionKeywordController {
         log.info("start removeExclusionKeyword");
         if (bindingResult.hasErrors()) {
             log.info("bindExceptions is throw");
-            throw new BindException(bindingResult);
+            throw new RequestException();
         }
         final boolean result = exclusionKeywordService.deleteExclusionKeyword(exclusionKeywordRequestDto,userDetails.getUsername());
         return new ResponseEntity<>(CommonResponse

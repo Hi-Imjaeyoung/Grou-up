@@ -14,13 +14,13 @@ import java.util.List;
 public interface KeywordRepository extends JpaRepository <Keyword,Long>{
 
     //TODO: 쿼리 순서 check!
-    @Query("SELECT k FROM Keyword k WHERE k.keyDate BETWEEN :startDate AND :endDate " +
+    @Query("SELECT k FROM Keyword k WHERE k.date BETWEEN :startDate AND :endDate " +
             "AND k.campaign.campaignId = :campaignId")
     List<Keyword> findAllByDateANDCampaign(@Param("startDate") LocalDate startDate,
                                            @Param("endDate")LocalDate endDate,
                                            @Param("campaignId")Long campaignId);
 
-    @Query("SELECT k FROM Keyword k WHERE k.keyDate BETWEEN :start AND :end " +
+    @Query("SELECT k FROM Keyword k WHERE k.date BETWEEN :start AND :end " +
             "AND k.campaign.campaignId = :campaignId " +
             "AND k.keyKeyword IN :keys")
     List<Keyword> findKeywordsByDateAndCampaignIdAndKeys(
@@ -31,7 +31,7 @@ public interface KeywordRepository extends JpaRepository <Keyword,Long>{
 
 
     @Modifying
-    @Query("DELETE FROM Keyword k WHERE k.keyDate BETWEEN :start AND :end " +
+    @Query("DELETE FROM Keyword k WHERE k.date BETWEEN :start AND :end " +
             "AND k.campaign.campaignId IN :campaignIds")
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,

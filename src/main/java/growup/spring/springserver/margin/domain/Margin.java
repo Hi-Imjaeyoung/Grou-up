@@ -29,7 +29,7 @@ public class Margin {
     private Long marReturnCount; // 반품 갯수
     private Double marReturnCost; // 반품 비용
     private Double marAdCost;
-    private Double marSales;
+    private Double marSales; // 매출
     // 계산필요
     private Long marAdMargin;  // 광고 머진 계산필요
     private Double marNetProfit;  // 순이익
@@ -43,6 +43,8 @@ public class Margin {
 
     //    statics 엑셀파일 필요
     private Long marActualSales;  // 실제 판매 수
+
+    private Boolean marUpdated = Boolean.FALSE;  // 업데이트 여부
 
     //    위에 컬럼들로 계싼할 수 있음
 //    private Double marAdRevenue;  // 광고 수익률
@@ -58,21 +60,38 @@ public class Margin {
 
     public void update(long actualSales, long adMargin, long returnCount, double returnCost) {
         this.marAdMargin = adMargin; // 광고 마진
-
         this.marNetProfit = adMargin - (this.marAdCost * 1.1) - returnCost ; // 순 이익 = 광고마진 - 집행광고비1.1
         this.marActualSales = actualSales; // 실제 판매수
         this.marReturnCount = returnCount; // 반품 총 갯수
         this.marReturnCost = returnCost; // 반품 총 비용
+
+        this.marUpdated = Boolean.FALSE; // 업데이트 여부
     }
 
     public void update(long adMargin, double returnPrice) {
         this.marAdMargin = adMargin;
         this.marReturnCost = returnPrice;
-        this.marNetProfit = adMargin - (this.marAdCost * 1.1) - this.marReturnCost;
+        this.marNetProfit = adMargin - (this.marAdCost * 1.1);
     }
 
     public void updateMarginData(double targetEfficiency, double adBudget) {
         this.marAdBudget = adBudget;
         this.marTargetEfficiency = targetEfficiency;
+    }
+
+    // 캠페인 ID와 날짜로 마진 데이터 삭제
+    public void deleteMarginAboutNetSale() {
+        // 광고 마진
+        this.marAdMargin = 0L;
+        // 순수익
+        this.marNetProfit =0.0;
+        // 실제 판매수
+        this.marActualSales = 0L;
+        // 반품 총 비용
+        this.marReturnCost = 0.0;
+        // 반품 갯수
+        this.marReturnCount = 0L;
+        // 업데이트 유무 True => 추후 netSales 들어오면 로직 탐
+        this.marUpdated = Boolean.TRUE;
     }
 }

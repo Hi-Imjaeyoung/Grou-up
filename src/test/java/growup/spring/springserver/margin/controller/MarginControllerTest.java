@@ -2,6 +2,7 @@ package growup.spring.springserver.margin.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import growup.spring.springserver.annotation.WithAuthUser;
+import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.margin.dto.*;
@@ -12,6 +13,8 @@ import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -44,6 +48,8 @@ class MarginControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MarginService marginService;
+    @MockBean
+    private CampaignService campaignService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
@@ -112,20 +118,21 @@ class MarginControllerTest {
 
     @Test
     @WithAuthUser
-    @DisplayName("getDailyAdSummary() : 성공 케이스")
-    void getDailyAdSummary() throws Exception {
+    @DisplayName("getMarginOverviewGraph() : 성공 케이스")
+    void getMarginOverviewGraph() throws Exception {
         // Given
-        LocalDate date = LocalDate.of(2024, 12, 1);
+        LocalDate start = LocalDate.of(2024, 12, 1);
+        LocalDate end = LocalDate.of(2024, 12, 15);
         List<DailyAdSummaryDto> mockResponse = List.of(
-                new DailyAdSummaryDto(date.minusDays(1), 200.0, 400.0, 200.0),
-                new DailyAdSummaryDto(date, 300.0, 600.0, 200.0)
+                new DailyAdSummaryDto(start, 200.0, 400.0),
+                new DailyAdSummaryDto(end, 300.0, 600.0)
         );
 
         // Mocking 서비스 호출
-        doReturn(mockResponse).when(marginService).findByCampaignIdsAndDates(any(String.class), any(LocalDate.class));
+        doReturn(mockResponse).when(marginService).getMarginOverviewGraph(any(LocalDate.class), any(LocalDate.class),any(String.class));
 
         // API 호출 URL
-        final String url = "/api/margin/getDailyAdSummary?date=2024-12-01";
+        final String url = "/api/margin/getMarginOverviewGraph?start=2024-12-01&end=2024-12-15";
 
         // When & Then
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -133,18 +140,14 @@ class MarginControllerTest {
         resultActions.andDo(print());
         resultActions
                 .andExpect(status().isOk()) // HTTP 상태 코드 200
-                .andExpect(jsonPath("$.message").value("success: getDailyAdSummary")) // 응답 메시지 검증
+                .andExpect(jsonPath("$.message").value("success : getMarginOverviewGraph")) // 응답 메시지 검증
                 .andExpect(jsonPath("$.data").isArray()) // 데이터가 배열인지 확인
-                .andExpect(jsonPath("$.data[0].marDate").value("2024-11-30"))
-                .andExpect(jsonPath("$.data[0].marAdCost").value(200.0))
-                .andExpect(jsonPath("$.data[0].marSales").value(400.0))
-                .andExpect(jsonPath("$.data[0].marRoas").value(200.0))
-                .andExpect(jsonPath("$.data[1].marDate").value("2024-12-01"))
-                .andExpect(jsonPath("$.data[1].marAdCost").value(300.0))
-                .andExpect(jsonPath("$.data[1].marSales").value(600.0))
-                .andExpect(jsonPath("$.data[1].marRoas").value(200.0));
+                .andExpect(jsonPath("$.data[0].marDate").value("2024-12-01"))
+                .andExpect(jsonPath("$.data[0].marSales").value(200.0))
+                .andExpect(jsonPath("$.data[1].marDate").value("2024-12-15"))
+                .andExpect(jsonPath("$.data[1].marSales").value(300.0));
         // Verify 서비스 호출
-        verify(marginService).findByCampaignIdsAndDates(any(String.class), any(LocalDate.class));
+        verify(marginService).getMarginOverviewGraph(any(LocalDate.class), any(LocalDate.class),any(String.class));
     }
 
     @Test
@@ -175,9 +178,9 @@ class MarginControllerTest {
     void getNetProfitAndReturnCost_success2() throws Exception {
         Gson gson = new Gson();
         List<DailyNetProfitResponseDto> ResponseDto = List.of(
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0, 10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0, 10L),
-                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8., 100L)
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 12), 10.0, 10.0, 10L,10.0),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 13), 9.0, 9.0, 10L,20.0),
+                new DailyNetProfitResponseDto(LocalDate.of(2024, 12, 14), 8.0, 8., 100L,30.0)
         );
         doReturn(ResponseDto).when(marginService).getDailyTotalMarginListResDto(any(LocalDate.class), any(LocalDate.class), any(String.class));
 
@@ -211,9 +214,9 @@ class MarginControllerTest {
                 new DailyMarginSummary("방한마스크2", 1100L, 100.0)
         );
 
-        doReturn(ResponsDto).when(marginService).getDailyMarginSummary(any(String.class), any(LocalDate.class));
+        doReturn(ResponsDto).when(marginService).getDailyMarginSummary(any(List.class), any(LocalDate.class), any(LocalDate.class));
 
-        final String url = "/api/margin/getDailyMarginSummary?date=2025-01-01";
+        final String url = "/api/margin/getDailyMarginSummary?start=2025-01-01&end=2025-01-31";
 
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));
@@ -252,7 +255,7 @@ class MarginControllerTest {
                 .with(csrf()));
         result.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.errorMessage").value("캠페인 ID를 입력해주세요.")
+                jsonPath("$.errorMessage").value("잘못된 요청 형식입니다.")
         );
     }
 
@@ -274,7 +277,7 @@ class MarginControllerTest {
                 .with(csrf()));
         result.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.errorMessage").value("1개 이상 수정해주세요.")
+                jsonPath("$.errorMessage").value("잘못된 요청 형식입니다.")
         );
     }
 
@@ -392,5 +395,54 @@ class MarginControllerTest {
                 .andExpect(jsonPath("$.data").value(mockDate.toString()));
 
         verify(marginService).findLatestMarginDateByEmail(any(String.class));
+    }
+
+    @ParameterizedTest
+    @DisplayName("getMarginOverview() : 날짜 검증 실패 케이스")
+    @WithAuthUser
+    @MethodSource("invalidDateRange")
+    void getMarginOverview_invalidDateRange(String url) throws Exception {
+        // When
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .with(csrf()));
+
+        // Then
+        result.andDo(print())
+                .andExpectAll(
+                status().isOk(),
+                jsonPath("$.message").value("요청 날짜 형식 오류로 인한 빈 값 리턴."));
+    }
+    static Stream<String> invalidDateRange() {
+        return Stream.of(
+                "/api/margin/getMarginOverview?start=2025-06-15&end=2025-06-09",
+                "/api/margin/getMarginOverview?start=2025-06-15"
+        );
+    }
+
+    @DisplayName("getMarginOverview() : 성공 케이스")
+    @WithAuthUser
+    @Test
+    void getMarginOverview_successCase() throws Exception {
+        final String url = "/api/margin/getMarginOverview?start=2025-06-15&end=2025-06-21";
+
+        List<MarginOverviewResponseDto> mockResponse = List.of(
+                new MarginOverviewResponseDto(1L, "Campaign 1", 1500.0, 200.0, 20.0, 50.0, 300.0, 10L, 50.0, 5L, 10.0),
+                new MarginOverviewResponseDto(2L, "Campaign 2", 1000.0, 300.0, 20.0, 60.0, 400.0, 15L, 60.0, 8L, 12.5)
+        );
+        doReturn(mockResponse).when(marginService).getMarginOverview(any(LocalDate.class), any(LocalDate.class), any(String.class));
+
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .with(csrf()));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : getMarginOverview"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].campaignId").value(1L))
+                .andExpect(jsonPath("$.data[1].campaignId").value(2L));
+
+
     }
 }

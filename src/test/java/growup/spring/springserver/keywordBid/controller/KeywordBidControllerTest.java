@@ -1,12 +1,13 @@
 package growup.spring.springserver.keywordBid.controller;
 
-import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import com.nimbusds.jose.shaded.gson.*;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.service.CampaignService;
-import growup.spring.springserver.exception.InvalidDateFormatException;
+import growup.spring.springserver.exception.global.InvalidDateFormatException;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.exception.global.RequestException;
+import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
 import growup.spring.springserver.keyword.service.KeywordService;
@@ -15,7 +16,6 @@ import growup.spring.springserver.keywordBid.dto.KeywordBidDto;
 import growup.spring.springserver.keywordBid.dto.KeywordBidRequestDtos;
 import growup.spring.springserver.keywordBid.dto.KeywordBidResponseDto;
 import growup.spring.springserver.keywordBid.service.KeywordBidService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -67,7 +69,7 @@ public class KeywordBidControllerTest {
 
     @BeforeEach
     void set(){
-        gson = new Gson();
+         gson = GsonConfig.getGson();
     }
 
     @WithAuthUser
@@ -144,15 +146,15 @@ public class KeywordBidControllerTest {
     @MethodSource("getsIncorrectParam")
     void test2_1(String start, String end, String campaignId) throws Exception {
         doReturn(getKeywordBidResponseDto(1,1,List.of())).when(keywordBidService).getKeywordBids(any());
-        doThrow(new InvalidDateFormatException()).when(keywordService).getKeywordsByDateAndCampaignIdAndKeys(any(),any(),any(),any());
+        doThrow(new RequestException()).when(keywordService).getKeywordsByDateAndCampaignIdAndKeys(any(),any(),any(),any());
         final String url = "/api/bid/gets";
         final ResultActions result = mockMvc.perform(get(url)
                 .param("start",start)
                 .param("end",end)
                 .param("campaignId",campaignId));
         result.andExpectAll(
-                status().isBadRequest(),
-                jsonPath("errorMessage").value("날짜 형식이 이상합니다.")
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
         );
     }
     public static Stream<Arguments> getsIncorrectParam(){
@@ -281,16 +283,16 @@ public class KeywordBidControllerTest {
     public KeywordResponseDto getKeywordResDto(){
         return KeywordResponseDto.builder()
                 .keyKeyword("keyword")
-                .keyAdcost(1.0)
-                .keyClickRate(0.8)
-                .keyClicks(10L)
-                .keyAdsales(1.0)
-                .keyCpc(1.0)
-                .keyCvr(1.0)
-                .keyImpressions(1L)
-                .keyRoas(1.0)
+                .adCost(1.0)
+                .clickRate(0.8)
+                .clicks(10L)
+                .adSales(1.0)
+                .cpc(1.0)
+                .cvr(1.0)
+                .impressions(1L)
+                .roas(1.0)
                 .keySearchType("test")
-                .keyTotalSales(1L)
+                .totalSales(1L)
                 .bid(100L)
                 .build();
     }

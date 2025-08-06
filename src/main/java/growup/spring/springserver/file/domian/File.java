@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -23,7 +23,13 @@ public class File {
     private String fileName;
 
     // 파일 업로드한 날짜
-    private LocalDateTime fileUploadDate;
+    private LocalDate fileUploadDate;
+
+    // 파일 시작 날짜
+    private LocalDate fileStartDate;
+
+    // 파일 종료 날짜
+    private LocalDate fileEndDate;
 
     // 엑셀파일 총 갯수
     private Long fileAllCount;
@@ -34,7 +40,7 @@ public class File {
     // 기존꺼에 들어간 갯수
     private Long fileDuplicateCount;
 
-    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
+    @Enumerated(EnumType.STRING)
     private FileType fileType; // 타입 로켓그로스, 판매자배송
 
     @ManyToOne

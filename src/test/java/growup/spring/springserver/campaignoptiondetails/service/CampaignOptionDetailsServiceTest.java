@@ -1,14 +1,13 @@
 package growup.spring.springserver.campaignoptiondetails.service;
 
-import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.campaignoptiondetails.domain.CampaignOptionDetails;
 import growup.spring.springserver.campaignoptiondetails.dto.CampaignOptionDetailsResponseDto;
 import growup.spring.springserver.campaignoptiondetails.repository.CampaignOptionDetailsRepository;
-import growup.spring.springserver.exception.InvalidDateFormatException;
-import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.exception.global.InvalidDateFormatException;
 import growup.spring.springserver.execution.domain.Execution;
 import growup.spring.springserver.execution.repository.ExecutionRepository;
+import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,7 +35,7 @@ class CampaignOptionDetailsServiceTest {
     private CampaignOptionDetailsRepository campaignOptionDetailsRepository;
 
     @Mock
-    private ExecutionRepository executionRepository;
+    private ExecutionService executionService;
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -52,7 +49,7 @@ class CampaignOptionDetailsServiceTest {
     void test1() {
         // Given
         doReturn(List.of())
-                .when(executionRepository)
+                .when(executionService)
                 .findExecutionIdsByCampaignId(any());
 
         // When & Then
@@ -63,20 +60,6 @@ class CampaignOptionDetailsServiceTest {
 
         // Then
         assertThat(campaignDetailsByCampaignsIds.size()).isZero();
-    }
-
-    @Test
-    @DisplayName("getCampaignDetails : Error 2. 날짜 오류")
-    void test2() {
-        // given
-        final LocalDate start = LocalDate.of(2024, 11, 11);
-        final LocalDate end = LocalDate.of(2025, 12, 13);
-
-        // when
-        final Exception result = assertThrows(InvalidDateFormatException.class,
-                () -> campaignOptionDetailsService.getCampaignDetailsByCampaignsIds(end, start, 1L));
-        //then
-        assertThat(result.getMessage()).isEqualTo("날짜 형식이 이상합니다.");
     }
 
     @Test
@@ -92,7 +75,7 @@ class CampaignOptionDetailsServiceTest {
                 newExecution(3L, 3L, "상품3", "상품3")
         );
 
-        doReturn(executions).when(executionRepository).findExecutionIdsByCampaignId(any());
+        doReturn(executions).when(executionService).findExecutionIdsByCampaignId(any());
 
         // when
         doReturn(List.of())
@@ -113,7 +96,7 @@ class CampaignOptionDetailsServiceTest {
         final LocalDate end = LocalDate.of(2024, 11, 13);
 
         List<Long> executionIds = List.of(1L, 2L, 3L);
-        doReturn(executionIds).when(executionRepository).findExecutionIdsByCampaignId(any());
+        doReturn(executionIds).when(executionService).findExecutionIdsByCampaignId(any());
 
         Execution execution1 = newExecution(1L, 1L, "Product A", "Category A");
         Execution execution2 = newExecution(2L, 2L, "Product B", "Category B");
@@ -157,7 +140,7 @@ class CampaignOptionDetailsServiceTest {
         final LocalDate end = LocalDate.of(2024, 11, 13);
 
         List<Long> executionIds = List.of(1L, 2L, 3L);
-        doReturn(executionIds).when(executionRepository).findExecutionIdsByCampaignId(any());
+        doReturn(executionIds).when(executionService).findExecutionIdsByCampaignId(any());
 
         Execution execution1 = newExecution(1L, 1L, "Product A", "Category A");
         Execution execution2 = newExecution(2L, 2L, "Product B", "Category B");

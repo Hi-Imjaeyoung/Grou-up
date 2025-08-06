@@ -1,6 +1,5 @@
 package growup.spring.springserver.file.controller;
 
-import growup.spring.springserver.file.FileType;
 import growup.spring.springserver.file.dto.FileResDto;
 import growup.spring.springserver.file.service.FileService;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -9,12 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/file")
@@ -23,18 +21,31 @@ public class FileController {
 
     private final FileService fileService;
 
-    // 타입별 파일 내역 보기
-    // 프론트에서 파일타입이 넘어옴
-    @GetMapping("/history")
-    public ResponseEntity<CommonResponse<List<FileResDto>>> getFileHistory(
+    @GetMapping("/getHistory")
+    public ResponseEntity<CommonResponse<FileResDto>> getFileHistory(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam FileType fileType) {
+            @RequestParam("startDate") LocalDate start,
+            @RequestParam("endDate") LocalDate end) {
 
-        List<FileResDto> fileHistory = fileService.getFileHistory(fileType, userDetails.getUsername());
+        FileResDto fileHistory = fileService.getFileHistory(userDetails.getUsername(), start, end);
 
         return new ResponseEntity<>(CommonResponse
-                .<List<FileResDto>>builder("success :getFileHistory")
+                .<FileResDto>builder("success :getFileHistory")
                 .data(fileHistory)
+                .build(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteNetSalesFile")
+    public ResponseEntity<CommonResponse<List<Map<String,Integer>>>> deleteCampaign(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("id") Long id
+    ) {
+
+        List<Map<String, Integer>> maps = fileService.deleteNetSalesFile(userDetails.getUsername(), id);
+
+        return new ResponseEntity<>(CommonResponse
+                .<List<Map<String,Integer>>>builder("success : deleteNetSalesReport")
+                .data(maps)
                 .build(), HttpStatus.OK);
     }
 }

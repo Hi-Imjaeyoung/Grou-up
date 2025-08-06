@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -33,12 +32,6 @@ public class ExecutionService {
         }
         return data;
     }
-  
-//    public List<Execution> getExecutionsByCampaignIdAndExeIds(Long campaignId, List<Long> exeIds) {
-//        List<Execution> result = executionRepository.findByCampaignIdAndExeId(campaignId, exeIds);
-//        return result;
-//    }
-  
     @Transactional
     public ExecutionResponseDto updateExecutions(ExecutionRequestDtos requests, Campaign campaign) {
         int requestDataSize = requests.getData().size();
@@ -66,4 +59,8 @@ public class ExecutionService {
                 CampaignOptionNotFoundException::new
         );
     }
+    public List<Long> findExecutionIdsByCampaignId(Long campaignId) {
+        return executionRepository.findExecutionIdsByCampaignId(campaignId);
+    }
 }
+

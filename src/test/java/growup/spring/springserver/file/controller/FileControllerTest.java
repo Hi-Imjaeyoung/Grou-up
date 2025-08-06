@@ -1,38 +1,40 @@
 package growup.spring.springserver.file.controller;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.global.config.JwtTokenProvider;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import growup.spring.springserver.file.FileType;
-import growup.spring.springserver.file.dto.FileResDto;
-import growup.spring.springserver.file.service.FileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import growup.spring.springserver.file.dto.FileResDto;
+import growup.spring.springserver.file.dto.FileResponseDto;
+import growup.spring.springserver.file.service.FileService;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-@ExtendWith(MockitoExtension.class)
 @WebMvcTest(FileController.class)
 class FileControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    FileService fileService;
+    private FileService fileService;
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
@@ -40,65 +42,103 @@ class FileControllerTest {
     @MockBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-
     @DisplayName("getFileHistory() : successCase")
     @Test
     @WithAuthUser
     void getFileHistory_successCase() throws Exception {
         // given
         String email = "test@test.com";
-        FileType fileType = FileType.ADVERTISING_REPORT;
-        FileResDto mockFileResDto = new FileResDto(1L, "testFile", LocalDateTime.now(), 10L, 5L, 2L);
-        FileResDto mockFileResDto2 = new FileResDto(2L, "testFile2", LocalDateTime.now(), 10L, 5L, 2L);
+        LocalDate start = LocalDate.of(2024, 11, 11);
+        LocalDate end = LocalDate.of(2024, 11, 13);
 
-        when(fileService.getFileHistory(fileType, email))
-                .thenReturn(List.of(mockFileResDto,mockFileResDto2));
+        List<LocalDate> advMap =
+                List.of(
+                        LocalDate.of(2024, 11, 11),
+                        LocalDate.of(2024, 11, 12),
+                        LocalDate.of(2024, 11, 13),
+                        LocalDate.of(2024, 11, 14)
+                );
+        Map<LocalDate, FileResponseDto> netMap = Map.of(
+                LocalDate.of(2024, 11, 11),
 
-        // when & then
-        mockMvc.perform(get("/api/file/history")
-                        .param("fileType", fileType.name())
+                FileResponseDto.builder()
+                        .id(2L)
+                        .fileName("file2.txt")
+                        .fileUploadDate(LocalDate.of(2024, 11, 11))
+                        .build()
+
+        );
+        FileResDto mockDto = FileResDto.builder()
+                .advertisingReport(advMap)
+                .netSalesReport(netMap)
+                .build();
+
+        given(fileService.getFileHistory(email, start, end))
+                .willReturn(mockDto);
+
+        mockMvc.perform(get("/api/file/getHistory")
+                        .param("startDate", start.toString())
+                        .param("endDate", end.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success :getFileHistory"))
-                .andExpect(jsonPath("$.data[0].fileName").value("testFile"))
-                .andExpect(jsonPath("$.data[0].id").value(1L))
-
-                .andExpect(jsonPath("$.data[1].fileName").value("testFile2"))
-                .andExpect(jsonPath("$.data[1].id").value(2))
-                .andExpect(jsonPath("$.data[1].fileAllCount").value(10))
-                .andExpect(jsonPath("$.data[1].fileNewCount").value(5))
-                .andExpect(jsonPath("$.data[1].fileDuplicateCount").value(2));
+                .andExpect(jsonPath("$.data.advertisingReport").isArray());
 
     }
 
-    @DisplayName("getFileHistory() : failCase1. 파일 내역이 없는 경우")
+    @DisplayName("getFileHistory() : empty data returns empty maps")
     @Test
     @WithAuthUser
-    void getFileHistory_failCase() throws Exception {
+    void getFileHistory_emptyData() throws Exception {
         // given
-        String email = "test@example.com";
-        FileType fileType = FileType.ADVERTISING_REPORT;
+        String email = "test@test.com";
+        LocalDate start = LocalDate.of(2024, 1, 1);
+        LocalDate end = LocalDate.of(2024, 1, 1);
 
-        when(fileService.getFileHistory(fileType, email))
-                .thenReturn(List.of());
+        FileResDto emptyDto = FileResDto.builder()
+                .advertisingReport(Collections.emptyList())
+                .netSalesReport(Collections.emptyMap())
+                .build();
+
+        given(fileService.getFileHistory(email, start, end))
+                .willReturn(emptyDto);
 
         // when & then
-        mockMvc.perform(get("/api/file/history")
-                        .param("fileType", fileType.name())
+        mockMvc.perform(get("/api/file/getHistory")
+                        .param("startDate", start.toString())
+                        .param("endDate", end.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success :getFileHistory"))
-                .andExpect(jsonPath("$.data").isEmpty());
+                // 빈 오브젝트(맵)인지 확인
+                .andExpect(jsonPath("$.data.advertisingReport").isEmpty())
+                .andExpect(jsonPath("$.data.netSalesReport").isEmpty());
     }
-
-    @DisplayName("getFileHistory() : failCase2. 잘못된 fileType 파라미터로 400 오류 발생")
+    @DisplayName("deleteNetSalesFile() - successCase")
     @Test
     @WithAuthUser
-    void getFileHistory_invalidFileType() throws Exception {
+    void deleteNetSalesFile() throws Exception{
+        String email = "test@test.com";
+        Long id = 1L;
 
-        mockMvc.perform(get("/api/file/history")
-                        .param("fileType", "INVALID_TYPE")
+        List<Map<String, Integer>> marginDeleteCount = List.of(
+                Map.of("marginDeleteCount", 1),
+                Map.of("netSalesDeleteCount", 2)
+        );
+
+
+//        doReturn(marginDeleteCount).when(fileService).deleteNetSalesFile(email, id);
+//        given(fileService.deleteNetSalesFile(email, id)).willReturn(marginDeleteCount);
+        when(fileService.deleteNetSalesFile(email, id)).thenReturn(marginDeleteCount);
+
+        mockMvc.perform(delete("/api/file/deleteNetSalesFile")
+                        .with(csrf())
+                        .param("id", id.toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success : deleteNetSalesReport"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].marginDeleteCount").value(1))
+                .andExpect(jsonPath("$.data[1].netSalesDeleteCount").value(2));
     }
 }

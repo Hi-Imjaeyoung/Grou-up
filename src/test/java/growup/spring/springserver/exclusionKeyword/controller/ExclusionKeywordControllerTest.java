@@ -65,7 +65,7 @@ public class ExclusionKeywordControllerTest {
                 .with(csrf())); // 403 에러 해결을 위해 추가
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("조회할 캠패인 ID를 입력해주세요")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 
@@ -89,7 +89,7 @@ public class ExclusionKeywordControllerTest {
         //then
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("제외 키워드는 최소 1개 이상이어야 합니다.")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 
@@ -141,7 +141,7 @@ public class ExclusionKeywordControllerTest {
                         .with(csrf())); // 403 에러 해결을 위해 추가
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("조회할 캠패인 ID를 입력해주세요")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 
@@ -163,7 +163,7 @@ public class ExclusionKeywordControllerTest {
                 .with(csrf())); // 403 에러 해결을 위해 추가
         resultActions.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("errorMessage").value("제외 키워드는 최소 1개 이상이어야 합니다.")
+                jsonPath("errorMessage").value("잘못된 요청 형식입니다.")
         ).andDo(print());
     }
 

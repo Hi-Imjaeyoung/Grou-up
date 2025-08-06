@@ -25,6 +25,8 @@ public enum ErrorCode {
 
     //Global
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 이상합니다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST,"잘못된 요청 형식입니다."),
+    VIOLATION_DATE_RANGE(HttpStatus.BAD_REQUEST,"시작날짜가 끝 날짜보다 클 수 없습니다."),
 
     //KeywordBid
     KEYWORDBID_NOT_FOUND(HttpStatus.BAD_REQUEST,"입찰가 정보가 없습니다."),
@@ -36,7 +38,7 @@ public enum ErrorCode {
     // Execution
     EXECUTION_REQUEST_ERROR(HttpStatus.BAD_REQUEST,"잘못된 요청값 입니다."),
 
-      // MarginForCampaign
+    // MarginForCampaign
     MARGIN_FOR_CAMPAIGN_PRODUCT_NAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "현재 캠페인 제외하고 없는 상품입니다."),
     MARGIN_FOR_CAMPAIGN_ID_NOT_FOUND(HttpStatus.BAD_REQUEST,"없는 ID 입니다."),
     MARGIN_FOR_CAMPAIGN_FOUND(HttpStatus.BAD_REQUEST,"현재 캠페인의 있는 상품명 입니다."),
@@ -45,7 +47,10 @@ public enum ErrorCode {
     NET_SALES_NOT_FOUND_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "없는 상품아이디 입니다."),
 
     // Memo
-    MEMO_NOT_FOUND(HttpStatus.BAD_REQUEST,"해당 메모가 존재하지 않습니다")
+    MEMO_NOT_FOUND(HttpStatus.BAD_REQUEST,"해당 메모가 존재하지 않습니다"),
+
+    // File
+    FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 파일이 존재하지 않습니다."),
     ;
 
 

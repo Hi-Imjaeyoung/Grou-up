@@ -1,4 +1,4 @@
-package growup.spring.springserver.exception;
+package growup.spring.springserver.exception.global;
 
 import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;

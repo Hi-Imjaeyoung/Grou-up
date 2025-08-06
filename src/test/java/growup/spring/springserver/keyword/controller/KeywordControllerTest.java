@@ -1,5 +1,6 @@
 package growup.spring.springserver.keyword.controller;
 
+import growup.spring.springserver.campaign.service.CampaignAnalysisService;
 import growup.spring.springserver.annotation.WithAuthUser;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
@@ -34,6 +35,8 @@ public class KeywordControllerTest {
     @MockBean
     private KeywordService keywordService;
     @MockBean
+    private CampaignAnalysisService campaignAnalysisService;
+    @MockBean
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -45,7 +48,10 @@ public class KeywordControllerTest {
         final String url = "/api/keyword/getKeywordsAboutCampaign?start=2024-12-01&campaignId=1";
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
+        );
     }
 
     @Test
@@ -55,7 +61,11 @@ public class KeywordControllerTest {
         final String url = "/api/keyword/getKeywordsAboutCampaign?start=2024-12-01&end=20-11-01&campaignId=1";
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url));
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpectAll(
+                status().isOk(),
+                jsonPath("message").value("요청 날짜 형식 오류로 인한 빈 값 리턴.")
+        );
+        resultActions.andDo(print());
     }
 
     @Test
@@ -79,24 +89,24 @@ public class KeywordControllerTest {
                 status().isOk(),
                 jsonPath("data").isArray(),
                 jsonPath("data[0].keyKeyword").value("keyword"),
-                jsonPath("data[1].keyCpc").value(1.0),
-                jsonPath("data[2].keyClicks").value(10L)
+                jsonPath("data[1].cpc").value(1.0),
+                jsonPath("data[2].clicks").value(10L)
         );
     }
 
     public KeywordResponseDto getKeywordResDto(){
         return KeywordResponseDto.builder()
                 .keyKeyword("keyword")
-                .keyAdcost(1.0)
-                .keyClickRate(0.8)
-                .keyClicks(10L)
-                .keyAdsales(1.0)
-                .keyCpc(1.0)
-                .keyCvr(1.0)
-                .keyImpressions(1L)
-                .keyRoas(1.0)
+                .adCost(1.0)
+                .clickRate(0.8)
+                .clicks(10L)
+                .adSales(1.0)
+                .cpc(1.0)
+                .cvr(1.0)
+                .impressions(1L)
+                .roas(1.0)
                 .keySearchType("test")
-                .keyTotalSales(1L)
+                .totalSales(1L)
                 .build();
     }
 }

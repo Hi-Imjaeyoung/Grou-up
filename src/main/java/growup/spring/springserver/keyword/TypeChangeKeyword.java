@@ -8,21 +8,18 @@ import java.util.HashMap;
 public class TypeChangeKeyword {
     public static KeywordResponseDto entityToResponseDto(Keyword keyword){
         return KeywordResponseDto.builder()
-                .keyAdcost(keyword.getKeyAdcost())
-                .keyAdsales(keyword.getKeyAdsales())
-                .keyClickRate((double) (Math.round(keyword.getKeyClickRate()*100)/100))
+                .adCost(keyword.getAdCost())
+                .adSales(keyword.getAdSales())
                 .keyKeyword(keyword.getKeyKeyword())
-                .keyClicks(keyword.getKeyClicks())
-                .keyCpc(keyword.getKeyCpc())
-                .keyCvr((double) (Math.round(keyword.getKeyCvr()*100)/100))
-                .keyImpressions(keyword.getKeyImpressions())
-                .keyRoas((double) (Math.round(keyword.getKeyRoas()*100)/100))
-                .keyDate(keyword.getKeyDate().toString())
+                .clicks(keyword.getClicks())
+                .cpc(keyword.getCpc())
+                .impressions(keyword.getImpressions())
+                .date(keyword.getDate())
                 .keyExcludeFlag(false)
                 .keyBidFlag(false)
                 .keySalesOptions(keyword.getKeyProductSales())
                 .keySearchType(keyword.getKeySearchType())
-                .keyTotalSales(keyword.getKeyTotalSales())
+                .totalSales(keyword.getTotalSales())
                 .build();
     }
 }

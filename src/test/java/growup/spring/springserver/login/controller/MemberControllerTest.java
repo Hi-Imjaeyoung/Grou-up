@@ -41,7 +41,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("getMyEmailAndRole : ErrorCase1.인가되지 않은 사용자 접근")
     void test1() throws Exception {
-        final String url = "/api/members/getMyEmailAndRole";
+        final String url = "/api/members/getMyName";
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url));
         resultActions.andDo(print()).andExpect(status().isUnauthorized());
     }
@@ -51,7 +51,7 @@ public class MemberControllerTest {
     @WithAuthUser
     void test2() throws Exception {
         Gson gson = new Gson();
-        final String url = "/api/members/getMyEmailAndRole";
+        final String url = "/api/members/getMyName";
 
         LoginDataResDto mockResponse = new LoginDataResDto("fa7271@naver.com");
         doReturn(mockResponse).when(memberService).getMyName(any());
@@ -66,8 +66,7 @@ public class MemberControllerTest {
         resultActions.andExpectAll(
                 status().isOk(),
                 jsonPath("message").value("getMyEmailAndRole Success"), // "message" 필드 검증
-                jsonPath("data.email").value("fa7271@naver.com"),       // "data.email" 필드 검증
-                jsonPath("data.role").value("USER")                    // "data.role" 필드 검증
+                jsonPath("data.name").value("fa7271@naver.com")
         ).andDo(print());
     }
     @Test

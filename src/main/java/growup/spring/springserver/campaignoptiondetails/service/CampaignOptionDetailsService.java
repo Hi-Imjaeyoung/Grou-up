@@ -1,13 +1,10 @@
 package growup.spring.springserver.campaignoptiondetails.service;
 
-import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.campaignoptiondetails.TypeChangeCampaignOptionDetails;
 import growup.spring.springserver.campaignoptiondetails.domain.CampaignOptionDetails;
 import growup.spring.springserver.campaignoptiondetails.dto.CampaignOptionDetailsResponseDto;
 import growup.spring.springserver.campaignoptiondetails.repository.CampaignOptionDetailsRepository;
-import growup.spring.springserver.exception.InvalidDateFormatException;
-import growup.spring.springserver.execution.repository.ExecutionRepository;
-import growup.spring.springserver.login.repository.MemberRepository;
+import growup.spring.springserver.execution.service.ExecutionService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +18,10 @@ import java.util.*;
 @Slf4j
 public class CampaignOptionDetailsService {
     private final CampaignOptionDetailsRepository campaignOptionDetailsRepository;
-    private final ExecutionRepository executionRepository;
-    private final MemberRepository memberRepository;
-    private final CampaignRepository campaignRepository;
+    private final ExecutionService executionService;
 
     public List<CampaignOptionDetails> getRawCampaignDetails(LocalDate start, LocalDate end, long id) {
-        if (start.isAfter(end)) {
-            throw new InvalidDateFormatException();
-        }
-        List<Long> byCampaignCampaignIds = executionRepository.findExecutionIdsByCampaignId(id);
+        List<Long> byCampaignCampaignIds = executionService.findExecutionIdsByCampaignId(id);
         if (byCampaignCampaignIds.isEmpty()) {
             return Collections.emptyList();
         }

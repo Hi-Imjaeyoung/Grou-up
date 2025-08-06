@@ -1,5 +1,6 @@
 package growup.spring.springserver.global.config;
 
+import growup.spring.springserver.global.fillter.JwtFilterConfiguration;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(properties = "spring.profiles.active=test")
-@ContextConfiguration(classes = {SecurityConfigTest.class, JwtTokenProvider.class})
+@ContextConfiguration(classes = {SecurityConfigTest.class, JwtTokenProvider.class,JwTokenProviderConfiguration.class})
 class JwtTokenProviderTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;

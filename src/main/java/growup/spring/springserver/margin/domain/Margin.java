@@ -77,6 +77,7 @@ public class Margin {
     public void updateMarginData(double targetEfficiency, double adBudget) {
         this.marAdBudget = adBudget;
         this.marTargetEfficiency = targetEfficiency;
+        this.marUpdated = Boolean.FALSE;
     }
 
     // 캠페인 ID와 날짜로 마진 데이터 삭제

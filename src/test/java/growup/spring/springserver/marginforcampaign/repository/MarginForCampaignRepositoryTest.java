@@ -106,6 +106,32 @@ public class MarginForCampaignRepositoryTest {
         assertThat(marginForCampaignRepository.existsById(1L)).isFalse();
     }
 
+    @DisplayName("findAllByMemberEmailWithFetch : success")
+    @Test
+    void test5() {
+        Member member = getMember();
+        memberRepository.save(member);
+
+        Campaign campaign = campaignRepository.save(getCampaign("송보석",1L,member));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign, "모자2", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+
+        Campaign campaign2 = campaignRepository.save(getCampaign("송보석1",2L,member));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자3", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign2, "모자4", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+
+        Campaign campaign3 = campaignRepository.save(getCampaign("송보석2",3L,member));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자5", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+        marginForCampaignRepository.save(getgetMarginForCampaign(campaign3, "모자6", 1L, 1L, 1L, 1.1,MarginType.ROCKET_GROWTH));
+
+
+        List<MarginForCampaign> result = marginForCampaignRepository.findAllByMemberEmailWithFetch("fa7271@naver.com");
+
+        assertThat(result).hasSize(6);
+
+
+    }
+
     public Member getMember() {
         return Member.builder()
                 .email("fa7271@naver.com")

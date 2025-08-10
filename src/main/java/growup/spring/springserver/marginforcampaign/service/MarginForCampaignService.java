@@ -157,4 +157,12 @@ public class MarginForCampaignService {
         marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(email, data.getMfcProductName(), campaign.getCampaignId(), data.getMfcType())
                 .orElseThrow(MarginForCampaignProductNameNotFoundException::new);
     }
+
+    public List<MarginForCampaignResDto>  getMyAllExecution(String username) {
+        List<MarginForCampaign> allByMemberEmailWithFetch = marginForCampaignRepository.findAllByMemberEmailWithFetch(username);
+
+        return allByMemberEmailWithFetch.stream()
+                .map(TypeChangeMarginForCampaign::EntityToDtoWithCampaign) // 각 data를 DTO로 변환
+                .toList();
+    }
 }

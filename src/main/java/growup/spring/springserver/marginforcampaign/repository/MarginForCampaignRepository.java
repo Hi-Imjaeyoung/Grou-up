@@ -17,6 +17,12 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
     @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId")
     List<MarginForCampaign> MarginForCampaignByCampaignId(Long campaignId);
 
+    // 순수 jpa 쿼리와 비교시
+    // 성능 최적화(N+1 문제 방지)와 명시성 때문에 해당 코드를 추천한다고 젬미니는 말합니다
+    @Query("SELECT mfc FROM MarginForCampaign mfc JOIN FETCH mfc.campaign c WHERE c.member.email = :email")
+    List<MarginForCampaign> findAllByMemberEmailWithFetch(@Param("email") String email);
+
+
 
     @Query("SELECT m FROM MarginForCampaign m JOIN m.campaign.member member WHERE member.email = :email AND m.mfcProductName = :productName AND m.mfcType = :mfcType AND m.campaign.campaignId <> :campaignId")
     Optional<MarginForCampaign> findByEmailAndMfcProductNameExcludingCampaign(@Param("email") String email,

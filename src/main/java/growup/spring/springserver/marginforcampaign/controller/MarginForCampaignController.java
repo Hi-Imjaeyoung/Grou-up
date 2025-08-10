@@ -32,6 +32,18 @@ public class MarginForCampaignController {
                 .build(), HttpStatus.OK);
     }
 
+    // 내가 가진 모든 캠페인들의 옵션
+    @GetMapping("/getMyAllExecution")
+    public ResponseEntity<CommonResponse<List<MarginForCampaignResDto>>> getExecutionAboutAll(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MarginForCampaignResDto> myAllExecution = marginForCampaignService.getMyAllExecution(userDetails.getUsername());
+
+        return new ResponseEntity<>(CommonResponse
+                .<List<MarginForCampaignResDto>>builder("success : getMyAllExecution")
+                .data(myAllExecution)
+                .build(), HttpStatus.OK);
+
+    }
+
     @PatchMapping("/updateExecutionAboutCampaign")
     public ResponseEntity<CommonResponse<MfcValidationResponseDto>> updateExecutionAboutCampaign(@Valid @RequestBody MfcRequestDtos mfcRequestDtos,
                                                                                                  @AuthenticationPrincipal UserDetails userDetails) {

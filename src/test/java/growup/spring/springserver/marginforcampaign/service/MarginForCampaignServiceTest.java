@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -213,6 +214,36 @@ class MarginForCampaignServiceTest {
 
     }
 
+    @DisplayName("getMyAllExecution : success")
+    @Test
+    void getMyAllExecution_Success() {
+        Member member = getMember();
+        Campaign campaign = getCampaign("송보석1", 1L, member);
+        Campaign campaign2 = getCampaign("송보석2", 2L,member);
+        Campaign campaign3 = getCampaign("송보석3", 3L,member);
+        doReturn(List.of(
+                getMarginForCampaign(campaign, "모자1", 1L, 1L, 1L, 1.1),
+                getMarginForCampaign(campaign2, "모자2", 1L, 1L, 1L, 1.1),
+                getMarginForCampaign(campaign3, "모자3", 1L, 1L, 1L, 1.1)))
+                .when(marginForCampaignRepository).findAllByMemberEmailWithFetch("fa7271@naver.com");
+
+        List<MarginForCampaignResDto> result = marginForCampaignService.getMyAllExecution("fa7271@naver.com");
+
+        // then
+        assertThat(result)
+                .extracting(MarginForCampaignResDto::getMfcProductName)
+                .containsExactly("모자1", "모자2", "모자3");
+    }
+    @DisplayName("getMyAllExecution : empty")
+    @Test
+    void getMyAllExecution_Empty() {
+        // given
+        doReturn(List.of()).when(marginForCampaignRepository).findAllByMemberEmailWithFetch("fa7271@naver.com");
+        // when
+        List<MarginForCampaignResDto> result = marginForCampaignService.getMyAllExecution("fa7271@naver.com");
+        // then
+        assertThat(result).isEmpty(); // 결과가 비어 있어야 함
+    }
 
     public Member getMember() {
         return Member.builder()
@@ -223,6 +254,13 @@ class MarginForCampaignServiceTest {
     public Campaign getCampaign(String name, Long id) {
         return Campaign.builder()
                 .campaignId(id)
+                .camCampaignName(name)
+                .build();
+    }
+    public Campaign getCampaign(String name, Long id, Member member) {
+        return Campaign.builder()
+                .campaignId(id)
+                .member(member)
                 .camCampaignName(name)
                 .build();
     }

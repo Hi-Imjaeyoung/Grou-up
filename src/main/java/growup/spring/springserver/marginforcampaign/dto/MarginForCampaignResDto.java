@@ -16,4 +16,7 @@ public class MarginForCampaignResDto {
     private Long mfcReturnPrice; // 반품
     private Long mfcPerPiece; //  1개당 마진
     private Double mfcZeroRoas; // 제로 Roas
+
+    private Long CampaignId; // 캠페인 ID
+    private String campaignName;
 }

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class MfcRequestWithDatesDto extends MfcRequestDtos {
     @NotNull(message = "시작 날짜를 입력해주세요.")
     private LocalDate startDate;

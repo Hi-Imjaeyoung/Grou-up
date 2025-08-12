@@ -75,11 +75,12 @@ public class MarginForCampaignService {
             }
 
             try {
+                // ✅ 현재 캠페인 내에서만 중복을 체크합니다.
                 validateUniqueProductInMyCampaign(data, campaign);
-                validateUniqueProductNameInOtherCampaigns(email, data, campaign);
-                failedProductNames.add(data.getMfcProductName());
-            } catch (MarginForCampaignProductNameNotFoundException exception) {
+
+                // ✅ 중복 검사 로직이 하나 줄었으므로, 여기서 바로 handleProduct를 호출해야 합니다.
                 handleProduct(data, campaign, successfulProducts);
+
             } catch (MarginForCampaignFoundException exception) {
                 handleExistingProduct(data, campaign, successfulProducts, failedProductNames);
             }
@@ -105,6 +106,7 @@ public class MarginForCampaignService {
     private void handleExistingProduct(MfcDto data, Campaign campaign,
                                        List<MarginForCampaign> successfulProducts,
                                        List<String> failedProductNames) {
+        log.info(data.getMfcProductName() + " is already processed in this campaign.");
         if (data.getMfcId() == null) {
             failedProductNames.add(data.getMfcProductName());
         } else {
@@ -153,8 +155,16 @@ public class MarginForCampaignService {
     *   email, camapign,상품명, type(판매자배송, 로켓그로스)
     *   현재 캠페인을 제외하고 중복되는 이름이 있는지 확인
      */
-    private void validateUniqueProductNameInOtherCampaigns(String email, MfcDto data, Campaign campaign) {
-        marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(email, data.getMfcProductName(), campaign.getCampaignId(), data.getMfcType())
-                .orElseThrow(MarginForCampaignProductNameNotFoundException::new);
+//    private void validateUniqueProductNameInOtherCampaigns(String email, MfcDto data, Campaign campaign) {
+//        marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(email, data.getMfcProductName(), campaign.getCampaignId(), data.getMfcType())
+//                .orElseThrow(MarginForCampaignProductNameNotFoundException::new);
+//    }
+
+    public List<MarginForCampaignResDto>  getMyAllExecution(String username) {
+        List<MarginForCampaign> allByMemberEmailWithFetch = marginForCampaignRepository.findAllByMemberEmailWithFetch(username);
+
+        return allByMemberEmailWithFetch.stream()
+                .map(TypeChangeMarginForCampaign::EntityToDtoWithCampaign) // 각 data를 DTO로 변환
+                .toList();
     }
 }

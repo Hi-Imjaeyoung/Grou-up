@@ -24,6 +24,21 @@ public class TypeChangeMarginForCampaign {
                 .mfcZeroRoas(data.getMfcZeroRoas())
                 .build();
     }
+    public static MarginForCampaignResDto EntityToDtoWithCampaign(MarginForCampaign data) {
+        return MarginForCampaignResDto.builder()
+                .id(data.getId())
+                .CampaignId(data.getCampaign().getCampaignId())
+                .campaignName(data.getCampaign().getCamCampaignName())
+                .mfcProductName(data.getMfcProductName())
+                .mfcSalePrice(data.getMfcSalePrice())
+                .mfcTotalPrice(data.getMfcTotalPrice())
+                .mfcCostPrice(data.getMfcCostPrice())
+                .mfcType(data.getMfcType())
+                .mfcReturnPrice(data.getMfcReturnPrice())
+                .mfcPerPiece(data.getMfcPerPiece())
+                .mfcZeroRoas(data.getMfcZeroRoas())
+                .build();
+    }
 
     public static MfcValidationResponseDto validationResponse(int request, int response, List<String> failedProductNames) {
         return MfcValidationResponseDto.builder()

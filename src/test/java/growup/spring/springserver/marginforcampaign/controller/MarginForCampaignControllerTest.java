@@ -171,6 +171,32 @@ class MarginForCampaignControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success : delete"));
     }
+    @WithAuthUser
+    @DisplayName("getMyAllExecution() -  successCase")
+    @Test
+    void getMyAllExecution_success() throws Exception {
+        String url = "/api/marginforcam/getMyAllExecution";
+
+        List<MarginForCampaignResDto> mockData = List.of(
+                createMarginForCampaignResDto("상품1", 1000L),
+                createMarginForCampaignResDto("상품2", 2000L)
+        );
+
+        // when
+        when(marginForCampaignService.getMyAllExecution(any(String.class))).thenReturn(mockData);
+
+        // then
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].mfcProductName").value("상품1"))
+                .andExpect(jsonPath("$.data[0].mfcTotalPrice").value(1000L))
+                .andExpect(jsonPath("$.data[1].mfcProductName").value("상품2"))
+                .andExpect(jsonPath("$.data[1].mfcTotalPrice").value(2000L));
+    }
 
     @WithAuthUser
     @DisplayName("deleteExecutionAboutCampaign() Fail Case - ID Not Found")

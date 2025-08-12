@@ -25,7 +25,7 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
 
 
     @Query("SELECT m FROM MarginForCampaign m JOIN m.campaign.member member WHERE member.email = :email AND m.mfcProductName = :productName AND m.mfcType = :mfcType AND m.campaign.campaignId <> :campaignId")
-    Optional<MarginForCampaign> findByEmailAndMfcProductNameExcludingCampaign(@Param("email") String email,
+    List<MarginForCampaign> findByEmailAndMfcProductNameExcludingCampaign(@Param("email") String email,
                                                                               @Param("productName") String productName,
                                                                               @Param("campaignId") Long campaignId,
                                                                               @Param("mfcType") MarginType mfcType);

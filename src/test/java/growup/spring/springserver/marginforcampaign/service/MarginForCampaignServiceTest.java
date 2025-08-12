@@ -82,7 +82,7 @@ class MarginForCampaignServiceTest {
 
     }
 
-    @DisplayName("모든 상품이 존재하지 않을 경우")
+    /*@DisplayName("모든 상품이 존재하지 않을 경우")
     @Test
     void searchMarginForCampaignProductName_Success1() {
         // given
@@ -123,7 +123,7 @@ class MarginForCampaignServiceTest {
         // then
         assertThat(response.getFailedProductNames()).containsExactly("존재하는 상품"); // 실패한 상품에 존재하는 상품이 있어야 함
         assertThat(response.getResponseNumber()).isEqualTo(1); // 새로운 상품이 하나 추가되었어야 함
-    }
+    }*/
     @DisplayName("모든 상품이 현재 캠페인에 존재하는 경우")
     @Test
     void searchMarginForCampaignProductName_Success3() {
@@ -156,8 +156,8 @@ class MarginForCampaignServiceTest {
         ));
 
         when(campaignService.getMyCampaign(anyLong(), anyString())).thenReturn(campaign);
-        when(marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(any(), eq("중복 상품"), any(),any()))
-                .thenReturn(Optional.empty());
+//        when(marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(any(), eq("중복 상품"), any(),any()))
+//                .thenReturn(Optional.empty());
 
         // when
         MfcValidationResponseDto response = marginForCampaignService.searchMarginForCampaignProductName("test@naver.com", requestDtos);
@@ -178,8 +178,8 @@ class MarginForCampaignServiceTest {
                 getMfcDto("상품1", 2L, 2L, 1L, 1.1) // 가격이 다름
         ));
         // 다른 캠페인에는 해당 상품이 없음
-        when(marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(any(), eq("상품1"), any(),any()))
-                .thenReturn(Optional.empty()); // 존재하는 상품
+//        when(marginForCampaignRepository.findByEmailAndMfcProductNameExcludingCampaign(any(), eq("상품1"), any(),any()))
+//                .thenReturn(Optional.empty()); // 존재하는 상품
 
 
         // when

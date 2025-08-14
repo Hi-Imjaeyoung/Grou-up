@@ -61,7 +61,7 @@ logging:
     org.springframework.web: WARN
     # 프로메테우스 관련 로그 Level WARN 설정.
     org.springframework.boot.actuate: WARN
-    org.springframework.security: DEBUG
+    org.springframework.security: WARN
     growup.spring.springserver.global.config: DEBUG
     # 새로 만든 HealthCheckController만 딱 집어서 WARN 레벨로 설정!
     com.example.demo.controller.HealthCheckController: WARN

@@ -5,6 +5,7 @@ import growup.spring.springserver.global.common.OAuth2AuthenticationSuccessHandl
 import growup.spring.springserver.global.error.UserAccessDeniedHandler;
 import growup.spring.springserver.global.error.UserAuthenticationEntryPoint;
 import growup.spring.springserver.global.fillter.JwtAuthFilter;
+import growup.spring.springserver.global.fillter.RequestLoggingFilter;
 import growup.spring.springserver.login.service.Oauth2UserService;
 import jakarta.servlet.GenericFilter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class SecurityConfig {
     private final GenericFilter jwtAuthFilter;
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler successHandler;
+    private final RequestLoggingFilter requestLoggingFilter; // 1. 방금 만든 필터를 주입받는다.
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -76,7 +78,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oauth2UserService) // 사용자 정보 서비스 등록
                         )
-                );
+                ).addFilterBefore(requestLoggingFilter,UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 

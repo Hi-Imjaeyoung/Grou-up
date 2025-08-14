@@ -71,13 +71,13 @@ def handle_excel_upload(request):
         # S3에서 파일 다운로드
         s3_client = boto3.client(
             's3',
-            region_name=settings.AWS_S3_REGION_NAME,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.MY_AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.MY_AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.MY_AWS_SECRET_ACCESS_KEY,
         )
 
         # S3에서 파일 객체 가져오기
-        response = s3_client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+        response = s3_client.get_object(Bucket=settings.MY_AWS_STORAGE_BUCKET_NAME, Key=s3_key)
         file_content = response['Body'].read()
 
         # BytesIO를 사용해 메모리에서 엑셀 파일 읽기
@@ -125,7 +125,7 @@ def handle_excel_upload(request):
 
         # 모든 처리가 성공적으로 완료된 경우에만 S3 파일 삭제
         try:
-            s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+            s3_client.delete_object(Bucket=settings.MY_AWS_STORAGE_BUCKET_NAME, Key=s3_key)
             print(f"{original_file_name} 은 삭제 완료 하였습니다.")
         except Exception as delete_error:
             print(f"Warning: Failed to delete S3 file {s3_key}: {str(delete_error)}")

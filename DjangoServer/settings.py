@@ -17,6 +17,11 @@ ALLOWED_HOSTS = ["*"]  # 배포 시 도메인 제한 권장
 DEBUG = os.environ.get("DEBUG", env("DEBUG", default=False))
 SECRET_KEY = os.environ.get("SECRET_KEY", env("SECRET_KEY", default="your-default-secret-key"))
 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+
 ALLOWED_HOSTS = ["*"]
 
 # Django 앱 설정
@@ -105,6 +110,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React 앱
+    "https://localhost:3000",  # React 앱
     "https://grouup.co.kr",
     "http://grouup.co.kr"
 ]
+

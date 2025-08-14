@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from DjangoServer.lottoTest.generateS3url import generate_s3_presigned_url
 from DjangoServer.lottoTest.uploadMargin import upload_margin
 from DjangoServer.lottoTest.views import upload_excel
 from DjangoServer.views import  index
@@ -25,5 +26,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('django/upload_excel/', upload_excel, name='upload_excel'),
     path('django/upload_margin/', upload_margin, name = 'upload_margin'),
+    path('django/generate_s3_presigned_url/', generate_s3_presigned_url, name='generate_s3_presigned_url'),
+
     path('', index, name='index'),  # / 경로 추가
+
 ]

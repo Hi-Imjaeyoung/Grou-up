@@ -15,9 +15,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-        highlight_sql: true
+        show_sql: false
+        format_sql: false
+        highlight_sql: false
     show-sql: true
   security:
     oauth2:
@@ -58,9 +58,13 @@ logging:
     root: info
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.web: DEBUG
+    org.springframework.web: WARN
+    # 프로메테우스 관련 로그 Level WARN 설정.
+    org.springframework.boot.actuate: WARN
     org.springframework.security: DEBUG
     growup.spring.springserver.global.config: DEBUG
+    # 새로 만든 HealthCheckController만 딱 집어서 WARN 레벨로 설정!
+    com.example.demo.controller.HealthCheckController: WARN
 
 jwt:
   expiration: ${JWT_EXPIRATION}

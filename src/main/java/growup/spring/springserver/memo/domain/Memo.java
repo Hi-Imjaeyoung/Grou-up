@@ -22,7 +22,8 @@ public class Memo {
     @Column
     private LocalDate date;
 
-    @Column
+    @Lob // 1. @Lob 어노테이션을 추가해 "이건 큰 데이터야!" 라고 알려준다.
+    @Column(columnDefinition = "TEXT") // 2. (선택사항) TEXT 타입임을 명시적으로 지정
     private String contents;
 
     @ManyToOne

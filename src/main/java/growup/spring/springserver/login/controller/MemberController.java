@@ -34,10 +34,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/test1")
-    public String test() {
-        return "test success";
-    }
+//    @GetMapping("/test1")
+//    public String test() {
+//        return "test success";
+//    }
 
     @GetMapping("/Authtest")
     @PreAuthorize("hasRole('SILVER')")

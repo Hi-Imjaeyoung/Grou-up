@@ -32,19 +32,37 @@ def generate_s3_presigned_url(request):
     elif file_name.lower().endswith('.csv'):
         content_type = 'text/csv'
 
+    # AWS 설정값 가져오기 - getattr를 사용하여 안전하게 접근
+    aws_access_key_id = getattr(settings, 'MY_AWS_ACCESS_KEY_ID', None)
+    aws_secret_access_key = getattr(settings, 'MY_AWS_SECRET_ACCESS_KEY', None)
+    aws_storage_bucket_name = getattr(settings, 'MY_AWS_STORAGE_BUCKET_NAME', None)
+    aws_s3_region_name = getattr(settings, 'MY_AWS_S3_REGION_NAME', None)
+
+    # AWS 설정값 검증
+    if not all([aws_access_key_id, aws_secret_access_key, aws_storage_bucket_name, aws_s3_region_name]):
+        missing_settings = []
+        if not aws_access_key_id: missing_settings.append('MY_AWS_ACCESS_KEY_ID')
+        if not aws_secret_access_key: missing_settings.append('MY_AWS_SECRET_ACCESS_KEY')
+        if not aws_storage_bucket_name: missing_settings.append('MY_AWS_STORAGE_BUCKET_NAME')
+        if not aws_s3_region_name: missing_settings.append('MY_AWS_S3_REGION_NAME')
+
+        return JsonResponse({
+            'error': f'AWS 설정이 누락되었습니다: {", ".join(missing_settings)}'
+        }, status=500)
+
     # AWS 자격 증명을 포함하여 S3 클라이언트 생성
     try:
         s3_client = boto3.client(
             's3',
-            region_name=settings.MY_AWS_S3_REGION_NAME,
-            aws_access_key_id=settings.MY_AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.MY_AWS_SECRET_ACCESS_KEY,
+            region_name=aws_s3_region_name,
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
             config=Config(signature_version='s3v4')
         )
 
         print(f"S3 Client created successfully")
-        print(f"Bucket: {settings.MY_AWS_STORAGE_BUCKET_NAME}")
-        print(f"Region: {settings.MY_AWS_S3_REGION_NAME}")
+        print(f"Bucket: {aws_storage_bucket_name}")
+        print(f"Region: {aws_s3_region_name}")
         print(f"Object Key: {object_key}")
 
     except Exception as e:
@@ -56,7 +74,7 @@ def generate_s3_presigned_url(request):
         presigned_url = s3_client.generate_presigned_url(
             'put_object',
             Params={
-                'Bucket': settings.MY_AWS_STORAGE_BUCKET_NAME,
+                'Bucket': aws_storage_bucket_name,
                 'Key': object_key,
                 'ContentType': content_type,
             },
@@ -67,7 +85,7 @@ def generate_s3_presigned_url(request):
         return JsonResponse({
             'presignedUrl': presigned_url,
             'key': object_key,
-            'bucket': settings.MY_AWS_STORAGE_BUCKET_NAME,
+            'bucket': aws_storage_bucket_name,
             'contentType': content_type
         })
 

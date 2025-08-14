@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import os
 import environ
@@ -17,14 +18,26 @@ ALLOWED_HOSTS = ["*"]  # 배포 시 도메인 제한 권장
 DEBUG = os.environ.get("DEBUG", env("DEBUG", default=False))
 SECRET_KEY = os.environ.get("SECRET_KEY", env("SECRET_KEY", default="your-default-secret-key"))
 
-MY_AWS_ACCESS_KEY_ID =  env('MY_AWS_ACCESS_KEY_ID')
-MY_AWS_SECRET_ACCESS_KEY =  env('MY_AWS_SECRET_ACCESS_KEY')
-MY_AWS_STORAGE_BUCKET_NAME =  env('MY_AWS_STORAGE_BUCKET_NAME')
-MY_AWS_S3_REGION_NAME =  env('MY_AWS_S3_REGION_NAME')
+print("AWS 설정")
+# AWS 설정을 settings 레벨에서 정의 (이 부분이 핵심!)
+MY_AWS_ACCESS_KEY_ID = os.environ.get('MY_AWS_ACCESS_KEY_ID', env('MY_AWS_ACCESS_KEY_ID', default=''))
+MY_AWS_SECRET_ACCESS_KEY = os.environ.get('MY_AWS_SECRET_ACCESS_KEY', env('MY_AWS_SECRET_ACCESS_KEY', default=''))
+MY_AWS_STORAGE_BUCKET_NAME = os.environ.get('MY_AWS_STORAGE_BUCKET_NAME', env('MY_AWS_STORAGE_BUCKET_NAME', default=''))
+MY_AWS_S3_REGION_NAME = os.environ.get('MY_AWS_S3_REGION_NAME', env('MY_AWS_S3_REGION_NAME', default=''))
 
+print("MY_AWS_S3_REGION_NAME : {}".format(MY_AWS_S3_REGION_NAME))
+print("MY_AWS_ACCESS_KEY_ID : {}".format(MY_AWS_ACCESS_KEY_ID))
+print("MY_AWS_STORAGE_BUCKET_NAME : {}".format(MY_AWS_STORAGE_BUCKET_NAME))
+
+# AWS 설정값 검증
+if not all([MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_STORAGE_BUCKET_NAME, MY_AWS_S3_REGION_NAME]):
+    print("Warning: AWS 설정값이 누락되었습니다!")
+    print(f"ACCESS_KEY_ID 존재: {bool(MY_AWS_ACCESS_KEY_ID)}")
+    print(f"SECRET_ACCESS_KEY 존재: {bool(MY_AWS_SECRET_ACCESS_KEY)}")
+    print(f"BUCKET_NAME 존재: {bool(MY_AWS_STORAGE_BUCKET_NAME)}")
+    print(f"REGION_NAME 존재: {bool(MY_AWS_S3_REGION_NAME)}")
 
 ALLOWED_HOSTS = ["*"]
-
 # Django 앱 설정
 INSTALLED_APPS = [
     "django.contrib.admin",

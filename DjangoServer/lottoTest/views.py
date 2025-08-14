@@ -50,6 +50,17 @@ def extract(file_name):
     return start_date, end_date
 
 
+import boto3
+import json
+import time
+from io import BytesIO
+import pandas as pd
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.conf import settings
+
+
 def handle_excel_upload(request):
     s3_client = None
     s3_key = None
@@ -68,16 +79,34 @@ def handle_excel_upload(request):
 
         start_time = time.time() * 1000
 
+        # AWS 설정값 가져오기 - getattr를 사용하여 안전하게 접근
+        aws_access_key_id = getattr(settings, 'MY_AWS_ACCESS_KEY_ID', None)
+        aws_secret_access_key = getattr(settings, 'MY_AWS_SECRET_ACCESS_KEY', None)
+        aws_storage_bucket_name = getattr(settings, 'MY_AWS_STORAGE_BUCKET_NAME', None)
+        aws_s3_region_name = getattr(settings, 'MY_AWS_S3_REGION_NAME', None)
+
+        # AWS 설정값 검증
+        if not all([aws_access_key_id, aws_secret_access_key, aws_storage_bucket_name, aws_s3_region_name]):
+            missing_settings = []
+            if not aws_access_key_id: missing_settings.append('MY_AWS_ACCESS_KEY_ID')
+            if not aws_secret_access_key: missing_settings.append('MY_AWS_SECRET_ACCESS_KEY')
+            if not aws_storage_bucket_name: missing_settings.append('MY_AWS_STORAGE_BUCKET_NAME')
+            if not aws_s3_region_name: missing_settings.append('MY_AWS_S3_REGION_NAME')
+
+            return JsonResponse({
+                'error': f'AWS 설정이 누락되었습니다: {", ".join(missing_settings)}'
+            }, status=500)
+
         # S3에서 파일 다운로드
         s3_client = boto3.client(
             's3',
-            region_name=settings.MY_AWS_S3_REGION_NAME,
-            aws_access_key_id=settings.MY_AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.MY_AWS_SECRET_ACCESS_KEY,
+            region_name=aws_s3_region_name,
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
         )
 
         # S3에서 파일 객체 가져오기
-        response = s3_client.get_object(Bucket=settings.MY_AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+        response = s3_client.get_object(Bucket=aws_storage_bucket_name, Key=s3_key)
         file_content = response['Body'].read()
 
         # BytesIO를 사용해 메모리에서 엑셀 파일 읽기
@@ -125,7 +154,7 @@ def handle_excel_upload(request):
 
         # 모든 처리가 성공적으로 완료된 경우에만 S3 파일 삭제
         try:
-            s3_client.delete_object(Bucket=settings.MY_AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+            s3_client.delete_object(Bucket=aws_storage_bucket_name, Key=s3_key)
             print(f"{original_file_name} 은 삭제 완료 하였습니다.")
         except Exception as delete_error:
             print(f"Warning: Failed to delete S3 file {s3_key}: {str(delete_error)}")

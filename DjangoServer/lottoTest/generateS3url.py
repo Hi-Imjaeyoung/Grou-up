@@ -36,15 +36,15 @@ def generate_s3_presigned_url(request):
     try:
         s3_client = boto3.client(
             's3',
-            region_name=settings.AWS_S3_REGION_NAME,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.MY_AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.MY_AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.MY_AWS_SECRET_ACCESS_KEY,
             config=Config(signature_version='s3v4')
         )
 
         print(f"S3 Client created successfully")
-        print(f"Bucket: {settings.AWS_STORAGE_BUCKET_NAME}")
-        print(f"Region: {settings.AWS_S3_REGION_NAME}")
+        print(f"Bucket: {settings.MY_AWS_STORAGE_BUCKET_NAME}")
+        print(f"Region: {settings.MY_AWS_S3_REGION_NAME}")
         print(f"Object Key: {object_key}")
 
     except Exception as e:
@@ -56,7 +56,7 @@ def generate_s3_presigned_url(request):
         presigned_url = s3_client.generate_presigned_url(
             'put_object',
             Params={
-                'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+                'Bucket': settings.MY_AWS_STORAGE_BUCKET_NAME,
                 'Key': object_key,
                 'ContentType': content_type,
             },
@@ -67,7 +67,7 @@ def generate_s3_presigned_url(request):
         return JsonResponse({
             'presignedUrl': presigned_url,
             'key': object_key,
-            'bucket': settings.AWS_STORAGE_BUCKET_NAME,
+            'bucket': settings.MY_AWS_STORAGE_BUCKET_NAME,
             'contentType': content_type
         })
 

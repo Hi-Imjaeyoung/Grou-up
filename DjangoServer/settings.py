@@ -17,10 +17,11 @@ ALLOWED_HOSTS = ["*"]  # 배포 시 도메인 제한 권장
 DEBUG = os.environ.get("DEBUG", env("DEBUG", default=False))
 SECRET_KEY = os.environ.get("SECRET_KEY", env("SECRET_KEY", default="your-default-secret-key"))
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+MY_AWS_ACCESS_KEY_ID = os.environ.get('MY_AWS_ACCESS_KEY_ID')
+MY_AWS_SECRET_ACCESS_KEY = os.environ.get('MY_AWS_SECRET_ACCESS_KEY')
+MY_AWS_STORAGE_BUCKET_NAME = os.environ.get('MY_AWS_STORAGE_BUCKET_NAME')
+MY_AWS_S3_REGION_NAME = os.environ.get('MY_AWS_S3_REGION_NAME')
+
 
 ALLOWED_HOSTS = ["*"]
 

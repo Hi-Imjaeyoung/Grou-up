@@ -1,5 +1,7 @@
 import os
+from io import BytesIO
 
+import boto3
 from django.utils import timezone
 import json
 from datetime import datetime
@@ -15,6 +17,7 @@ from .forms import ExcelFileForm
 from django.http import JsonResponse
 import jwt
 import logging
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +26,11 @@ logger = logging.getLogger(__name__)
 def upload_excel(request):
     if request.method == 'POST':
         print("A 엑셀 업로드 시작")
-        form = ExcelFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            return handle_excel_upload(request, form)
+        return handle_excel_upload(request)
+
     else:
         return JsonResponse({'status': 'error', 'message': 'Failed to upload Excel file.'}, status=500)
-    return JsonResponse({'status': 'success', 'message': 'Excel file uploaded successfully.'}, status=200)
+
 
 
 def extract(file_name):
@@ -48,53 +50,106 @@ def extract(file_name):
     return start_date, end_date
 
 
-def handle_excel_upload(request, form):
-    start_time = time.time() * 1000  # 밀리세컨드 단위
-    uploaded_file = request.FILES['file']
+def handle_excel_upload(request):
+    s3_client = None
+    s3_key = None
+    original_file_name = None
 
-    file_name = uploaded_file.name
-    start, end = extract(file_name)
+    try:
+        data = json.loads(request.body)
+        s3_key = data.get('key')  # S3 object key
+        original_file_name = data.get('fileName')  # 원본 파일명
 
-    email = some_protected_view(request)
-    member = get_object_or_404(Member, email=email)
+        if not s3_key or not original_file_name:
+            return JsonResponse({'error': 'key and fileName are required'}, status=400)
 
-    logger.info(f"Member Info: Email={member.email}")
+        print(f"Processing S3 file: {s3_key}")
+        print(f"Original file name: {original_file_name}")
 
-    excel = pd.read_excel(uploaded_file, dtype={'날짜': str})
+        start_time = time.time() * 1000
 
-    aggregated_data, keyword_data, margin_data = aggregate_data(excel, member)
-    with transaction.atomic():  # 트랜잭션 시작
-        save_campaign_option_details(aggregated_data)
-        insert_count, duplicate_count = save_keywords(keyword_data)
-        save_margin(margin_data)
-    end_time = time.time() * 1000
-    time_taken = end_time - start_time
+        # S3에서 파일 다운로드
+        s3_client = boto3.client(
+            's3',
+            region_name=settings.AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
 
-    total_count = excel.shape[0]
+        # S3에서 파일 객체 가져오기
+        response = s3_client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+        file_content = response['Body'].read()
 
-    print(f"엑셀 총 row = {total_count}")
-    print(f"합쳐저서 들어간 총 데이터 = {insert_count}")
-    print(f"중복 데이터 = {duplicate_count}")
+        # BytesIO를 사용해 메모리에서 엑셀 파일 읽기
+        excel_buffer = BytesIO(file_content)
+        excel = pd.read_excel(excel_buffer, dtype={'날짜': str})
 
-    print(f"Time taken: {time_taken} milliseconds")
+        print(f"Excel loaded successfully. Rows: {excel.shape[0]}")
 
-    file_type = FileType.ADVERTISING_REPORT.value
+        # 파일명에서 날짜 추출
+        start_date, end_date = extract(original_file_name)
 
-    save_file(member,file_name,total_count,insert_count,duplicate_count,file_type, start, end)
+        # 사용자 정보 가져오기
+        email = some_protected_view(request)
+        if isinstance(email, JsonResponse):  # 에러 응답인 경우
+            return email
 
-    Margin.objects.filter(
-        mar_date__range=(start, end),
-        campaign__email=member
-    ).update(mar_updated=True)
+        member = get_object_or_404(Member, email=email)
 
+        # 기존 로직 실행
+        aggregated_data, keyword_data, margin_data = aggregate_data(excel, member)
 
-    return JsonResponse({'status': 'success',
-                         'data' : {
-                             'total_count' : total_count,
-                             'insert_count' : insert_count,
-                             'duplicate_count' : duplicate_count,
-                         },
-                         'message': 'Margin file uploaded successfully.'}, status=200)
+        with transaction.atomic():
+            save_campaign_option_details(aggregated_data)
+            insert_count, duplicate_count = save_keywords(keyword_data)
+            save_margin(margin_data)
+
+        end_time = time.time() * 1000
+        time_taken = end_time - start_time
+        total_count = excel.shape[0]
+
+        # 파일 정보 저장
+        file_type = FileType.ADVERTISING_REPORT.value
+        save_file(member, original_file_name, total_count, insert_count, duplicate_count, file_type, start_date,
+                  end_date)
+
+        # Margin 업데이트
+        Margin.objects.filter(
+            mar_date__range=(start_date, end_date),
+            campaign__email=member
+        ).update(mar_updated=True)
+
+        print(f"Processing completed in {time_taken} ms")
+        print(f"{email} 회원이 총 {total_count} 중 {insert_count} 개의 데이터가 들어 갔습니다")
+        print(f"{email} 회원이 총 {total_count} 중 {duplicate_count} 개의 데이터가 겹쳐 continue 되었습니다")
+
+        # 모든 처리가 성공적으로 완료된 경우에만 S3 파일 삭제
+        try:
+            s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=s3_key)
+            print(f"{original_file_name} 은 삭제 완료 하였습니다.")
+        except Exception as delete_error:
+            print(f"Warning: Failed to delete S3 file {s3_key}: {str(delete_error)}")
+            # 파일 삭제 실패는 전체 프로세스의 성공에 영향을 주지 않음
+
+        return JsonResponse({
+            'status': 'success',
+            'data': {
+                'total_count': total_count,
+                'insert_count': insert_count,
+                'duplicate_count': duplicate_count,
+                'processing_time': time_taken
+            },
+            'message': 'Excel file processed successfully from S3.'
+        }, status=200)
+
+    except Exception as e:
+        print(f"Error processing S3 file: {str(e)}")
+        print(f"S3 파일 {s3_key} 보존됨 (처리 실패로 인해)")
+
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to process S3 file: {str(e)}'
+        }, status=500)
 
 def aggregate_data(excel, member):
     aggregated_data = {}

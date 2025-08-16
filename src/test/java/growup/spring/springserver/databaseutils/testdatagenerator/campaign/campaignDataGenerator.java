@@ -57,11 +57,33 @@ public class campaignDataGenerator {
                 continue;
             }
             for(int i = 1; i<=Integer.parseInt(numberOfCampaign); i++){
+                if(i%3==0){
+                    campaignRepository.save(Campaign.builder()
+                            .campaignId(campaignId)
+                            .camCampaignName("테스트캠패인"+counter)
+                            .member(member)
+                            .camAdType("매출최적화")
+                            .build()
+                    );
+                    campaignId++;
+                    continue;
+                }
+                if(i%3==1){
+                    campaignRepository.save(Campaign.builder()
+                            .campaignId(campaignId)
+                            .camCampaignName("테스트캠패인"+counter)
+                            .member(member)
+                            .camAdType("수동 성과형")
+                            .build()
+                    );
+                    campaignId++;
+                    continue;
+                }
                 campaignRepository.save(Campaign.builder()
                         .campaignId(campaignId)
-                        .camCampaignName("testCam"+counter)
+                        .camCampaignName("테스트캠패인"+counter)
                         .member(member)
-                        .camAdType("매출최적화")
+                        .camAdType("간편 매출 스타트")
                         .build()
                 );
                 campaignId++;

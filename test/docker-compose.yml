@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: "mysql:8.0.29"
+    container_name: "mysql"
+    ports:
+      - "${MYSQL_HOST_PORT}:3306"
+    volumes:
+      - "study-marathon-data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+
+volumes:
+  study-marathon-data:

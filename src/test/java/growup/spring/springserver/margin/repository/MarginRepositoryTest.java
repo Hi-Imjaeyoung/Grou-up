@@ -285,6 +285,34 @@ class MarginRepositoryTest {
         assertThat(marginOverviewByCampaignIdsAndDate.get(0).getMarReturnRate()).isEqualTo(166.67);
 
     }
+
+    @Test
+    @DisplayName("findMarginOverviewByCampaignIdsAndDate () ")
+    void findDistinctAdvDatesByEmailAndDateBetween() {
+
+        LocalDate startDate = LocalDate.of(2024, 12,2 );
+        LocalDate endDate = LocalDate.of(2024, 12, 30);
+
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,1),campaign4,100.0,200.0,50L,100.0,30L,100.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,3),campaign2,100.0,200.0,50L,100.0,30L,500.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,5),campaign3,100.0,200.0,50L,100.0,30L,700.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,12),campaign1,100.0,200.0,50L,100.0,30L,600.0));
+        marginRepository.save(dashBoardMargin(LocalDate.of(2024,12,11),campaign1,100.0,200.0,50L,100.0,30L,400.0));
+
+
+        List<LocalDate> distinctAdvDatesByEmailAndDateBetween = marginRepository.findDistinctAdvDatesByEmailAndDateBetween(member.getEmail(), startDate, endDate);
+
+        assertThat(distinctAdvDatesByEmailAndDateBetween)
+                .hasSize(4)
+                .extracting(LocalDate::toString)
+                .containsExactlyInAnyOrder(
+                        "2024-12-03",
+                        "2024-12-05",
+                        "2024-12-11",
+                        "2024-12-12"
+                );
+    }
+
     private Margin dashBoardMargin(LocalDate date, Campaign campaign, Double marNetProfit, Double marReturnCost, Long marReturnCount, Double marAdCost, Long marAdConversionSalesCount, Double marSales) {
         return Margin.builder()
                 .marDate(date)

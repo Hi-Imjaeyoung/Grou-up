@@ -27,6 +27,10 @@ public class CampaignService {
 
         return campaignList;
     }
+    public List<Campaign> getCampaignsByEmailPossibleEmpty(String email) {
+
+        return campaignRepository.findAllByEmail(email);
+    }
 
     public List<Campaign> getCampaignsByMember(Member member) {
         List<Campaign> campaignList = campaignRepository.findAllByMember(member);

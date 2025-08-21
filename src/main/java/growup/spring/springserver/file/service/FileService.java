@@ -10,6 +10,7 @@ import growup.spring.springserver.file.domian.File;
 import growup.spring.springserver.file.dto.FileResDto;
 import growup.spring.springserver.file.dto.FileResponseDto;
 import growup.spring.springserver.file.repository.FileRepository;
+import growup.spring.springserver.margin.repository.MarginRepository;
 import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.netsales.service.NetSalesService;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class FileService {
     private final CampaignService campaignService;
     private final MarginService marginService;
     private final NetSalesService netSalesService;
+    private final MarginRepository marginRepository;
 
     /**
      * 파일 업로드 이력을 조회.
@@ -39,19 +41,17 @@ public class FileService {
      * @return FileResDto
      */
     public FileResDto getFileHistory(String email, LocalDate startDate, LocalDate endDate) {
-        List<File> advData = getByMemberEmailAndFileTypeAndFileStartDateLessThanEqualAndFileEndDateGreaterThanEqual(
-                email, FileType.ADVERTISING_REPORT, startDate, endDate);
+        List<LocalDate> distinctAdvDatesByEmailAndDateBetween = marginRepository.findDistinctAdvDatesByEmailAndDateBetween(email, startDate, endDate);
 
         List<File> marData = getByMemberEmailAndFileTypeAndFileStartDateLessThanEqualAndFileEndDateGreaterThanEqual(
                 email, FileType.NET_SALES_REPORT, startDate, endDate);
 
         Map<LocalDate, FileResponseDto> localDateListMap = getNetSalesReport(marData);
 
-        List<LocalDate> advertisingReport = getAdvertisingReport(advData);
 
 
         return FileResDto.builder()
-                .advertisingReport(advertisingReport)
+                .advertisingReport(distinctAdvDatesByEmailAndDateBetween)
                 .netSalesReport(localDateListMap)
                 .build();
     }
@@ -74,18 +74,7 @@ public class FileService {
                 ));
     }
 
-    public List<LocalDate> getAdvertisingReport(List<File> advData) {
-        HashSet<LocalDate> dateSet = new HashSet<>();
 
-        for (File f : advData) {
-            LocalDate startDate = f.getFileStartDate();
-            LocalDate endDate = f.getFileEndDate();
-            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                dateSet.add(date);
-            }
-        }
-        return new ArrayList<>(dateSet);
-    }
     /**
      * 순매출 리포트 삭제
      *
@@ -123,7 +112,7 @@ public class FileService {
     }
 
     public List<Long> getCampaignList(String email) {
-        return campaignService.getCampaignsByEmail(email)
+        return campaignService.getCampaignsByEmailPossibleEmpty(email)
                 .stream()
                 .map(Campaign::getCampaignId)
                 .toList();

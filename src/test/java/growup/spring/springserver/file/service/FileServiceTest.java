@@ -9,6 +9,7 @@ import growup.spring.springserver.file.dto.FileResDto;
 import growup.spring.springserver.file.dto.FileResponseDto;
 import growup.spring.springserver.file.repository.FileRepository;
 import growup.spring.springserver.login.domain.Member;
+import growup.spring.springserver.margin.repository.MarginRepository;
 import growup.spring.springserver.margin.service.MarginService;
 import growup.spring.springserver.netsales.service.NetSalesService;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,8 @@ class FileServiceTest {
     @Mock
     private FileRepository fileRepository;
     @Mock
+    private MarginRepository marginRepository;
+    @Mock
     private MarginService marginService;
     @Mock
     private CampaignService campaignService;
@@ -43,8 +46,7 @@ class FileServiceTest {
     @InjectMocks
     private FileService fileService;
 
-    List<File> netFiles, advFiles;
-
+    List<File> netFiles;
 
     @BeforeEach
     void setUp() {
@@ -54,11 +56,6 @@ class FileServiceTest {
                 File.builder().id(2L).member(member).fileName("file2.txt").fileStartDate(LocalDate.of(2024,11,2)).fileEndDate(LocalDate.of(2024,11,2)).fileType(FileType.NET_SALES_REPORT).build(),
                 File.builder().id(4L).member(member).fileName("file3.txt").fileStartDate(LocalDate.of(2024,11,5)).fileEndDate(LocalDate.of(2024,11,5)).fileType(FileType.NET_SALES_REPORT).build()
 
-        );
-        advFiles = List.of(
-                File.builder().id(5L).member(member).fileName("file4.txt").fileStartDate(LocalDate.of(2024,11,1)).fileEndDate(LocalDate.of(2024,11,5)).fileType(FileType.ADVERTISING_REPORT).build(),
-                File.builder().id(6L).member(member).fileName("file5.txt").fileStartDate(LocalDate.of(2024,11,2)).fileEndDate(LocalDate.of(2024,11,7)).fileType(FileType.ADVERTISING_REPORT).build(),
-                File.builder().id(7L).member(member).fileName("file4.txt").fileStartDate(LocalDate.of(2024,11,17)).fileEndDate(LocalDate.of(2024,11,19)).fileType(FileType.ADVERTISING_REPORT).build()
         );
     }
 
@@ -84,26 +81,7 @@ class FileServiceTest {
                 .isEqualTo("file3.txt");
     }
 
-    @Test
-    @DisplayName("getAdvertisingReport - successCase")
-    void getAdvertisingReport() {
-        List<LocalDate> advertisingReport = fileService.getAdvertisingReport(advFiles);
-        assertAll(
-                () -> assertThat(advertisingReport).hasSize(10),
-                () -> assertThat(advertisingReport).containsExactlyInAnyOrder(
-                        LocalDate.of(2024,11,1),
-                        LocalDate.of(2024,11,2),
-                        LocalDate.of(2024,11,3),
-                        LocalDate.of(2024,11,4),
-                        LocalDate.of(2024,11,5),
-                        LocalDate.of(2024,11,6),
-                        LocalDate.of(2024,11,7),
-                        LocalDate.of(2024,11,17),
-                        LocalDate.of(2024,11,18),
-                        LocalDate.of(2024,11,19)
-                )
-        );
-    }
+
 
     @Test
     @DisplayName("getFileHistory - Total successCase")
@@ -119,14 +97,16 @@ class FileServiceTest {
                         eq(start)
                 ))
                 .thenReturn(netFiles);
-        when(fileRepository
-                .findByMemberEmailAndFileTypeAndFileStartDateLessThanEqualAndFileEndDateGreaterThanEqual(
+        when(marginRepository
+                .findDistinctAdvDatesByEmailAndDateBetween(
                         anyString(),
-                        eq(FileType.ADVERTISING_REPORT),
-                        eq(end),
-                        eq(start)
-                ))
-                .thenReturn(advFiles);
+                        eq(start),
+                        eq(end)
+                )).thenReturn(List.of(
+                        LocalDate.of(2024,11,1),
+                        LocalDate.of(2024,11,2),
+                        LocalDate.of(2024,11,3)
+                ));
 
         FileResDto result = fileService.getFileHistory(getMember().getEmail(), start, end);
 
@@ -135,18 +115,11 @@ class FileServiceTest {
                 () -> assertThat(result.getNetSalesReport().get(LocalDate.of(2024,11,2)).getFileName()).isEqualTo("file2.txt"),
                 () -> assertThat(result.getNetSalesReport().get(LocalDate.of(2024,11,5)).getFileName()).isEqualTo("file3.txt"),
 
-                () -> assertThat(result.getAdvertisingReport()).hasSize(10),
+                () -> assertThat(result.getAdvertisingReport()).hasSize(3),
                 () -> assertThat(result.getAdvertisingReport()).containsExactlyInAnyOrder(
                         LocalDate.of(2024,11,1),
                         LocalDate.of(2024,11,2),
-                        LocalDate.of(2024,11,3),
-                        LocalDate.of(2024,11,4),
-                        LocalDate.of(2024,11,5),
-                        LocalDate.of(2024,11,6),
-                        LocalDate.of(2024,11,7),
-                        LocalDate.of(2024,11,17),
-                        LocalDate.of(2024,11,18),
-                        LocalDate.of(2024,11,19)
+                        LocalDate.of(2024,11,3)
                 )
         );
 
@@ -189,11 +162,12 @@ class FileServiceTest {
                 Campaign.builder().campaignId(1L).camCampaignName("Campaign 1").build(),
                 Campaign.builder().campaignId(2L).camCampaignName("Campaign 2").build()
         );
-        when(campaignService.getCampaignsByEmail(email)).thenReturn(campaigns);
+        when(campaignService.getCampaignsByEmailPossibleEmpty(email)).thenReturn(campaigns);
 
 
         List<Long> result = fileService.getCampaignList(email);
 
+        System.out.println("result = " + result);
         // then
         assertAll(
                 () -> assertThat(result).hasSize(2),

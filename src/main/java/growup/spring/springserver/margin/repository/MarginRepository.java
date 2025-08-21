@@ -103,4 +103,10 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
             @Param("campaignIds") List<Long> campaignIds
     );
 
+    @Query("SELECT DISTINCT m.marDate FROM Margin m WHERE m.campaign.member.email = :email AND m.marDate BETWEEN :startDate AND :endDate")
+    List<LocalDate> findDistinctAdvDatesByEmailAndDateBetween(
+            @Param("email") String email,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

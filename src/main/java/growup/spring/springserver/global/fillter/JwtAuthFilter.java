@@ -29,7 +29,7 @@ public class JwtAuthFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        log.info("JwtAuthFilter activated");
+        log.info("JwtAuthFilter activated");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String bearerToken = httpRequest.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -45,7 +45,7 @@ public class JwtAuthFilter extends GenericFilter {
                 log.info("Invalid JWT token: {} ", e.getMessage());
             }
         }
-//        log.info("next");
+        log.info("next");
         chain.doFilter(request, response);
     }
 

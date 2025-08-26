@@ -1,15 +1,18 @@
 spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    url: ${DEV_DATASOURCE_URL}
+    username: ${DEV_DATASOURCE_USERNAME}
+    password: ${DEV_DATASOURCE_PASSWORD}
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: false
@@ -20,30 +23,87 @@ spring:
     oauth2:
       client:
         registration:
-          client-id: ${KAKAO_CLIENT_ID}
-          client-secret: ${KAKAO_CLIENT_SECRET}
-          client-authentication-method: client_secret_post
-          client-name: kakao
-          authorization-grant-type: authorization_code
-          redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-          scope:
-            - profile_nickname
-            - account_email
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            client-name: kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: ${KAKAO_URL}
+            scope:
+              - profile_nickname
+              - account_email
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-name: google
+            authorization-grant-type: authorization_code
+            redirect-uri:  ${GOOGLE_URL} # 구글에 추가함
+            scope:
+              - profile
+              - email
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
 logging:
   level:
-    root: error
-    growup.spring.springserver.global.config: info
+    root: info
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web: WARN
+    # 프로메테우스 관련 로그 Level WARN 설정.
+    org.springframework.boot.actuate: WARN
+    org.springframework.security: WARN
+    growup.spring.springserver.global.config: DEBUG
+    # 새로 만든 HealthCheckController만 딱 집어서 WARN 레벨로 설정!
+    com.example.demo.controller.HealthCheckController: WARN
 
 jwt:
   expiration: ${JWT_EXPIRATION}
   secretKey: ${JWT_SECRET_KEY}
+redirect:
+  kakao: ${RE_DIRECT_URL_KAKAO}
+  google: ${RE_DIRECT_URL_GOOGLE}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"  # health와 prometheus 엔드포인트만 외부에 노출
+  metrics:
+    distribution:
+      # 1. http.server.requests 라는 측정 항목에 대해 히스토그램을 활성화!
+      percentiles-histogram:
+        http.server.requests: true
 
+      # 2. (선택사항, 하지만 강력 추천) 히스토그램의 경계값(bucket)을 직접 설정
+      # 더 정확한 백분위 수 계산을 위해 우리 서비스의 응답 시간 목표(SLO)를 정의하는 거야.
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s, 5s
+    tags: # 모든 메트릭에 공통 태그 추가 (나중에 서버 많아지면 구분하기 좋음)
+      application: grouUP
 springdoc:
   swagger-ui:
-    enabled: true  # 운영환경에서는 Swagger 비활성화 권장
+    groups-order: ASC
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: 2
+    defaultModelExpandDepth: 2
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
+  model-and-view-allowed: true
+  paths-to-match:
+    - /api/**

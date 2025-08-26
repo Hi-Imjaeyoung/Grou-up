@@ -7,6 +7,8 @@ import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.domain.CoupangExcelData;
 import growup.spring.springserver.keyword.domain.Keyword;
 import growup.spring.springserver.keyword.repository.KeywordRepository;
+import growup.spring.springserver.login.domain.Member;
+import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.margin.domain.Margin;
 import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 @SpringBootTest
@@ -28,34 +32,36 @@ public class CoupangExcelTestDataGenerator {
     private CampaignRepository campaignRepository;
     @Autowired
     private KeywordRepository keywordRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @ParameterizedTest
     @CsvSource({
-            "3, 100, 2025-07-01, 2025-08-01",
+            "1000, 2025-07-01, 2025-08-01",
     })
     @DisplayName("쿠팡 액셀 데이터 형식 생성")
-    void coupangDataGenerator(Long campaignId, int numberOfData, String start, String end){
-        while(numberOfData -->0){
-            CoupangExcelData coupangExcelData = CoupagRandomData.createRandomData();
-            LocalDate date = CoupagRandomData.between(LocalDate.parse(start, DateTimeFormatter.ISO_DATE),LocalDate.parse(end, DateTimeFormatter.ISO_DATE));
-            Campaign campaign = campaignRepository.findByCampaignId(campaignId).orElseThrow(CampaignNotFoundException::new);
-            Keyword keyword = Keyword.builder()
-                    .adCost(coupangExcelData.getAdCost())
-                    .cpc(coupangExcelData.getCpc())
-                    .campaign(campaign)
-                    .cvr(coupangExcelData.getCvr())
-                    .adSales(coupangExcelData.getAdSales())
-                    .roas(coupangExcelData.getRoas())
-                    .impressions(coupangExcelData.getImpressions())
-                    .clicks(coupangExcelData.getClicks())
-                    .date(date)
-                    .keyKeyword(CoupagRandomData.createRandomKeyword())
-                    .keySearchType("검색 영역")
-                    .clickRate(coupangExcelData.getClickRate())
-                    .totalSales(coupangExcelData.getTotalSales())
-                    .keyProductSales(CoupagRandomData.createKeyProductSales(coupangExcelData.getTotalSales()))
-                    .build();
-            keywordRepository.save(keyword);
+    void coupangDataGenerator(int numberOfData, String start, String end){
+        RandomDateGenerator randomDateGenerator = new RandomDateGenerator(LocalDate.parse(start,DateTimeFormatter.ISO_DATE),
+                LocalDate.parse(end,DateTimeFormatter.ISO_DATE));
+        List<Member> members = memberRepository.findAll();
+        for(Member member : members) {
+            for (Campaign campaign : campaignRepository.findAllByMember(member)) {
+                int rowNumber = numberOfData;
+                RandomKeywordGenerator randomKeywordGenerator = new RandomKeywordGenerator(campaign, randomDateGenerator);
+                while (rowNumber-- > 0) {
+                    CoupangExcelData coupangExcelData = CoupagRandomData.createRandomData();
+                    Random random = new Random();
+                    int randomInt = random.nextInt(1, 11);
+                    Keyword keyword;
+                    // 비검색 키워드 생성 20%
+                    if (randomInt % 5 == 0) {
+                        keyword = randomKeywordGenerator.makeNonSearchKeyword(coupangExcelData);
+                    } else {
+                        keyword = randomKeywordGenerator.makeSearchKeyword(coupangExcelData);
+                    }
+                    keywordRepository.save(keyword);
+                }
+            }
         }
     }
 }

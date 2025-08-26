@@ -25,18 +25,6 @@ public class CoupagRandomData extends CoupangExcelData {
         return coupangExcelData;
     }
 
-    public static LocalDate between(LocalDate startInclusive, LocalDate endExclusive) {
-        // 1. 시작 날짜와 종료 날짜를 epoch day(long)로 변환
-        long startEpochDay = startInclusive.toEpochDay();
-        long endEpochDay = endExclusive.toEpochDay();
-        // 2. 두 epoch day 사이의 랜덤한 long 값을 생성
-        long randomDay = ThreadLocalRandom
-                .current()
-                .nextLong(startEpochDay, endEpochDay);
-        // 3. 랜덤하게 생성된 epoch day를 다시 LocalDate로 변환하여 반환
-        return LocalDate.ofEpochDay(randomDay);
-    }
-
     public static String createRandomKeyword(){
         return KEYWORD + random.nextLong(100);
     }

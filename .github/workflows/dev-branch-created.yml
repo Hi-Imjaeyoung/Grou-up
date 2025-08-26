@@ -62,6 +62,7 @@ jobs:
               echo "java is already installed"
             fi
             sudo killall java || true
+            sleep 5 # 종료될 때까지 잠시 대기
             nohup java -jar /home/${{ secrets.DEV_EC2_USERNAME }}/build/libs/*.jar \
             --spring.datasource.url=jdbc:mariadb://${{ secrets.DEV_DATASOURCE_URL }}:3306/grouup \
             --spring.datasource.username=${{ secrets.DEV_DATASOURCE_USERNAME }} \
@@ -75,4 +76,4 @@ jobs:
             --spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.KAKAO_URL }} \
             --spring.security.oauth2.client.registration.google.client-id=${{ secrets.GOOGLE_CLIENT_ID }} \
             --spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.GOOGLE_URL }} \
-            --spring.security.oauth2.client.registration.google.client-secret=${{ secrets.GOOGLE_CLIENT_SECRET }} > /home/${{ secrets.EC2_USERNAME }}/app.log 2>&1 &
+            --spring.security.oauth2.client.registration.google.client-secret=${{ secrets.GOOGLE_CLIENT_SECRET }} > /dev/null 2>&1 &

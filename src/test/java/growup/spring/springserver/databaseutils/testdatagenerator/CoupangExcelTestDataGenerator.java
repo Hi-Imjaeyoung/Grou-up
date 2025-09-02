@@ -9,7 +9,11 @@ import growup.spring.springserver.keyword.domain.Keyword;
 import growup.spring.springserver.keyword.repository.KeywordRepository;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
+import growup.spring.springserver.margin.TypeChangeMargin;
 import growup.spring.springserver.margin.domain.Margin;
+import growup.spring.springserver.margin.dto.MarginResponseDto;
+import growup.spring.springserver.margin.dto.MarginResultDto;
+import growup.spring.springserver.margin.repository.MarginRepository;
 import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -34,17 +39,23 @@ public class CoupangExcelTestDataGenerator {
     private KeywordRepository keywordRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private MarginRepository marginRepository;
 
     @ParameterizedTest
     @CsvSource({
-            "1000, 2025-07-01, 2025-08-01",
+            "1000, 2025-06-01, 2025-07-01",
     })
     @DisplayName("쿠팡 액셀 데이터 형식 생성")
     void coupangDataGenerator(int numberOfData, String start, String end){
+        final int BATCH_SIZE = 1000;
+        List<Keyword> keywordBatch = new ArrayList<>();
+        HashMap<LocalDate, MarginResultDto> map = new HashMap<>();
         RandomDateGenerator randomDateGenerator = new RandomDateGenerator(LocalDate.parse(start,DateTimeFormatter.ISO_DATE),
                 LocalDate.parse(end,DateTimeFormatter.ISO_DATE));
         List<Member> members = memberRepository.findAll();
         for(Member member : members) {
+            System.out.println(member.getName()+"의 데이터 삽입 시작");
             for (Campaign campaign : campaignRepository.findAllByMember(member)) {
                 int rowNumber = numberOfData;
                 RandomKeywordGenerator randomKeywordGenerator = new RandomKeywordGenerator(campaign, randomDateGenerator);
@@ -59,7 +70,42 @@ public class CoupangExcelTestDataGenerator {
                     } else {
                         keyword = randomKeywordGenerator.makeSearchKeyword(coupangExcelData);
                     }
-                    keywordRepository.save(keyword);
+                    keywordBatch.add(keyword);
+                    if(keywordBatch.size() >BATCH_SIZE){
+                        keywordRepository.saveAll(keywordBatch);
+                        keywordBatch = new ArrayList<>();
+                    }
+                    // 마진 데이터 일짜별 합 저장
+                    if(map.containsKey(keyword.getDate())){
+                        map.get(keyword.getDate()).plusData(coupangExcelData);
+                    }else{
+                        map.put(keyword.getDate(),MarginResultDto.builder()
+                                .marDate(coupangExcelData.getDate())
+                                .marClicks(coupangExcelData.getClicks())
+                                .marImpressions(coupangExcelData.getImpressions())
+                                .marAdCost(coupangExcelData.getAdCost())
+                                .marSales(coupangExcelData.getAdSales())
+                                .marAdConversionSales(coupangExcelData.getTotalSales())
+                                .marAdConversionSalesCount(coupangExcelData.getTotalSales())
+                                .build());
+                    }
+                }
+                List<Margin> marginList = new ArrayList<>();
+                for(LocalDate date : map.keySet()){
+                    MarginResultDto marginResultDto = map.get(date);
+                    marginList.add(Margin.builder()
+                            .marDate(marginResultDto.getMarDate())
+                            .marClicks(marginResultDto.getMarClicks())
+                            .marImpressions(marginResultDto.getMarImpressions())
+                            .marAdCost(marginResultDto.getMarAdCost())
+                            .marSales(marginResultDto.getMarSales())
+                            .marAdConversionSales(marginResultDto.getMarAdConversionSales())
+                            .marAdConversionSalesCount(marginResultDto.getMarAdConversionSalesCount())
+                            .build());
+                }
+                marginRepository.saveAll(marginList);
+                if(!keywordBatch.isEmpty()){
+                    keywordRepository.saveAll(keywordBatch);
                 }
             }
         }

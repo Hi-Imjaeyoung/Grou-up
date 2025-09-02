@@ -1,5 +1,6 @@
 package growup.spring.springserver.global.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 //@javax.persistence.MappedSuperclass; // JPA에서 부모 필드를 인식할 수 있게 만들어주는 어노테이션 Spring 3.x 부터는 사용 x
 @jakarta.persistence.MappedSuperclass
 public class CoupangExcelData {

@@ -15,8 +15,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+        show_sql: false
+        format_sql: false
+        jdbc:
+          batch_size: 5000
   security:
     oauth2:
       client:
@@ -54,7 +56,7 @@ spring:
 logging:
   level:
     root: info
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG

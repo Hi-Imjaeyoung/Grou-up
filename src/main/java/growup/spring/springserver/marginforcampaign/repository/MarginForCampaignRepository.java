@@ -2,6 +2,7 @@ package growup.spring.springserver.marginforcampaign.repository;
 
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
+import growup.spring.springserver.marginforcampaign.dto.MarginForCampaignOptionNameAndCampaignId;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,21 +23,28 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
     @Query("SELECT mfc FROM MarginForCampaign mfc JOIN FETCH mfc.campaign c WHERE c.member.email = :email")
     List<MarginForCampaign> findAllByMemberEmailWithFetch(@Param("email") String email);
 
-
-
     @Query("SELECT m FROM MarginForCampaign m JOIN m.campaign.member member WHERE member.email = :email AND m.mfcProductName = :productName AND m.mfcType = :mfcType AND m.campaign.campaignId <> :campaignId")
     List<MarginForCampaign> findByEmailAndMfcProductNameExcludingCampaign(@Param("email") String email,
                                                                               @Param("productName") String productName,
                                                                               @Param("campaignId") Long campaignId,
                                                                               @Param("mfcType") MarginType mfcType);
 
-//    @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId AND m.mfcProductName = :productName")
-//    Optional<MarginForCampaign> findByCampaignAndMfcProductName(@Param("productName") String productName,
-//                                                                @Param("campaignId") Long campaignId);
+    // 해당 쿼리가 주석처리되어있던 이유가 따로 있을까요? 일단 제가 필요해서 열었습니당.
+    @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId AND m.mfcProductName = :productName")
+    Optional<MarginForCampaign> findByCampaignAndMfcProductName(@Param("productName") String productName,
+                                                                @Param("campaignId") Long campaignId);
+
     @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId AND m.id = :mfcId")
     Optional<MarginForCampaign> findByCampaignAndMfcId(@Param("mfcId") Long mfcId,
                                                                 @Param("campaignId") Long campaignId);
 
-
     boolean existsByCampaignAndMfcProductNameAndMfcType(Campaign campaign, String mfcProductName, MarginType mfcType);
+
+    @Query("SELECT new growup.spring.springserver.marginforcampaign.dto.MarginForCampaignOptionNameAndCampaignId(" +
+            "mfc.mfcProductName," +
+            "c.campaignId)" +
+            "FROM MarginForCampaign mfc " +
+            "JOIN mfc.campaign c " +
+            "WHERE c.member.email = :email")
+    List<MarginForCampaignOptionNameAndCampaignId> findByCampaignEmail(@Param("email") String email);
 }

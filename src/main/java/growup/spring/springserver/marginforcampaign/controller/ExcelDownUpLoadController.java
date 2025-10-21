@@ -38,6 +38,7 @@ public class ExcelDownUpLoadController {
     public ResponseEntity<?> downloadExcel(@AuthenticationPrincipal UserDetails userDetails) {
 
         try {
+            //TODO : N번 반복을 줄 일 수 있습니다.
             List<CampaignIdAndNameForExcelDownload> campaignList =
                     campaignService.getCampaignsByEmail(userDetails.getUsername()).stream()
                             .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))

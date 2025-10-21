@@ -33,6 +33,15 @@ public class ExcelService {
         /*
             액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
          */
+        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(excelDownloadDataList);
+        List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
+        List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
+        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
+    }
+    public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(List<CampaignIdAndNameForExcelDownload> excelDownloadDataList){
+        /*
+            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
+         */
         List<Map<String, Object>> dummyUsers = new ArrayList<>();
         for (CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : excelDownloadDataList) {
             List<MarginForCampaign> marginForCampaigns =
@@ -55,10 +64,10 @@ public class ExcelService {
                 );
             }
         }
-        List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
-        List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
-        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
+        return dummyUsers;
     }
+
+
 
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {
         /*

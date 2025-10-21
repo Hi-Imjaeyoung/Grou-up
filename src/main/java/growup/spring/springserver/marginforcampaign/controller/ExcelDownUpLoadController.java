@@ -42,7 +42,6 @@ public class ExcelDownUpLoadController {
                     campaignService.getCampaignsByEmail(userDetails.getUsername()).stream()
                             .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
                             .toList();
-
             Workbook workbook = excelService.createUsersExcel(campaignList);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
@@ -66,7 +65,7 @@ public class ExcelDownUpLoadController {
     public ResponseEntity<CommonResponse<String>> uploadUsersExcel(@RequestParam("file") MultipartFile file,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
         if (file.isEmpty()) {
-            new ResponseEntity<>(CommonResponse.<String>builder("post fail")
+            return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("빈 파일입니다.")
                     .build(), HttpStatus.BAD_REQUEST);
         }
@@ -81,11 +80,13 @@ public class ExcelDownUpLoadController {
                         .data(e.getErrorCode().getMessage())
                         .build(), HttpStatus.OK);
             }
+            return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
+                    .data(e.getErrorCode().getMessage())
+                    .build(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")
                     .build(), HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 }

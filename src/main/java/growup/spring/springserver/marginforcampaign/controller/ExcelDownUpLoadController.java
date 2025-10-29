@@ -43,7 +43,8 @@ public class ExcelDownUpLoadController {
                     campaignService.getCampaignsByEmail(userDetails.getUsername()).stream()
                             .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
                             .toList();
-            Workbook workbook = excelService.createUsersExcel(campaignList);
+            Workbook workbook = excelService.createUsersExcel(campaignList,userDetails.getUsername());
+//            Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
             workbook.close();

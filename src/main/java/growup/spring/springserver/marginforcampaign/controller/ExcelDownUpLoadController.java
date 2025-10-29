@@ -1,6 +1,5 @@
 package growup.spring.springserver.marginforcampaign.controller;
 
-import growup.spring.springserver.campaign.dto.CampaignIdAndNameForExcelDownload;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -10,6 +9,7 @@ import growup.spring.springserver.marginforcampaign.service.ExcelService;
 import growup.spring.springserver.marginforcampaign.service.MarginForCampaignService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +28,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/marginforcam")
+@Slf4j
 @AllArgsConstructor
 public class ExcelDownUpLoadController {
 
@@ -38,12 +39,7 @@ public class ExcelDownUpLoadController {
     public ResponseEntity<?> downloadExcel(@AuthenticationPrincipal UserDetails userDetails) {
 
         try {
-            //TODO : N번 반복을 줄 일 수 있습니다.
-            List<CampaignIdAndNameForExcelDownload> campaignList =
-                    campaignService.getCampaignsByEmail(userDetails.getUsername()).stream()
-                            .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
-                            .toList();
-            Workbook workbook = excelService.createUsersExcel(campaignList);
+            Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
             workbook.close();
@@ -60,7 +56,12 @@ public class ExcelDownUpLoadController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("엑셀 파일을 생성하는 중 오류가 발생했습니다.");
-        }
+        } catch (Exception e) {
+            log.error("엑셀 다운로드 중 알 수 없는 런타임 오류 발생", e); // 👈 스택 트레이스를 꼭 찍어야 함
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
+    }
     }
     @PostMapping("/upload")
     public ResponseEntity<CommonResponse<String>> uploadUsersExcel(@RequestParam("file") MultipartFile file,

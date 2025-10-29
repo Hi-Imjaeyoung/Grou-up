@@ -4,6 +4,7 @@ import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
 import growup.spring.springserver.marginforcampaign.dto.MarginForCampaignOptionNameAndCampaignId;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,10 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
 
     @Query("SELECT m FROM MarginForCampaign m WHERE m.campaign.campaignId = :campaignId")
     List<MarginForCampaign> MarginForCampaignByCampaignId(Long campaignId);
+
+    // N+1을 방지하기 위해서 EntityGraph를 사용.
+    @EntityGraph(attributePaths = {"campaign"})
+    List<MarginForCampaign> findByCampaignMemberEmail(String email);
 
     // 순수 jpa 쿼리와 비교시
     // 성능 최적화(N+1 문제 방지)와 명시성 때문에 해당 코드를 추천한다고 젬미니는 말합니다

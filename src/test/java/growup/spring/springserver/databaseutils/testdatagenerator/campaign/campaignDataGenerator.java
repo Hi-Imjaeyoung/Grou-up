@@ -46,7 +46,6 @@ public class campaignDataGenerator {
             if(startNum<10) {
                 counter = "0" + startNum;
             }
-            System.out.println(counter);
             String email = DataFormat.USERNAME.getValue() +counter+ DataFormat.EMAIL_FORMAT.getValue();
             try {
                  member = memberRepository.findByEmail(email).orElseThrow(
@@ -91,5 +90,4 @@ public class campaignDataGenerator {
             startNum++;
         }
     }
-
 }

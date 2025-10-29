@@ -85,7 +85,7 @@ public class ExcelDownUpLoadController {
             }
             return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
                     .data(e.getErrorCode().getMessage())
-                    .build(), HttpStatus.BAD_REQUEST;
+                    .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")

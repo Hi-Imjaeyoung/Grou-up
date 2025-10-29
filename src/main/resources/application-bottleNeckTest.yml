@@ -17,6 +17,8 @@ spring:
       hibernate:
         show_sql: false
         format_sql: false
+        jdbc:
+          batch_size: 5000
   security:
     oauth2:
       client:

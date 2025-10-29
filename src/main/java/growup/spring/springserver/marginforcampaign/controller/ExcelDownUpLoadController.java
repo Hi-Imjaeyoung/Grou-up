@@ -37,31 +37,32 @@ public class ExcelDownUpLoadController {
     private final MarginForCampaignService marginForCampaignService;
     @GetMapping("/downloadExcel")
     public ResponseEntity<?> downloadExcel(@AuthenticationPrincipal UserDetails userDetails) {
-
-        try {
-            Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            workbook.write(out);
-            workbook.close();
+        try (Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            workbook.write(out); // 엑셀 데이터를 메모리에 씁니다.
             ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"new-users-list.xlsx\"")
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(resource);
+
         } catch (CampaignNotFoundException e) {
+            log.warn("엑셀 다운로드 실패 (캠페인 없음): {}", userDetails.getUsername());
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body("다운로드할 캠페인이 존재하지 않습니다.");
         } catch (IOException e) {
+            log.error("엑셀 파일 생성 IO 오류", e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("엑셀 파일을 생성하는 중 오류가 발생했습니다.");
         } catch (Exception e) {
-            log.error("엑셀 다운로드 중 알 수 없는 런타임 오류 발생", e); // 👈 스택 트레이스를 꼭 찍어야 함
+            log.error("엑셀 다운로드 중 알 수 없는 런타임 오류 발생", e);
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
-    }
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
+        }
     }
     @PostMapping("/upload")
     public ResponseEntity<CommonResponse<String>> uploadUsersExcel(@RequestParam("file") MultipartFile file,
@@ -80,11 +81,11 @@ public class ExcelDownUpLoadController {
             if(e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)){
                 return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                         .data(e.getErrorCode().getMessage())
-                        .build(), HttpStatus.OK);
+                        .build(), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
                     .data(e.getErrorCode().getMessage())
-                    .build(), HttpStatus.OK);
+                    .build(), HttpStatus.BAD_REQUEST;
         } catch (Exception e) {
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")

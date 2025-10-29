@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ExcelUtil {
+    static final String SHEET_NAME = "캠패인 옵션 목록";
     public static Workbook createExcelFile(List<Map<String, Object>> dataList, List<String> headers, List<String> dataKeys) {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("사용자 목록");
+        Sheet sheet = workbook.createSheet(SHEET_NAME);
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < headers.size(); i++) {
             Cell cell = headerRow.createCell(i);
@@ -30,6 +31,8 @@ public class ExcelUtil {
                     cell.setCellValue((Integer) value);
                 } else if (value instanceof Long) {
                     cell.setCellValue((Long) value);
+                } else if (value != null) {
+                    cell.setCellValue(value.toString());
                 }
             }
         }

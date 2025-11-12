@@ -30,79 +30,35 @@ public class ExcelService {
     private final MarginForCampaignRepository marginForCampaignRepository;
     private final CampaignService campaignService;
 
-    public Workbook createUsersExcel(List<CampaignIdAndNameForExcelDownload> excelDownloadDataList,
-                                     String email){
-        /*
-            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
-         */
-        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(excelDownloadDataList);
-        List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
-        List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
-        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
-    }
-
-    public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(List<CampaignIdAndNameForExcelDownload> excelDownloadDataList){
-        /*
-            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
-         */
-        List<Map<String, Object>> dummyUsers = new ArrayList<>();
-        for (CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : excelDownloadDataList) {
-            List<MarginForCampaign> marginForCampaigns =
-                    marginForCampaignRepository.MarginForCampaignByCampaignId(campaignIdAndNameForExcelDownload.campaignId());
-            if (marginForCampaigns.isEmpty()) {
-                dummyUsers.add(
-                        Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
-                );
-                continue;
-            }
-            for (MarginForCampaign marginForCampaign : marginForCampaigns) {
-                dummyUsers.add(
-                        Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(),
-                                "campaignId", campaignIdAndNameForExcelDownload.campaignId(),
-                                "optionName", marginForCampaign.getMfcProductName(),
-                                "salePrice", marginForCampaign.getMfcSalePrice(),
-                                "costPrice", marginForCampaign.getMfcCostPrice(),
-                                "totalPrice", marginForCampaign.getMfcTotalPrice(),
-                                "returnPrice", marginForCampaign.getMfcReturnPrice())
-                );
-            }
-        }
-        return dummyUsers;
-    }
-
-//    public Workbook createUsersExcel(String email){
+//    public Workbook createUsersExcel(List<CampaignIdAndNameForExcelDownload> excelDownloadDataList,
+//                                     String email){
 //        /*
 //            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
 //         */
-//        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(email);
+//        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(excelDownloadDataList);
 //        List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
 //        List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
 //        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
 //    }
-//    public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(String email){
+
+//    public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(List<CampaignIdAndNameForExcelDownload> excelDownloadDataList){
 //        /*
 //            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
 //         */
 //        List<Map<String, Object>> dummyUsers = new ArrayList<>();
-//        List<MarginForCampaign> marginForCampaigns =
-//                marginForCampaignRepository.findByCampaignMemberEmail(email);
-//        Map<Long, List<MarginForCampaign>> map = marginForCampaigns.stream()
-//                .collect(Collectors.groupingBy(
-//                        mfc -> mfc.getCampaign().getCampaignId()
-//                ));
-//        /* TODO : mfc 가 없는 경우.
-//        1. 캠패인으로만 만들어서 액셀을 줘야함.
-//        */
-////        if (marginForCampaigns.isEmpty()) {
-////            dummyUsers.add(
-////                   Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
-////            );
-////        }
-//        for(Long campaignId : map.keySet()){
-//            for (MarginForCampaign marginForCampaign : map.get(campaignId)) {
+//        for (CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : excelDownloadDataList) {
+//            List<MarginForCampaign> marginForCampaigns =
+//                    marginForCampaignRepository.MarginForCampaignByCampaignId(campaignIdAndNameForExcelDownload.campaignId());
+//            if (marginForCampaigns.isEmpty()) {
 //                dummyUsers.add(
-//                        Map.of("campaignName", marginForCampaign.getCampaign().getCamCampaignName(),
-//                                "campaignId", marginForCampaign.getCampaign().getCampaignId(),
+//                        Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
+//                );
+//                continue;
+//            }
+//            for (MarginForCampaign marginForCampaign : marginForCampaigns) {
+//                dummyUsers.add(
+//                        Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(),
+//                                "campaignId", campaignIdAndNameForExcelDownload.campaignId(),
 //                                "optionName", marginForCampaign.getMfcProductName(),
 //                                "salePrice", marginForCampaign.getMfcSalePrice(),
 //                                "costPrice", marginForCampaign.getMfcCostPrice(),
@@ -111,9 +67,53 @@ public class ExcelService {
 //                );
 //            }
 //        }
-//
 //        return dummyUsers;
 //    }
+
+    public Workbook createUsersExcel(String email){
+        /*
+            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
+         */
+        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(email);
+        List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
+        List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
+        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
+    }
+    public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(String email){
+        /*
+            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
+         */
+        List<Map<String, Object>> dummyUsers = new ArrayList<>();
+        List<MarginForCampaign> marginForCampaigns =
+                marginForCampaignRepository.findByCampaignMemberEmail(email);
+        Map<Long, List<MarginForCampaign>> map = marginForCampaigns.stream()
+                .collect(Collectors.groupingBy(
+                        mfc -> mfc.getCampaign().getCampaignId()
+                ));
+        /* TODO : mfc 가 없는 경우.
+        1. 캠패인으로만 만들어서 액셀을 줘야함.
+        */
+//        if (marginForCampaigns.isEmpty()) {
+//            dummyUsers.add(
+//                   Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
+//            );
+//        }
+        for(Long campaignId : map.keySet()){
+            for (MarginForCampaign marginForCampaign : map.get(campaignId)) {
+                dummyUsers.add(
+                        Map.of("campaignName", marginForCampaign.getCampaign().getCamCampaignName(),
+                                "campaignId", marginForCampaign.getCampaign().getCampaignId(),
+                                "optionName", marginForCampaign.getMfcProductName(),
+                                "salePrice", marginForCampaign.getMfcSalePrice(),
+                                "costPrice", marginForCampaign.getMfcCostPrice(),
+                                "totalPrice", marginForCampaign.getMfcTotalPrice(),
+                                "returnPrice", marginForCampaign.getMfcReturnPrice())
+                );
+            }
+        }
+
+        return dummyUsers;
+    }
 
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {
         /*

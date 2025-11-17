@@ -64,7 +64,7 @@ public class ExcelDownUpLoadController {
                     .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
         }
     }
-    @PostMapping("/upload")
+    @DeleteMapping("/upload")
     public ResponseEntity<CommonResponse<String>> uploadUsersExcel(@RequestParam("file") MultipartFile file,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
         if (file.isEmpty()) {
@@ -83,10 +83,16 @@ public class ExcelDownUpLoadController {
                         .data(e.getErrorCode().getMessage())
                         .build(), HttpStatus.BAD_REQUEST);
             }
+            if(e.getErrorCode().equals(ErrorCode.CAMPAIGN_NOT_FOUND)){
+                return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
+                        .data("캠패인 ID가 잘못되었습니다. 액셀을 다시 다운로드해주세요.")
+                        .build(), HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
                     .data(e.getErrorCode().getMessage())
                     .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            log.error(e.toString());
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")
                     .build(), HttpStatus.BAD_REQUEST);

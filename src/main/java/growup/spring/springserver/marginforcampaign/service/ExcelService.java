@@ -92,6 +92,7 @@ public class ExcelService {
         return dummyUsers;
     }
 
+    @Transactional
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {
         /*
             액셀 업로드 결과를 사용자에게 전달하기 위한 Map.
@@ -112,18 +113,28 @@ public class ExcelService {
             result.put("total",sheet.getLastRowNum());
             result.put("error",0);
             result.put("update",0);
+            result.put("input",0);
             ExcelDataLoop:
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 try {
                     MfcDto mfcDto = readExcelRowToMarginForCampaignData(row);
                     Long campaignID = Long.valueOf(getCellStringValue(row.getCell(0)));
-                    if(optionNamesAboutCampaign.get(campaignID).contains(mfcDto.getMfcProductName())){
-                        executeUpdateMarginForCampaignEntity(mfcDto,campaignID);
+                    Campaign campaign = campaignService.getMyCampaign(campaignID,email);
+                    // campaign Selete 문을 적게 날리기 위해 campaignId가 바뀌는 순간에만 조회를 새로해옵니다.
+                    if(campaign != null && !campaign.getCampaignId().equals(campaignID))
+                        campaign = campaignService.getMyCampaign(campaignID,email);
+                    // 이미 mfc 옵션이 있는 경우 그 값을 업데이트 합니다.
+                    // Option이 하나도 등록되지 않은 campaignID에 대해 map.get 를 수행시 nullPointE 가 발생하여 조건 추가.
+                    if(optionNamesAboutCampaign.containsKey(campaignID)
+                            && optionNamesAboutCampaign.get(campaignID).contains(mfcDto.getMfcProductName())){
+                        MarginForCampaign updatedMFC = executeUpdateMarginForCampaignEntity(mfcDto,campaignID);
+                        marginForCampaigns.add(updatedMFC);
                         result.put("update", result.get("update") + 1);
                         continue;
                     }
-                    Campaign campaign = campaignService.getMyCampaign(campaignID,email);
+                    // 그렇지 않은 경우 새로 insert
+                    result.put("input",result.get("input")+1);
                     marginForCampaigns.add(
                             TypeChangeMarginForCampaign.createDtoToMargin(mfcDto,campaign)
                     );
@@ -149,20 +160,32 @@ public class ExcelService {
                     throw e;
                 }
             }
+            // List 가 빈값인 경우 끔찍한 delete 문이 날라갈수 있기떄문에 체크를 해줍니다.
+            if(marginForCampaigns.isEmpty()){
+               return result;
+            }
+            checkNotExistOptions(marginForCampaigns, email);
             marginForCampaignRepository.saveAll(marginForCampaigns);
-            result.put("input",marginForCampaigns.size());
             return result;
         }
     }
 
-    @Transactional
-    public void executeUpdateMarginForCampaignEntity(MfcDto mfcDto,Long campaignId){
+    public void checkNotExistOptions(List<MarginForCampaign> marginForCampaigns, String email){
+        List<String> optionNamesInExcels = marginForCampaigns.stream()
+                .map(MarginForCampaign::getMfcProductName)
+                .toList();
+        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email);
+    }
+
+
+    public MarginForCampaign executeUpdateMarginForCampaignEntity(MfcDto mfcDto,Long campaignId){
         MarginForCampaign oldMarginForCampaign = marginForCampaignRepository.findByCampaignAndMfcProductName(
                 mfcDto.getMfcProductName(),
                 campaignId).orElseThrow(
                 ()-> new GrouException(ErrorCode.MARGIN_FOR_CAMPAIGN_PRODUCT_NAME_NOT_FOUND)
         );
         oldMarginForCampaign.updateExistingProduct(mfcDto);
+        return oldMarginForCampaign;
     }
 
     private Map<Long,Set<String>> extractedCampaignIdAndOptionNames(String email) {

@@ -14,6 +14,7 @@ import growup.spring.springserver.marginforcampaign.repository.MarginForCampaign
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +31,51 @@ import java.util.stream.Collectors;
 public class ExcelService {
     private final MarginForCampaignRepository marginForCampaignRepository;
     private final CampaignService campaignService;
+    @Getter
+    private static class ExcelUploadContext {
+        /*
+         업로드 결과를 저장하는 Map
+         Key : insert(새로 추가된 옵션), update(기존 옵션), error(파일 형식 오류), total(전체 옵션)
+         */
+        private final Map<String,Integer> result = new HashMap<>();
+        /*
+         저장할 MFC 모아두는 List
+         */
+        private final List<MarginForCampaign> entitiesToSave = new ArrayList<>();
+        /*
+         사용자가 올린 엑셀의 옵션명들을 value, campaignId를 key 로 갖는 Map
+         */
+        private final Map<Long,List<String>> optionNamesFromExcel = new HashMap<>();
 
+        private final String email;
+        private final Map<Long, Campaign> campaignCache;
+        private final Map<Long,Map<String,MarginForCampaign>> myMFCCache;
+
+        public ExcelUploadContext(int totalRow,String email,
+                                  Map<Long, Campaign> campaignCache,
+                                  Map<Long,Map<String,MarginForCampaign>> myMFCCache) {
+            this.email = email;
+            this.campaignCache = campaignCache;
+            this.myMFCCache = myMFCCache;
+            this.result.put("total", totalRow);
+            this.result.put("error", 0);
+            this.result.put("update", 0);
+            this.result.put("input", 0);
+        }
+        public void increment(String key) {
+            result.put(key, result.get(key) + 1);
+        }
+
+        public void addEntityToSave(MarginForCampaign entity) {
+            this.entitiesToSave.add(entity);
+        }
+
+        public void addOptionNameFromExcel(Long campaignId,String name) {
+            this.optionNamesFromExcel.computeIfAbsent(campaignId, k -> new ArrayList<>());
+            this.optionNamesFromExcel.get(campaignId).add(name);
+        }
+
+    }
     public Workbook createUsersExcel(String email){
         /*
             액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
@@ -51,7 +97,7 @@ public class ExcelService {
         List<MarginForCampaign> marginForCampaigns =
                 marginForCampaignRepository.findByCampaignMemberEmail(email);
         /*
-            Key : 캠패인 Id , Value : MarginForCampaign
+            Key : 캠패인 id , Value : MarginForCampaign
          */
         Map<Long, List<MarginForCampaign>> map = marginForCampaigns.stream()
                 .collect(Collectors.groupingBy(
@@ -91,111 +137,93 @@ public class ExcelService {
         }
         return dummyUsers;
     }
-
     @Transactional
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {
-        /*
-            액셀 업로드 결과를 사용자에게 전달하기 위한 Map.
-            key : 업로드 결과, value : 횟수
-         */
-        Map<String,Integer> result = new HashMap<>();
-        /*
-            쿼리문을 하나씩 던지는 것 보다는 한번에 모아서 던지는게 더 효율적이라고 배워서 이를 위해 만든 list.
-         */
-        List<MarginForCampaign> marginForCampaigns = new ArrayList<>();
-        /*
-            이미 존재하는 MarginForCampaign에 대한 검증을 위한 Map.
-            key : 캠패인 id , value : 해당 캠패인 옵션 이름.
-         */
-        Map<Long,Set<String>> optionNamesAboutCampaign = extractedCampaignIdAndOptionNames(email);
+        // N + 1 이슈를 방지하기 위해 캠패인 조회 후 캐싱 처리.
+        Map<Long,Campaign> myCampaignCache = campaignService.getCampaignsByEmail(email)
+                .stream()
+                .collect(Collectors.toMap(
+                        Campaign::getCampaignId,
+                        campaign -> campaign
+                ));
+        // N + 1 이슈를 방지하기 위해 MarginForCampaign 조회 후 캐싱처리
+        Map<Long,Map<String,MarginForCampaign>> myMFCCache = marginForCampaignRepository.findByCampaignMemberEmail(email)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        mfc -> mfc.getCampaign().getCampaignId(),
+                        Collectors.toMap(
+                                MarginForCampaign::getMfcProductName, // Key = 상품명
+                                Function.identity(),                  // Value = mfc 객체
+                                (existingValue, replacementValue) -> existingValue
+                        )
+            )
+        );
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            result.put("total",sheet.getLastRowNum());
-            result.put("error",0);
-            result.put("update",0);
-            result.put("input",0);
-            ExcelDataLoop:
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                try {
-                    MfcDto mfcDto = readExcelRowToMarginForCampaignData(row);
-                    Long campaignID = Long.valueOf(getCellStringValue(row.getCell(0)));
-                    Campaign campaign = campaignService.getMyCampaign(campaignID,email);
-                    // campaign Selete 문을 적게 날리기 위해 campaignId가 바뀌는 순간에만 조회를 새로해옵니다.
-                    if(campaign != null && !campaign.getCampaignId().equals(campaignID))
-                        campaign = campaignService.getMyCampaign(campaignID,email);
-                    // 이미 mfc 옵션이 있는 경우 그 값을 업데이트 합니다.
-                    // Option이 하나도 등록되지 않은 campaignID에 대해 map.get 를 수행시 nullPointE 가 발생하여 조건 추가.
-                    if(optionNamesAboutCampaign.containsKey(campaignID)
-                            && optionNamesAboutCampaign.get(campaignID).contains(mfcDto.getMfcProductName())){
-                        MarginForCampaign updatedMFC = executeUpdateMarginForCampaignEntity(mfcDto,campaignID);
-                        marginForCampaigns.add(updatedMFC);
-                        result.put("update", result.get("update") + 1);
-                        continue;
-                    }
-                    // 그렇지 않은 경우 새로 insert
-                    result.put("input",result.get("input")+1);
-                    marginForCampaigns.add(
-                            TypeChangeMarginForCampaign.createDtoToMargin(mfcDto,campaign)
-                    );
-                }catch (GrouException e) {
-                    // 액셀의 row를 읽다가 생기는 예외
-                    if (e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)) {
-                        // 액셀 업로드 작업을 계속 진행, 잘못 입력된 row의 정보를 사용자에게 전달한다.
-                        result.put("error", result.get("error") + 1);
-                        continue ExcelDataLoop;
-                    }
-                    // 해당 캠패인을 찾지 못할때 생기는 예외
-                    if (e.getErrorCode().equals(ErrorCode.CAMPAIGN_NOT_FOUND)) {
-                        // 액셀 업로드 작업을 중지, 찾지 못한 캠패인 아이디를 사용자에게 명시하여 수정하도록 유도한다.
-                        log.error("MFC 액셀 업로드 과정 중 에러 발생 : {}", e.getErrorCode().getMessage());
-                        throw e;
-                    }
-                    // 수정을 위해 조회 시 해당 옵션 이름을 찾지 못할 때
-                    if(e.getErrorCode().equals(ErrorCode.MARGIN_FOR_CAMPAIGN_PRODUCT_NAME_NOT_FOUND)){
-                        // 액셀 업로드 작업을 중지, 치명적 에러로 그대로 상위 레이어로 throw
-                        log.error("MFC 액셀 업로드 과정 중 에러 발생 : {}", e.getErrorCode().getMessage());
-                        throw  e;
-                    }
-                    throw e;
+            ExcelUploadContext excelUploadContext = new ExcelUploadContext(sheet.getLastRowNum(), email, myCampaignCache,myMFCCache);
+            processExcelRows(sheet, excelUploadContext);
+            if (!excelUploadContext.getOptionNamesFromExcel().isEmpty()) {
+                // "엑셀에 없는" 기존 옵션 삭제
+                for(Long campaignId : excelUploadContext.getOptionNamesFromExcel().keySet()){
+                    if(excelUploadContext.optionNamesFromExcel.get(campaignId).isEmpty()) continue;
+                    checkNotExistOptions(excelUploadContext.getOptionNamesFromExcel().get(campaignId), email,campaignId);
                 }
             }
-            // List 가 빈값인 경우 끔찍한 delete 문이 날라갈수 있기떄문에 체크를 해줍니다.
-            if(marginForCampaigns.isEmpty()){
-               return result;
+            if (!excelUploadContext.getEntitiesToSave().isEmpty()) {
+                // 엑셀에 있던 내용 일괄 저장 (Update + Insert)
+                marginForCampaignRepository.saveAll(excelUploadContext.getEntitiesToSave());
             }
-            checkNotExistOptions(marginForCampaigns, email);
-            marginForCampaignRepository.saveAll(marginForCampaigns);
-            return result;
+            return excelUploadContext.getResult();
+        }
+    }
+    private void processExcelRows(Sheet sheet, ExcelUploadContext excelUploadContext) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            try {
+                processSingleRow(row, excelUploadContext);
+            } catch (GrouException e) {
+                handleRowProcessingError(e, excelUploadContext);
+            }
+        }
+    }
+    private void processSingleRow(Row row, ExcelUploadContext excelUploadContext) {
+        MfcDto mfcDto = readExcelRowToMarginForCampaignData(row);
+        Long campaignID = Long.valueOf(getCellStringValue(row.getCell(0)));
+        Campaign campaign = excelUploadContext.getCampaignCache().get(campaignID);
+        if (campaign == null) {
+            // 이 캠페인 ID가 엑셀에는 있는데, 내 DB에 없거나 내 소유가 아님
+            throw new GrouException(ErrorCode.CAMPAIGN_NOT_FOUND);
+        }
+        excelUploadContext.addOptionNameFromExcel(campaignID,mfcDto.getMfcProductName());
+        MarginForCampaign oldMFc = null;
+        if (excelUploadContext.getMyMFCCache().containsKey(campaignID)) {
+            oldMFc = excelUploadContext.getMyMFCCache().get(campaignID).get(mfcDto.getMfcProductName());
+        }
+        if(oldMFc == null){
+            excelUploadContext.addEntityToSave(
+                    TypeChangeMarginForCampaign.createDtoToMargin(mfcDto, campaign)
+            );
+            excelUploadContext.increment("input");
+        }else{
+            oldMFc.updateExistingProduct(mfcDto);
+            excelUploadContext.addEntityToSave(oldMFc);
+            excelUploadContext.increment("update");
+        }
+    }
+    private void handleRowProcessingError(GrouException e, ExcelUploadContext excelUploadContext) {
+        if (e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)) {
+            // 잘못된 행(Row)은 "error" 카운트만 올리고 다음 행으로 넘어간다.
+            excelUploadContext.increment("error");
+        } else {
+            // CAMPAIGN_NOT_FOUND 등... "치명적인" 에러는
+            // 엑셀 업로드 전체를 중단시켜야 하므로, 예외를 다시 던진다.
+            log.error("MFC 액셀 업로드 중 치명적 에러 발생 : {}", e.getErrorCode().getMessage());
+            throw e;
         }
     }
 
-    public void checkNotExistOptions(List<MarginForCampaign> marginForCampaigns, String email){
-        List<String> optionNamesInExcels = marginForCampaigns.stream()
-                .map(MarginForCampaign::getMfcProductName)
-                .toList();
-        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email);
-    }
-
-
-    public MarginForCampaign executeUpdateMarginForCampaignEntity(MfcDto mfcDto,Long campaignId){
-        MarginForCampaign oldMarginForCampaign = marginForCampaignRepository.findByCampaignAndMfcProductName(
-                mfcDto.getMfcProductName(),
-                campaignId).orElseThrow(
-                ()-> new GrouException(ErrorCode.MARGIN_FOR_CAMPAIGN_PRODUCT_NAME_NOT_FOUND)
-        );
-        oldMarginForCampaign.updateExistingProduct(mfcDto);
-        return oldMarginForCampaign;
-    }
-
-    private Map<Long,Set<String>> extractedCampaignIdAndOptionNames(String email) {
-        Map<Long,Set<String>> optionNamesAboutCampaign = new HashMap<>();
-        List<MarginForCampaignOptionNameAndCampaignId> marginForCampaignOptionNameAndCampaignIds =
-                marginForCampaignRepository.findByCampaignEmail(email);
-        for(MarginForCampaignOptionNameAndCampaignId dto : marginForCampaignOptionNameAndCampaignIds){
-            optionNamesAboutCampaign.computeIfAbsent(dto.campaignId(), k -> new HashSet<>()).add(dto.optionName());
-        }
-        return optionNamesAboutCampaign;
+    public void checkNotExistOptions(List<String> optionNamesInExcels, String email,Long campaignId){
+        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email,campaignId);
     }
 
     public MfcDto readExcelRowToMarginForCampaignData(Row row){

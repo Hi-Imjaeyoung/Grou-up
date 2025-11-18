@@ -56,8 +56,10 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
 
     @Modifying
     @Query("DELETE FROM MarginForCampaign mfc WHERE mfc.mfcProductName NOT IN :optionNamesInExcels AND " +
-            "mfc.campaign.member.email = :email ")
+            "mfc.campaign.member.email = :email AND " +
+            "mfc.campaign.campaignId = :campaignId")
     int deleteNotIncludeOptionName(
             @Param("optionNamesInExcels") List<String> optionNamesInExcels,
-            @Param("email") String email);
+            @Param("email") String email,
+            @Param("campaignId")Long campaignId);
 }

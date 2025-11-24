@@ -107,11 +107,11 @@ public class ExcelService {
             /*
                 사용자가 갖는 캠패인들의 id 와 이름 List
              */
-            List<CampaignIdAndNameForExcelDownload> campaignList =
+            List<CampaignIdAndNameForExcelDownload> campaignNameAndIDList =
                     campaignService.getCampaignsByEmail(email).stream()
                             .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
                             .toList();
-            for(CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : campaignList){
+            for(CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : campaignNameAndIDList){
                 dummyUsers.add(
                         Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
                 );

@@ -106,54 +106,30 @@ public class ExcelService {
 
     }
     public Workbook createUsersExcel(String email){
-        /*
-            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
-         */
-        List<Map<String, Object>> dummyUsers = makeMarginForCampaignExcelBasicDataForm(email);
+        List<Map<String, Object>> writtenDataToDownloadExcel = makeMarginForCampaignExcelBasicDataForm(email);
         List<String> headers = List.of("캠패인 ID","캠페인 명", "옵션명", "판매가","원가","총 비용(쿠팡)","반품비");
         List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
-        return ExcelUtil.createExcelFile(dummyUsers, headers, dataKeys);
+        return ExcelUtil.createExcelFile(writtenDataToDownloadExcel, headers, dataKeys);
     }
 
     public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(String email){
-        /*
-            액셀 다운로드  시 필요한 기본 데인터를 Map 형태로 갖는 List.
-         */
-        List<Map<String, Object>> dummyUsers = new ArrayList<>();
-        /*
-            기존 사용자가 갖고 있는 MarginForCampaign List
-         */
-        List<MarginForCampaign> marginForCampaigns =
+        List<MarginForCampaign> myMarginForCampaigns =
                 marginForCampaignRepository.findByCampaignMemberEmail(email);
-        /*
-            Key : 캠패인 id , Value : MarginForCampaign
-         */
-        Map<Long, List<MarginForCampaign>> map = marginForCampaigns.stream()
+        if (myMarginForCampaigns.isEmpty()) {
+            return getMinimalDataAboutCampaignNameAndIDToWrittenExcel(email);
+        }
+        return getMyMFCDataToWrittenExcel(myMarginForCampaigns);
+
+    }
+    public List<Map<String, Object>> getMyMFCDataToWrittenExcel(List<MarginForCampaign> myMarginForCampaigns){
+        List<Map<String, Object>> myMFCDataToWrittenExcel = new ArrayList<>();
+        Map<Long, List<MarginForCampaign>> keyCampaignIdValueMFCInThatCampaign = myMarginForCampaigns.stream()
                 .collect(Collectors.groupingBy(
                         mfc -> mfc.getCampaign().getCampaignId()
                 ));
-        if (marginForCampaigns.isEmpty()) {
-            /*
-                사용자가 갖는 캠패인들의 id 와 이름 List
-             */
-            List<CampaignIdAndNameForExcelDownload> campaignNameAndIDList =
-                    campaignService.getCampaignsByEmail(email).stream()
-                            .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
-                            .toList();
-            for(CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : campaignNameAndIDList){
-                dummyUsers.add(
-                        Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
-                );
-            }
-            /*
-                캠패인 마저 없는 경우 값을 채워준다.
-             */
-            if(dummyUsers.isEmpty()) dummyUsers.add(Map.of("campaignName", "캠피인 1", "campaignId", 123456L));
-            return dummyUsers;
-        }
-        for(Long campaignId : map.keySet()){
-            for (MarginForCampaign marginForCampaign : map.get(campaignId)) {
-                dummyUsers.add(
+        for(Long campaignId : keyCampaignIdValueMFCInThatCampaign.keySet()){
+            for (MarginForCampaign marginForCampaign : keyCampaignIdValueMFCInThatCampaign.get(campaignId)) {
+                myMFCDataToWrittenExcel.add(
                         Map.of("campaignName", marginForCampaign.getCampaign().getCamCampaignName(),
                                 "campaignId", marginForCampaign.getCampaign().getCampaignId(),
                                 "optionName", marginForCampaign.getMfcProductName(),
@@ -164,7 +140,21 @@ public class ExcelService {
                 );
             }
         }
-        return dummyUsers;
+        return myMFCDataToWrittenExcel;
+    }
+    public List<Map<String, Object>> getMinimalDataAboutCampaignNameAndIDToWrittenExcel(String email){
+        List<Map<String, Object>> writtenAboutCampaignNameAndID = new ArrayList<>();
+        List<CampaignIdAndNameForExcelDownload> campaignNameAndIDList =
+                campaignService.getCampaignsByEmail(email).stream()
+                        .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
+                        .toList();
+        for(CampaignIdAndNameForExcelDownload campaignIdAndNameForExcelDownload : campaignNameAndIDList){
+            writtenAboutCampaignNameAndID.add(
+                    Map.of("campaignName", campaignIdAndNameForExcelDownload.campaignName(), "campaignId", campaignIdAndNameForExcelDownload.campaignId())
+            );
+        }
+        if(writtenAboutCampaignNameAndID.isEmpty()) writtenAboutCampaignNameAndID.add(Map.of("campaignName", "캠피인 1", "campaignId", 123456L));
+        return writtenAboutCampaignNameAndID;
     }
     @Transactional
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {

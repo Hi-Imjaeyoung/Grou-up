@@ -74,6 +74,35 @@ public class ExcelService {
             this.optionNamesFromExcel.computeIfAbsent(campaignId, k -> new ArrayList<>());
             this.optionNamesFromExcel.get(campaignId).add(name);
         }
+        public boolean existMfcCacheMayToCampaignId(Long campaignId){
+            return myMFCCache.containsKey(campaignId);
+        }
+        public MarginForCampaign getMfcToCampaignIdAndProductNameOrNull(Long campaignId,String productName){
+            if(!existMfcCacheMayToCampaignId(campaignId)){
+                return null;
+            }
+            return this.myMFCCache.get(campaignId).get(productName);
+        }
+        public void upsertMfcDtoToEntitiesToSave(MarginForCampaign oldMFc,MfcDto mfcDto,Campaign campaign){
+            if(oldMFc == null){
+                addEntityToSave(
+                        TypeChangeMarginForCampaign.createDtoToMargin(mfcDto, campaign)
+                );
+                increment("input");
+            }else{
+                oldMFc.updateExistingProduct(mfcDto);
+                addEntityToSave(oldMFc);
+                increment("update");
+            }
+        }
+        public Campaign getCampaignToCampaignIdInCampaignCache(Long campaignId){
+            try {
+                return campaignCache.get(campaignId);
+            } catch (NullPointerException e){
+                // 이 캠페인 ID가 엑셀에는 있는데, 내 DB에 없거나 내 소유가 아님
+                throw new GrouException(ErrorCode.CAMPAIGN_NOT_FOUND);
+            }
+        }
 
     }
     public Workbook createUsersExcel(String email){
@@ -189,27 +218,13 @@ public class ExcelService {
     private void processSingleRow(Row row, ExcelUploadContext excelUploadContext) {
         MfcDto mfcDto = readExcelRowToMarginForCampaignData(row);
         Long campaignID = Long.valueOf(getCellStringValue(row.getCell(0)));
-        Campaign campaign = excelUploadContext.getCampaignCache().get(campaignID);
-        if (campaign == null) {
-            // 이 캠페인 ID가 엑셀에는 있는데, 내 DB에 없거나 내 소유가 아님
-            throw new GrouException(ErrorCode.CAMPAIGN_NOT_FOUND);
-        }
-        excelUploadContext.addOptionNameFromExcel(campaignID,mfcDto.getMfcProductName());
-        MarginForCampaign oldMFc = null;
-        if (excelUploadContext.getMyMFCCache().containsKey(campaignID)) {
-            oldMFc = excelUploadContext.getMyMFCCache().get(campaignID).get(mfcDto.getMfcProductName());
-        }
-        if(oldMFc == null){
-            excelUploadContext.addEntityToSave(
-                    TypeChangeMarginForCampaign.createDtoToMargin(mfcDto, campaign)
-            );
-            excelUploadContext.increment("input");
-        }else{
-            oldMFc.updateExistingProduct(mfcDto);
-            excelUploadContext.addEntityToSave(oldMFc);
-            excelUploadContext.increment("update");
-        }
+        Campaign campaign = excelUploadContext.getCampaignToCampaignIdInCampaignCache(campaignID);
+        excelUploadContext.addOptionNameFromExcel(campaign.getCampaignId(),mfcDto.getMfcProductName());
+        MarginForCampaign oldMFc =
+                excelUploadContext.getMfcToCampaignIdAndProductNameOrNull(campaign.getCampaignId(),mfcDto.getMfcProductName());
+        excelUploadContext.upsertMfcDtoToEntitiesToSave(oldMFc,mfcDto,campaign);
     }
+
     private void handleRowProcessingError(GrouException e, ExcelUploadContext excelUploadContext) {
         if (e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)) {
             // 잘못된 행(Row)은 "error" 카운트만 올리고 다음 행으로 넘어간다.

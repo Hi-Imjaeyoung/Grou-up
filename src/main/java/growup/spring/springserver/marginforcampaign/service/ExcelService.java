@@ -8,7 +8,6 @@ import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.marginforcampaign.TypeChangeMarginForCampaign;
 import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
-import growup.spring.springserver.marginforcampaign.dto.MarginForCampaignOptionNameAndCampaignId;
 import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.repository.MarginForCampaignRepository;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
@@ -32,7 +31,7 @@ public class ExcelService {
     private final MarginForCampaignRepository marginForCampaignRepository;
     private final CampaignService campaignService;
     @Getter
-    private static class ExcelUploadContext {
+    private class ExcelUploadContext {
         /*
          업로드 결과를 저장하는 Map
          Key : insert(새로 추가된 옵션), update(기존 옵션), error(파일 형식 오류), total(전체 옵션)
@@ -51,16 +50,35 @@ public class ExcelService {
         private final Map<Long, Campaign> campaignCache;
         private final Map<Long,Map<String,MarginForCampaign>> myMFCCache;
 
-        public ExcelUploadContext(int totalRow,String email,
-                                  Map<Long, Campaign> campaignCache,
-                                  Map<Long,Map<String,MarginForCampaign>> myMFCCache) {
+        public ExcelUploadContext(int totalRow,String email) {
             this.email = email;
-            this.campaignCache = campaignCache;
-            this.myMFCCache = myMFCCache;
+            this.campaignCache = loadMyCampaignCache(email);
+            this.myMFCCache = loadMyMFCCache(email);
             this.result.put("total", totalRow);
             this.result.put("error", 0);
             this.result.put("update", 0);
             this.result.put("input", 0);
+        }
+        private Map<Long, Campaign> loadMyCampaignCache(String email){
+            return campaignService.getCampaignsByEmail(email)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            Campaign::getCampaignId,
+                            campaign -> campaign
+                    ));
+        }
+        private Map<Long,Map<String,MarginForCampaign>> loadMyMFCCache(String email){
+            return marginForCampaignRepository.findByCampaignMemberEmail(email)
+                    .stream()
+                    .collect(Collectors.groupingBy(
+                                    mfc -> mfc.getCampaign().getCampaignId(),
+                                    Collectors.toMap(
+                                            MarginForCampaign::getMfcProductName, // Key = 상품명
+                                            Function.identity(),                  // Value = mfc 객체
+                                            (existingValue, replacementValue) -> existingValue
+                                    )
+                            )
+                    );
         }
         public void increment(String key) {
             result.put(key, result.get(key) + 1);
@@ -111,7 +129,6 @@ public class ExcelService {
         List<String> dataKeys = List.of("campaignId","campaignName", "optionName","salePrice","costPrice", "totalPrice","returnPrice");
         return ExcelUtil.createExcelFile(writtenDataToDownloadExcel, headers, dataKeys);
     }
-
     public List<Map<String, Object>> makeMarginForCampaignExcelBasicDataForm(String email){
         List<MarginForCampaign> myMarginForCampaigns =
                 marginForCampaignRepository.findByCampaignMemberEmail(email);
@@ -156,46 +173,19 @@ public class ExcelService {
         if(writtenAboutCampaignNameAndID.isEmpty()) writtenAboutCampaignNameAndID.add(Map.of("campaignName", "캠피인 1", "campaignId", 123456L));
         return writtenAboutCampaignNameAndID;
     }
+
     @Transactional
     public Map<String,Integer> processUploadedExcel(MultipartFile file,String email) throws IOException {
-        // N + 1 이슈를 방지하기 위해 캠패인 조회 후 캐싱 처리.
-        Map<Long,Campaign> myCampaignCache = campaignService.getCampaignsByEmail(email)
-                .stream()
-                .collect(Collectors.toMap(
-                        Campaign::getCampaignId,
-                        campaign -> campaign
-                ));
-        // N + 1 이슈를 방지하기 위해 MarginForCampaign 조회 후 캐싱처리
-        Map<Long,Map<String,MarginForCampaign>> myMFCCache = marginForCampaignRepository.findByCampaignMemberEmail(email)
-                .stream()
-                .collect(Collectors.groupingBy(
-                        mfc -> mfc.getCampaign().getCampaignId(),
-                        Collectors.toMap(
-                                MarginForCampaign::getMfcProductName, // Key = 상품명
-                                Function.identity(),                  // Value = mfc 객체
-                                (existingValue, replacementValue) -> existingValue
-                        )
-            )
-        );
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            ExcelUploadContext excelUploadContext = new ExcelUploadContext(sheet.getLastRowNum(), email, myCampaignCache,myMFCCache);
-            processExcelRows(sheet, excelUploadContext);
-            if (!excelUploadContext.getOptionNamesFromExcel().isEmpty()) {
-                // "엑셀에 없는" 기존 옵션 삭제
-                for(Long campaignId : excelUploadContext.getOptionNamesFromExcel().keySet()){
-                    if(excelUploadContext.optionNamesFromExcel.get(campaignId).isEmpty()) continue;
-                    checkNotExistOptions(excelUploadContext.getOptionNamesFromExcel().get(campaignId), email,campaignId);
-                }
-            }
-            if (!excelUploadContext.getEntitiesToSave().isEmpty()) {
-                // 엑셀에 있던 내용 일괄 저장 (Update + Insert)
-                marginForCampaignRepository.saveAll(excelUploadContext.getEntitiesToSave());
-            }
+            ExcelUploadContext excelUploadContext = new ExcelUploadContext(sheet.getLastRowNum(), email);
+            readAllExcelRows(sheet, excelUploadContext);
+            deleteOldMfcNotExistExcel(excelUploadContext,email);
+            saveMfcInExcel(excelUploadContext);
             return excelUploadContext.getResult();
         }
     }
-    private void processExcelRows(Sheet sheet, ExcelUploadContext excelUploadContext) {
+    private void readAllExcelRows(Sheet sheet, ExcelUploadContext excelUploadContext) {
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             try {
@@ -214,23 +204,6 @@ public class ExcelService {
                 excelUploadContext.getMfcToCampaignIdAndProductNameOrNull(campaign.getCampaignId(),mfcDto.getMfcProductName());
         excelUploadContext.upsertMfcDtoToEntitiesToSave(oldMFc,mfcDto,campaign);
     }
-
-    private void handleRowProcessingError(GrouException e, ExcelUploadContext excelUploadContext) {
-        if (e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)) {
-            // 잘못된 행(Row)은 "error" 카운트만 올리고 다음 행으로 넘어간다.
-            excelUploadContext.increment("error");
-        } else {
-            // CAMPAIGN_NOT_FOUND 등... "치명적인" 에러는
-            // 엑셀 업로드 전체를 중단시켜야 하므로, 예외를 다시 던진다.
-            log.error("MFC 액셀 업로드 중 치명적 에러 발생 : {}", e.getErrorCode().getMessage());
-            throw e;
-        }
-    }
-
-    public void checkNotExistOptions(List<String> optionNamesInExcels, String email,Long campaignId){
-        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email,campaignId);
-    }
-
     public MfcDto readExcelRowToMarginForCampaignData(Row row){
         String optionName = getCellStringValue(row.getCell(2));
         Long salePrice = convertStringToLong(getCellStringValue(row.getCell(3)));
@@ -267,5 +240,34 @@ public class ExcelService {
             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
             default -> "";
         };
+    }
+    private void handleRowProcessingError(GrouException e, ExcelUploadContext excelUploadContext) {
+        if (e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)) {
+            // 잘못된 행(Row)은 "error" 카운트만 올리고 다음 행으로 넘어간다.
+            excelUploadContext.increment("error");
+        } else {
+            // CAMPAIGN_NOT_FOUND 등... "치명적인" 에러는
+            // 엑셀 업로드 전체를 중단시켜야 하므로, 예외를 다시 던진다.
+            log.error("MFC 액셀 업로드 중 치명적 에러 발생 : {}", e.getErrorCode().getMessage());
+            throw e;
+        }
+    }
+    public void checkNotExistOptionsAndDelete(List<String> optionNamesInExcels, String email,Long campaignId){
+        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email,campaignId);
+    }
+    private void deleteOldMfcNotExistExcel(ExcelUploadContext excelUploadContext,String email){
+        if (excelUploadContext.getOptionNamesFromExcel().isEmpty()) {
+            return;
+        }
+        for(Long campaignId : excelUploadContext.getOptionNamesFromExcel().keySet()){
+            if(excelUploadContext.optionNamesFromExcel.get(campaignId).isEmpty()) continue;
+            checkNotExistOptionsAndDelete(excelUploadContext.getOptionNamesFromExcel().get(campaignId), email,campaignId);
+        }
+    }
+    private void saveMfcInExcel(ExcelUploadContext excelUploadContext){
+        if (excelUploadContext.getEntitiesToSave().isEmpty()) {
+            return;
+        }
+        marginForCampaignRepository.saveAll(excelUploadContext.getEntitiesToSave());
     }
 }

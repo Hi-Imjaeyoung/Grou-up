@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -139,25 +140,20 @@ public class ExcelService {
 
     }
     public List<Map<String, Object>> getMyMFCDataToWrittenExcel(List<MarginForCampaign> myMarginForCampaigns){
-        List<Map<String, Object>> myMFCDataToWrittenExcel = new ArrayList<>();
-        Map<Long, List<MarginForCampaign>> keyCampaignIdValueMFCInThatCampaign = myMarginForCampaigns.stream()
-                .collect(Collectors.groupingBy(
-                        mfc -> mfc.getCampaign().getCampaignId()
-                ));
-        for(Long campaignId : keyCampaignIdValueMFCInThatCampaign.keySet()){
-            for (MarginForCampaign marginForCampaign : keyCampaignIdValueMFCInThatCampaign.get(campaignId)) {
-                myMFCDataToWrittenExcel.add(
-                        Map.of("campaignName", marginForCampaign.getCampaign().getCamCampaignName(),
-                                "campaignId", marginForCampaign.getCampaign().getCampaignId(),
-                                "optionName", marginForCampaign.getMfcProductName(),
-                                "salePrice", marginForCampaign.getMfcSalePrice(),
-                                "costPrice", marginForCampaign.getMfcCostPrice(),
-                                "totalPrice", marginForCampaign.getMfcTotalPrice(),
-                                "returnPrice", marginForCampaign.getMfcReturnPrice())
-                );
-            }
-        }
-        return myMFCDataToWrittenExcel;
+        return myMarginForCampaigns.stream()
+                .sorted(Comparator.comparing(mfc -> mfc.getCampaign().getCampaignId()))
+                .map(mfc -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("campaignName", mfc.getCampaign().getCamCampaignName());
+                    map.put("campaignId", mfc.getCampaign().getCampaignId());
+                    map.put("optionName", mfc.getMfcProductName());
+                    map.put("salePrice", mfc.getMfcSalePrice());
+                    map.put("costPrice", mfc.getMfcCostPrice());
+                    map.put("totalPrice", mfc.getMfcTotalPrice());
+                    map.put("returnPrice", mfc.getMfcReturnPrice());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
     public List<Map<String, Object>> getMinimalDataAboutCampaignNameAndIDToWrittenExcel(String email){
         List<Map<String, Object>> writtenAboutCampaignNameAndID = new ArrayList<>();

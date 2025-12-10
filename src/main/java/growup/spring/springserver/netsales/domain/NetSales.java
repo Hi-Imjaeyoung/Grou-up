@@ -22,9 +22,10 @@ public class NetSales {
     private String netProductName;
     @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
     private MarginType netType; // 타입 로켓그로스, 판매자배송
-    private Long netSalesAmount; // 순 판매금액
+    private Long netSalesAmount; // 총 매출(원)
     private Long netSalesCount; // 순 판매수
     private Long netReturnCount; // 반품수
+    private Long netCancelPrice; // 총 취소 금액
     private LocalDate netDate;
     @ManyToOne
     @JoinColumn(name = "email", referencedColumnName = "email")

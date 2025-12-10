@@ -2,6 +2,7 @@ package growup.spring.springserver.netsales.repository;
 
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.netsales.domain.NetSales;
+import growup.spring.springserver.netsales.dto.DailySalesDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,35 @@ public interface NetRepository extends JpaRepository<NetSales, Long> {
             @Param("endDate") LocalDate endDate);
 
     int deleteByMemberEmailAndNetDate(String email, LocalDate netDate);
+
+    @Query("""
+    SELECT new growup.spring.springserver.netsales.dto.DailySalesDto(
+        ns.netDate,
+        COALESCE(SUM(ns.netCancelPrice), 0.0),
+        COALESCE(SUM(ns.netSalesAmount), 0.0)
+    )
+    FROM NetSales ns
+    WHERE ns.member.email = :email
+      AND ns.netDate BETWEEN :start AND :end
+    GROUP BY ns.netDate
+    ORDER BY ns.netDate ASC
+    """)
+    List<DailySalesDto> findDailySalesByEmail(
+            @Param("email") String email,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
+
+    // 기간 조회 -> Map 형태로 변환 시킬 예정
+    @Query("""
+    SELECT ns
+    FROM NetSales ns
+    JOIN FETCH ns.member m
+    WHERE m.email = :email
+      AND ns.netDate BETWEEN :start AND :end
+""")
+    List<NetSales> findAllByEmailAndDateRange(
+            @Param("email") String email,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 }

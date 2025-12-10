@@ -167,4 +167,8 @@ public class MarginForCampaignService {
                 .map(TypeChangeMarginForCampaign::EntityToDtoWithCampaign) // 각 data를 DTO로 변환
                 .toList();
     }
+    public MarginForCampaign getMyMarginForCampaignById(Long id) {
+        return marginForCampaignRepository.findById(id)
+                .orElseThrow(MarginForCampaignIdNotFoundException::new);
+    }
 }

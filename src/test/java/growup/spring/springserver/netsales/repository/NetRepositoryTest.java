@@ -4,6 +4,7 @@ import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.repository.MemberRepository;
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.netsales.domain.NetSales;
+import growup.spring.springserver.netsales.dto.DailySalesDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -152,6 +153,43 @@ class NetRepositoryTest {
 
         assertThat(result).isZero();
     }
+
+    @Test
+    @DisplayName("findDailySalesByEmail - successCase")
+    void findDailySalesByEmail_successCase() {
+        String email = "fa7271@naver.com";
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 1);
+
+        List<DailySalesDto> result = netRepository.findDailySalesByEmail(email, start, end);
+
+        assertThat(result).hasSize(1);
+
+        assertThat(result.get(0).getTotalSalesPriceWithoutCancel()).isEqualTo(10.0);
+    }
+    @Test
+    @DisplayName("findAllByEmailAndDateRange - successCase")
+    void findAllByEmailAndDateRange_successCase() {
+        String email = "fa7271@naver.com";
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 2);
+
+        List<NetSales> result = netRepository.findAllByEmailAndDateRange(email, start, end);
+
+        assertThat(result).hasSize(2);
+    }
+    @Test
+    @DisplayName("findAllByEmailAndDateRange - failCase")
+    void findAllByEmailAndDateRange_failCase() {
+        String email = "fa7271@naver.com";
+        LocalDate start = LocalDate.of(2024, 1, 1);
+        LocalDate end = LocalDate.of(2024, 1, 2);
+
+        List<NetSales> result = netRepository.findAllByEmailAndDateRange(email, start, end);
+
+        assertThat(result).isEmpty();
+    }
+
 
     private Member newMember(String email) {
 

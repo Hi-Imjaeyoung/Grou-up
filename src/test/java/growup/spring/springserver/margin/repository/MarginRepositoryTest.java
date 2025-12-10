@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -65,10 +66,11 @@ class MarginRepositoryTest {
         List<Margin> margins = marginRepository.findByCampaignIdsAndDates(campaignIds, start, end);
 
         // Then
-        assertThat(margins).hasSize(3);
-        assertThat(margins).anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign1.getCampaignId()));
-        assertThat(margins).anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign2.getCampaignId()));
-        assertThat(margins).noneMatch(m -> m.getCampaign().getCampaignId().equals(campaign3.getCampaignId()));
+        assertThat(margins)
+                .hasSize(3)
+                .anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign1.getCampaignId()))
+                .anyMatch(m -> m.getCampaign().getCampaignId().equals(campaign2.getCampaignId()))
+                .noneMatch(m -> m.getCampaign().getCampaignId().equals(campaign3.getCampaignId()));
     }
 
     @Test
@@ -310,6 +312,24 @@ class MarginRepositoryTest {
                         "2024-12-05",
                         "2024-12-11",
                         "2024-12-12"
+                );
+    }
+    @Test
+    @DisplayName("findExistingDatesByCampaignIdAndDateIn () : successCase")
+    void findExistingDatesByCampaignIdAndDateIn() {
+        List<LocalDate> datesToCheck = List.of(
+                LocalDate.of(2024, 11, 10),
+                LocalDate.of(2024, 11, 11),
+                LocalDate.of(2024, 11, 12)
+        );
+        Long campaignId = campaign1.getCampaignId();
+        Set<LocalDate> existingDatesByCampaignIdAndDateIn = marginRepository.findExistingDatesByCampaignIdAndDateIn(campaignId, datesToCheck);
+
+        assertThat(existingDatesByCampaignIdAndDateIn)
+                .hasSize(2)
+                .containsExactlyInAnyOrder(
+                        LocalDate.of(2024, 11, 10),
+                        LocalDate.of(2024, 11, 11)
                 );
     }
 

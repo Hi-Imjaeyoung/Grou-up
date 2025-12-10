@@ -6,6 +6,8 @@ import growup.spring.springserver.marginforcampaign.dto.MarginForCampaignResDto;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestDtos;
 import growup.spring.springserver.marginforcampaign.dto.MfcValidationResponseDto;
 import growup.spring.springserver.marginforcampaign.service.MarginForCampaignService;
+import growup.spring.springserver.marginforcampaignchangedbyperiod.repository.MarginForCampaignChangedByPeriodRepository;
+import growup.spring.springserver.marginforcampaignchangedbyperiod.service.MarginForCampaignChangedByPeriodService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import java.util.List;
 @Slf4j
 public class MarginForCampaignController {
     private final MarginForCampaignService marginForCampaignService;
+    private final MarginForCampaignChangedByPeriodService marginForCampaignChangedByPeriodService;
 
     @GetMapping("/getExecutionAboutCampaign")
     public ResponseEntity<CommonResponse<List<MarginForCampaignResDto>>> getExecutionAboutCampaign(@RequestParam Long campaignId) {
@@ -62,6 +65,7 @@ public class MarginForCampaignController {
     @DeleteMapping("/deleteExecutionAboutCampaign")
     public ResponseEntity<CommonResponse<Void>> deleteExecutionAboutCampaign(@RequestParam Long id) {
         try {
+            marginForCampaignChangedByPeriodService.findByMarginForCampaignIdAndDelete(id);
             marginForCampaignService.deleteMarginForCampaign(id);
             return ResponseEntity.ok(CommonResponse
                     .<Void>builder("success : delete")

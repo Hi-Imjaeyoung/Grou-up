@@ -64,7 +64,7 @@ public class ExcelDownUpLoadController {
                     .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
         }
     }
-    @DeleteMapping("/upload")
+    @PostMapping("/upload")
     public ResponseEntity<CommonResponse<String>> uploadUsersExcel(@RequestParam("file") MultipartFile file,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
         if (file.isEmpty()) {

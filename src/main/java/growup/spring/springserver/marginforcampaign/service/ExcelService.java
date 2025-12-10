@@ -205,7 +205,12 @@ public class ExcelService {
         Long salePrice = convertStringToLong(getCellStringValue(row.getCell(3)));
         Long costPrice = convertStringToLong(getCellStringValue(row.getCell(4)));
         Long totalPrice = convertStringToLong(getCellStringValue(row.getCell(5)));
-        Long returnPrice = convertStringToLong(getCellStringValue(row.getCell(6)));
+        Long returnPrice;
+        try{
+            returnPrice =  convertStringToLong(getCellStringValue(row.getCell(6)));
+        } catch (GrouException e) {
+            returnPrice = 0L;
+        }
         return MfcDto.builder()
                 .mfcType(MarginType.ROCKET_GROWTH)
                 .mfcProductName(optionName)

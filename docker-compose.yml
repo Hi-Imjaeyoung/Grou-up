@@ -4,7 +4,7 @@ services:
   # 기존 Spring Boot 애플리케이션 서비스
   app:
     build: . # Dockerfile이 있는 경로
-    image: my-spring-app:0.0.21 # 👈 ✨ 바로 여기!
+    image: my-spring-app:0.0.22 # 👈 ✨ 바로 여기!
     container_name: my_spring_boot_app # (선택 사항) 컨테이너 이름 지정
     ports:
       - "8080:8080" # 호스트의 8080 포트를 컨테이너의 8080 포트로 연결

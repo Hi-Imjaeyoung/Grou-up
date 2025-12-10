@@ -23,7 +23,7 @@ public class memberDataGenerator {
 
 
     @ParameterizedTest
-    @ValueSource(ints = {100})
+    @ValueSource(ints = {500})
     @DisplayName("MemberGenerator")
     void memberGenerator(int numberOfMember){
         for(int i=1;i<=numberOfMember;i++){

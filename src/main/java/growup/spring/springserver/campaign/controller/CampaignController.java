@@ -117,6 +117,4 @@ public class CampaignController {
                 .data(totalCampaignsData)
                 .build(),HttpStatus.OK);
     }
-
-
 }

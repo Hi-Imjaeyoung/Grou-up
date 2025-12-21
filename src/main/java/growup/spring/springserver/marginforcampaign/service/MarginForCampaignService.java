@@ -171,4 +171,8 @@ public class MarginForCampaignService {
         return marginForCampaignRepository.findById(id)
                 .orElseThrow(MarginForCampaignIdNotFoundException::new);
     }
+
+    public int deleteMFC(List<Long> campaignIds){
+        return marginForCampaignRepository.deleteAllByCampaignIds(campaignIds);
+    }
 }

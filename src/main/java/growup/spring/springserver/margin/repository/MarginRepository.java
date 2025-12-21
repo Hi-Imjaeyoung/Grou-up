@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Repository
@@ -113,4 +114,13 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+    @Query("""
+        SELECT DISTINCT m.marDate
+        FROM Margin m
+        WHERE m.campaign.campaignId = :campaignId
+          AND m.marDate IN :dates
+        """)
+    Set<LocalDate> findExistingDatesByCampaignIdAndDateIn(
+            @Param("campaignId") Long campaignId,
+            @Param("dates") List<LocalDate> dates);
 }

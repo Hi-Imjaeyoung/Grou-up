@@ -1,6 +1,5 @@
 package growup.spring.springserver.marginforcampaign.controller;
 
-import growup.spring.springserver.campaign.dto.CampaignIdAndNameForExcelDownload;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -10,6 +9,7 @@ import growup.spring.springserver.marginforcampaign.service.ExcelService;
 import growup.spring.springserver.marginforcampaign.service.MarginForCampaignService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -36,31 +36,31 @@ public class ExcelDownUpLoadController {
     private final MarginForCampaignService marginForCampaignService;
     @GetMapping("/downloadExcel")
     public ResponseEntity<?> downloadExcel(@AuthenticationPrincipal UserDetails userDetails) {
-
-        try {
-            //TODO : N번 반복을 줄 일 수 있습니다.
-            List<CampaignIdAndNameForExcelDownload> campaignList =
-                    campaignService.getCampaignsByEmail(userDetails.getUsername()).stream()
-                            .map(campaign -> new CampaignIdAndNameForExcelDownload(campaign.getCampaignId(), campaign.getCamCampaignName()))
-                            .toList();
-//            Workbook workbook = excelService.createUsersExcel(campaignList,userDetails.getUsername());
-            Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            workbook.write(out);
-            workbook.close();
+        try (Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            workbook.write(out); // 엑셀 데이터를 메모리에 씁니다.
             ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"new-users-list.xlsx\"")
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(resource);
+
         } catch (CampaignNotFoundException e) {
+            log.warn("엑셀 다운로드 실패 (캠페인 없음): {}", userDetails.getUsername());
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body("다운로드할 캠페인이 존재하지 않습니다.");
         } catch (IOException e) {
+            log.error("엑셀 파일 생성 IO 오류", e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("엑셀 파일을 생성하는 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("엑셀 다운로드 중 알 수 없는 런타임 오류 발생", e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
         }
     }
     @PostMapping("/upload")

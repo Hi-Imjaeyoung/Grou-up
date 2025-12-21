@@ -167,8 +167,8 @@ public class MarginForCampaignService {
                 .map(TypeChangeMarginForCampaign::EntityToDtoWithCampaign) // 각 data를 DTO로 변환
                 .toList();
     }
-
-    public int deleteMFC(List<Long> campaignIds){
-        return marginForCampaignRepository.deleteAllByCampaignIds(campaignIds);
+    public MarginForCampaign getMyMarginForCampaignById(Long id) {
+        return marginForCampaignRepository.findById(id)
+                .orElseThrow(MarginForCampaignIdNotFoundException::new);
     }
 }

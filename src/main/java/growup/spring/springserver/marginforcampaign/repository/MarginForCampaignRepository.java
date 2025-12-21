@@ -52,9 +52,14 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
             "FROM MarginForCampaign mfc " +
             "JOIN mfc.campaign c " +
             "WHERE c.member.email = :email")
-    List<MarginForCampaignOptionNameAndCampaignId> findCampNameAndIdByEmail(@Param("email") String email);
+    List<MarginForCampaignOptionNameAndCampaignId> findByCampaignEmail(@Param("email") String email);
 
-    @Modifying(clearAutomatically = true,flushAutomatically = true)
-    @Query("DELETE From MarginForCampaign m WHERE m.campaign.campaignId IN :campaignIds")
-    int deleteAllByCampaignIds(@Param("campaignIds")List<Long> campaignIds);
+    @Modifying
+    @Query("DELETE FROM MarginForCampaign mfc WHERE mfc.mfcProductName NOT IN :optionNamesInExcels AND " +
+            "mfc.campaign.member.email = :email AND " +
+            "mfc.campaign.campaignId = :campaignId")
+    int deleteNotIncludeOptionName(
+            @Param("optionNamesInExcels") List<String> optionNamesInExcels,
+            @Param("email") String email,
+            @Param("campaignId")Long campaignId);
 }

@@ -68,21 +68,6 @@ public class MarginController {
                 .build(), HttpStatus.OK);
     }
 
-    // 기간 별 마진, 반품 비용 없데이트
-    @PatchMapping("/marginUpdatesByPeriod")
-    public ResponseEntity<CommonResponse<String>> marginUpdatesByPeriod(@Valid @RequestBody MfcRequestWithDatesDto mfcRequestWithDatesDto,
-                                                                        @AuthenticationPrincipal UserDetails userDetails,
-                                                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new RequestException();
-        }
-        marginService.marginUpdatesByPeriod(mfcRequestWithDatesDto, userDetails.getUsername());
-
-        return ResponseEntity.ok(CommonResponse
-                .<String>builder("success: marginUpdatesByPeriod")
-                .data("Margin update successful")  // 성공 메시지 반환
-                .build());
-    }
 
     /*TODO
      *  마진보고서 (4사분면)

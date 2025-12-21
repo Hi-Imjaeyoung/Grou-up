@@ -29,6 +29,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/marginforcam")
 @AllArgsConstructor
+@Slf4j
 public class ExcelDownUpLoadController {
 
     private final ExcelService excelService;

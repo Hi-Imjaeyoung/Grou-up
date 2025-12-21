@@ -61,4 +61,8 @@ public class MemoService {
         return map;
     }
 
+    public int deleteMemoByCampaignIds(List<Long> campaignIds){
+        return memoRepository.deleteAllByCampaignIds(campaignIds);
+    }
+
 }

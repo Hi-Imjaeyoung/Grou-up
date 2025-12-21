@@ -123,4 +123,8 @@ public class KeywordService {
     public int deleteKeywordByCampaignIdsAndDate(List<Long> campaignIds,LocalDate start, LocalDate end){
         return keywordRepository.deleteByCampaignIdAndDate(start,end,campaignIds);
     }
+
+    public int deleteKeywordByCampaignIds(List<Long> campaignIds){
+        return keywordRepository.deleteAllByCampaignIds(campaignIds);
+    }
 }

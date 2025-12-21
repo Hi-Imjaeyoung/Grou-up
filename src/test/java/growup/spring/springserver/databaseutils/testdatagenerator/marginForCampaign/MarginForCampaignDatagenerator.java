@@ -32,7 +32,7 @@ public class MarginForCampaignDatagenerator {
 
     @ParameterizedTest
     @CsvSource({
-            "1, 10"
+            "1, 500"
     })
     void makeMFCData(String startMemberId, String endMemberId) throws ChangeSetPersister.NotFoundException {
         for(int i=Integer.parseInt(startMemberId);i<Integer.parseInt(endMemberId);i++){

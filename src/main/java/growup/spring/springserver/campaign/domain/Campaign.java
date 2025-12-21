@@ -37,28 +37,28 @@ public class Campaign {
     private Boolean camOpen = false;
 
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign",fetch = FetchType.LAZY)
     private List<Keyword> keywordList = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign",fetch = FetchType.LAZY)
     private List<ExclusionKeyword> exclusionKeywords = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<KeywordBid> keywordBids = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<Memo> memos = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<MarginForCampaign> marginForCampaigns = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<Execution> executions= new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<Log> logs = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
     private List<Margin> margins= new ArrayList<>();
 
     @ManyToOne

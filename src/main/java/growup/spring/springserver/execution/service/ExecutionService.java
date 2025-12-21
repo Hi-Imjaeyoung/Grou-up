@@ -62,5 +62,9 @@ public class ExecutionService {
     public List<Long> findExecutionIdsByCampaignId(Long campaignId) {
         return executionRepository.findExecutionIdsByCampaignId(campaignId);
     }
+
+    public int deleteExecutionByCampaignIds(List<Long> campaignIds){
+        return executionRepository.deleteAllByCampaignIds(campaignIds);
+    }
 }
 

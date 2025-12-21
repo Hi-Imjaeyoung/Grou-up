@@ -25,6 +25,10 @@ public interface MemoRepository extends JpaRepository<Memo,Long> {
                                   @Param("end") LocalDate end,
                                   @Param("campaignIds") List<Long> campaignIds);
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Memo m WHERE m.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
+
     @Query("SELECT m FROM Memo m WHERE m.date BETWEEN :start AND :end " +
             "AND m.campaign.campaignId = :campaignId")
     List<Memo> findByDateAndCampaignId(@Param("start") LocalDate start,

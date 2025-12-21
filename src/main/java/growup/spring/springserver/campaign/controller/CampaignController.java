@@ -1,5 +1,6 @@
 package growup.spring.springserver.campaign.controller;
 
+import growup.spring.springserver.campaign.facade.CampaignDeleteFacade;
 import growup.spring.springserver.campaign.service.CampaignAnalysisService;
 import growup.spring.springserver.campaign.TypeChangeCampaign;
 import growup.spring.springserver.campaign.domain.Campaign;
@@ -10,6 +11,7 @@ import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.exception.global.RequestException;
+import growup.spring.springserver.exclusionKeyword.service.ExclusionKeywordService;
 import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
 import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.global.common.CommonResponse;
@@ -17,6 +19,7 @@ import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.keyword.service.KeywordService;
+import growup.spring.springserver.keywordBid.service.KeywordBidService;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.service.MemberService;
 import growup.spring.springserver.margin.service.MarginService;
@@ -50,6 +53,8 @@ public class CampaignController {
     private final CampaignOptionDetailsService campaignOptionDetailsService;
     private final MemberService memberService;
     private final CampaignAnalysisService campaignAnalysisService;
+    private final CampaignDeleteFacade campaignDeleteFacade;
+
 
     @GetMapping("/getMyCampaigns")
     public ResponseEntity<CommonResponse<List<CampaignResponseDto>>> getMyCampaigns(@AuthenticationPrincipal UserDetails userDetails) {
@@ -69,13 +74,13 @@ public class CampaignController {
     }
 
     @DeleteMapping("/deleteCampaign")
-    public ResponseEntity<CommonResponse<Integer>> deleteCampaign(@RequestBody List<Long> campaignIds,
-                                                                 BindingResult bindingResult) throws BindException {
+    public ResponseEntity<CommonResponse<Integer>> refactoringDeleteCampaign(@RequestBody List<Long> campaignIds,
+                                                                  BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors() || campaignIds.isEmpty()){
             log.error(bindingResult.toString());
             throw new RequestException();
         }
-        int deletedCampaignNumber = campaignService.deleteCampaign(campaignIds);
+        int deletedCampaignNumber = campaignDeleteFacade.deleteCampaign(campaignIds);
         return new ResponseEntity<>(CommonResponse.<Integer>builder("success delete")
                 .data(deletedCampaignNumber)
                 .build(),HttpStatus.OK);

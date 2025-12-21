@@ -67,6 +67,10 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
                                   @Param("end") LocalDate end,
                                   @Param("campaignIds") List<Long> campaignIds);
 
+    @Modifying
+    @Query("DELETE FROM Margin m WHERE m.campaign.campaignId IN:campaignIds")
+    int deleteByCampaignId(@Param("campaignIds") List<Long> campaignIds);
+
     @Query("SELECT MAX(m.marDate) FROM Margin m WHERE m.campaign.member.email = :email")
     Optional<LocalDate> findLatestMarginDateByEmail(@Param("email") String email);
 

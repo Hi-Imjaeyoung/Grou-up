@@ -1,5 +1,4 @@
-FROM openjdk:17-jdk-slim
-# ✨ 바로 여기! 폰트 엔진(freetype)과 폰트 설정(fontconfig) 라이브러리를 설치한다.
+FROM eclipse-temurin:17-jdk-jammy
 RUN apt-get update && apt-get install -y libfreetype6 fontconfig
 WORKDIR /app
 COPY build/libs/*.jar app.jar

@@ -444,4 +444,8 @@ public class MarginService {
 
         return marginRepository.findMarginOverviewGraphByCampaignIdsAndDate(campaignIds, start, end);
     }
+
+    public int deleteMarginByCampaignIds(List<Long> campaignIds){
+        return marginRepository.deleteByCampaignId(campaignIds);
+    }
 }

@@ -33,7 +33,7 @@ public class campaignDataGenerator {
     */
     @ParameterizedTest
     @CsvSource({
-            "01, 30, 30",
+            "01, 500, 10",
     })
     @DisplayName("CampaignGenerator")
     void campaignGenerator(String startUserNumber, String endUserNumber ,String numberOfCampaign){

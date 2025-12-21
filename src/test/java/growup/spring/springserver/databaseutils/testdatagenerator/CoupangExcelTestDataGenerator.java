@@ -25,10 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @SpringBootTest
 @ActiveProfiles("bottleNeckTest")
@@ -44,22 +41,37 @@ public class CoupangExcelTestDataGenerator {
 
     @ParameterizedTest
     @CsvSource({
-            "1500, 2025-07-01, 2025-07-30",
+            "17000," +
+            "user476," +
+            "user500," +
+            "2025-07-01,"+
+            "2025-07-30"
     })
     @DisplayName("쿠팡 액셀 데이터 형식 생성")
-    void coupangDataGenerator(int numberOfData, String start, String end) {
+    void coupangDataGenerator(int numberOfData,
+                              String startMemberNum,
+                              String endMemberNum,
+                              String start,
+                              String end) {
         final int BATCH_SIZE = 20000;
         Random random = new Random();
-
         List<Keyword> keywordBatch = new ArrayList<>();
         HashMap<LocalDate, MarginResultDto> map = new HashMap<>();
         RandomDateGenerator randomDateGenerator = new RandomDateGenerator(
                 LocalDate.parse(start, DateTimeFormatter.ISO_DATE),
                 LocalDate.parse(end, DateTimeFormatter.ISO_DATE));
         List<Member> members = memberRepository.findAll();
+        members = members.stream().sorted(
+                Comparator.comparing(Member::getName)
+        ).toList();
         List<Margin> marginList = new ArrayList<>();
-
+        boolean startData = false;
         for (Member member : members) {
+            if(member.getName().equals(startMemberNum)) {
+                startData = true;
+                System.out.println(member.getName()+"의 데이터 넣기 시작");
+            }
+            if(!startData) continue;
             System.out.println(member.getName() + "의 데이터 삽입 시작");
             for (Campaign campaign : campaignRepository.findAllByMember(member)) {
                 int rowNumber = numberOfData;
@@ -91,7 +103,6 @@ public class CoupangExcelTestDataGenerator {
                             .build()
                     ).plusData(coupangExcelData);
                 }
-
                 for (LocalDate date : map.keySet()) {
                     MarginResultDto marginResultDto = map.get(date);
                     marginList.add(Margin.builder()
@@ -102,6 +113,7 @@ public class CoupangExcelTestDataGenerator {
                             .marSales(marginResultDto.getMarSales())
                             .marAdConversionSales(marginResultDto.getMarAdConversionSales())
                             .marAdConversionSalesCount(marginResultDto.getMarAdConversionSalesCount())
+                            .campaign(campaign)
                             .build());
                 }
                 if (marginList.size() > BATCH_SIZE) {
@@ -110,14 +122,16 @@ public class CoupangExcelTestDataGenerator {
                 }
                 map.clear();
             }
+            if (member.getName().equals(endMemberNum)){
+                System.out.println(member.getName()+"의 데이터 넣기 후 중단");
+                break;
+            }
         }
-
         // 남아있는 키워드 저장
         if (!keywordBatch.isEmpty()) {
             keywordRepository.saveAll(keywordBatch);
             keywordBatch.clear();
         }
-
         // 모든 margin 한 번에 저장
         if (!marginList.isEmpty()) {
             System.out.println("총 마진 저장 개수: " + marginList.size());

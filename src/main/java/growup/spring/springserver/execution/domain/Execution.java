@@ -36,7 +36,7 @@ public class Execution {
     @JoinColumn(name = "campaignId", referencedColumnName = "campaignId")
     private Campaign campaign;
 
-    @OneToMany(mappedBy = "execution", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "execution",fetch = FetchType.LAZY)
     @Builder.Default
     private List<CampaignOptionDetails> campaignOptionDetails = new ArrayList<>();
 

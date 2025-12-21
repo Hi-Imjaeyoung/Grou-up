@@ -6,6 +6,7 @@ import growup.spring.springserver.marginforcampaign.dto.MarginForCampaignOptionN
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -52,4 +53,8 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
             "JOIN mfc.campaign c " +
             "WHERE c.member.email = :email")
     List<MarginForCampaignOptionNameAndCampaignId> findCampNameAndIdByEmail(@Param("email") String email);
+
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
+    @Query("DELETE From MarginForCampaign m WHERE m.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds")List<Long> campaignIds);
 }

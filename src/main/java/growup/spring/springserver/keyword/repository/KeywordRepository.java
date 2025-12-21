@@ -36,4 +36,8 @@ public interface KeywordRepository extends JpaRepository <Keyword,Long>{
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
                                   @Param("campaignIds") List<Long> campaignIds);
+
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
+    @Query("DELETE FROM Keyword k WHERE k.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 }

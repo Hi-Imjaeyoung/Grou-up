@@ -41,8 +41,8 @@ public class CoupangExcelTestDataGenerator {
 
     @ParameterizedTest
     @CsvSource({
-            "2000," +
-            "user475," +
+            "17000," +
+            "user476," +
             "user500," +
             "2025-07-01,"+
             "2025-07-30"
@@ -55,7 +55,6 @@ public class CoupangExcelTestDataGenerator {
                               String end) {
         final int BATCH_SIZE = 20000;
         Random random = new Random();
-
         List<Keyword> keywordBatch = new ArrayList<>();
         HashMap<LocalDate, MarginResultDto> map = new HashMap<>();
         RandomDateGenerator randomDateGenerator = new RandomDateGenerator(
@@ -104,7 +103,6 @@ public class CoupangExcelTestDataGenerator {
                             .build()
                     ).plusData(coupangExcelData);
                 }
-
                 for (LocalDate date : map.keySet()) {
                     MarginResultDto marginResultDto = map.get(date);
                     marginList.add(Margin.builder()
@@ -134,7 +132,6 @@ public class CoupangExcelTestDataGenerator {
             keywordRepository.saveAll(keywordBatch);
             keywordBatch.clear();
         }
-
         // 모든 margin 한 번에 저장
         if (!marginList.isEmpty()) {
             System.out.println("총 마진 저장 개수: " + marginList.size());

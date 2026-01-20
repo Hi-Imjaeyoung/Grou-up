@@ -52,6 +52,9 @@ class MarginRepositoryTest {
         marginRepository.save(newMargin(LocalDate.of(2024, 11, 11), campaign1, 120L, 250.0, 60L,200.0));
         marginRepository.save(newMargin(LocalDate.of(2024, 11, 10), campaign2, 150L, 300.0, 75L,100.0));
         marginRepository.save(newMargin(LocalDate.of(2024, 11, 2), campaign4, 150L, 300.0, 75L,250.0));
+
+        marginRepository.save(newMargin(LocalDate.of(2024, 1, 8), campaign2, 150L, 300.0, 75L,100.0));
+        marginRepository.save(newMargin(LocalDate.of(2024, 1, 8), campaign1, 150L, 300.0, 75L,100.0));
     }
 
     @Test
@@ -331,6 +334,24 @@ class MarginRepositoryTest {
                         LocalDate.of(2024, 11, 10),
                         LocalDate.of(2024, 11, 11)
                 );
+    }
+    @Test
+    @DisplayName("bulk update")
+    void testFastDelete() {
+        // Given
+        LocalDate targetDate = LocalDate.of(2024, 1, 8);
+        List<Long> campaignIds = List.of( 1L, 2L,3L);
+
+        // When
+        int resultCount = marginRepository.resetNetSalesInfo(targetDate, campaignIds);
+
+        // Then
+        System.out.println(" 수정된 데이터(Row) 개수: " + resultCount + "개");
+        
+        assertThat(resultCount).isEqualTo(2);
+
+
+
     }
 
     private Margin dashBoardMargin(LocalDate date, Campaign campaign, Double marNetProfit, Double marReturnCost, Long marReturnCount, Double marAdCost, Long marAdConversionSalesCount, Double marSales) {

@@ -1,12 +1,13 @@
 package growup.spring.springserver.netsales.service;
 
-import growup.spring.springserver.netsales.domain.NetSales;
 import growup.spring.springserver.netsales.dto.DailySalesDto;
 import growup.spring.springserver.netsales.dto.NetResultRecord;
+import growup.spring.springserver.netsales.dto.NetSalesSummaryDto;
 import growup.spring.springserver.netsales.dto.TotalSalesDto;
 import growup.spring.springserver.netsales.repository.NetRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,8 @@ public class NetSalesService {
         }
         return new NetResultRecord(totalSalesPrice, totalCancelPrice);
     }
-    public List<NetSales> getNetSalesByEmailAndDateRange(String email, LocalDate start, LocalDate end) {
-        return netRepository.findAllByEmailAndDateRange(email, start, end);
+    @Cacheable(cacheNames = "salesStats", key = "#email + '_' + #start + '_' + #end")
+    public List<NetSalesSummaryDto> getNetSalesByEmailAndDateRange(String email, LocalDate start, LocalDate end) {
+        return netRepository.findSummaryByEmailAndDateRange(email, start, end);
     }
 }

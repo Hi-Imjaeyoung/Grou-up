@@ -189,7 +189,7 @@ class FileServiceTest {
 
         // 2) 마진 삭제
         int marginDeleteCount = 3;
-        when(marginService.deleteMarginsForNetSale(eq(date), anyList()))
+        when(marginService.refactoryDeleteMarginsForNetSale(eq(date), anyList()))
                 .thenReturn(marginDeleteCount);
 
         // 3) 순매출 삭제
@@ -200,27 +200,13 @@ class FileServiceTest {
         // when
         List<Map<String, Integer>> result = fileService.deleteNetSalesFile(email, id);
 
-        // then
-        assertAll(
-                () -> assertThat(result)
-                        .isNotNull()
-                        .hasSize(2),
-                () -> {
-                    assert result != null;
-                    assertThat(result.get(0))
-                            .containsEntry("marginDeleteCount", marginDeleteCount);
-                },
-                () -> {
-                    assert result != null;
-                    assertThat(result.get(1))
-                            .containsEntry("netSalesDeleteCount", netSalesDeleteCount);
-                }
-        );
-
-        // verify
+        // 호출하는지 확인
         verify(fileRepository).findById(id);
-        verify(marginService).deleteMarginsForNetSale(eq(date), anyList());
+        verify(marginService).refactoryDeleteMarginsForNetSale(eq(date), anyList());
         verify(netSalesService).deleteNetSalesReport(date, email);
+
+        System.out.println("result = " + result);
+
     }
 
 

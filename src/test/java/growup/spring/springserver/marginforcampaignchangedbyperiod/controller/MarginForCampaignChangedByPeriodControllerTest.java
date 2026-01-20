@@ -63,7 +63,7 @@ class MarginForCampaignChangedByPeriodControllerTest {
                 )
         .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success: marginforcampaignchangedbyperiodsave"))
-                .andExpect(jsonPath("$.data").value("Margin update successful"));
+                .andExpect(jsonPath("$.data").value("marginforcampaignchangedbyperiod update successful"));
     }
     private MarginChangeSaveRequestDto dto(Long mfcId, LocalDate startDate, LocalDate endDate,
                                            Long salePrice, Long totalPrice, Long costPrice, Long returnPrice) {

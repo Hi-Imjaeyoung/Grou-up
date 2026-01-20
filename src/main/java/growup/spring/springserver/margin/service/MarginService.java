@@ -15,7 +15,7 @@ import growup.spring.springserver.marginforcampaign.domain.MarginForCampaign;
 import growup.spring.springserver.marginforcampaign.repository.MarginForCampaignRepository;
 import growup.spring.springserver.marginforcampaignchangedbyperiod.domain.MarginForCampaignChangedByPeriod;
 import growup.spring.springserver.marginforcampaignchangedbyperiod.service.MarginForCampaignChangedByPeriodService;
-import growup.spring.springserver.netsales.domain.NetSales;
+import growup.spring.springserver.netsales.dto.NetSalesSummaryDto;
 import growup.spring.springserver.netsales.repository.NetRepository;
 import growup.spring.springserver.netsales.service.NetSalesService;
 import lombok.AllArgsConstructor;
@@ -137,7 +137,8 @@ public class MarginService {
         6.2 날짜별 -> NetSalesKey(상품명,타입)별 NetSales 값 가져옴
     */
         Map<LocalDate, Map<Long, MarginForCampaignChangedByPeriod>> getMarginChangesByCampaignAndDateRange = marginChangesByDate(start, end, campaignId);
-        Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap = getNetSalesMap(start, end, email);
+//        Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap = getNetSalesMap(start, end, email);
+        Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> netSalesMap = getNetSalesMap(start, end, email);
     /*
         6.3 업데이트 해야하는 Margin 리스와, 캐시 된거 들고 마진 계산
     */
@@ -222,7 +223,7 @@ public class MarginService {
             List<Margin> margins,
             Long campaignId,
             Map<LocalDate, Map<Long, MarginForCampaignChangedByPeriod>> getMarginChangesByCampaignAndDateRange,
-            Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap
+            Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> netSalesMap
     ) {
         // 캠페인의 모든 옵션 가져오기
         List<MarginForCampaign> mfcList = getMfcListByCampaignId(campaignId);
@@ -248,37 +249,41 @@ public class MarginService {
 
     }
 
-    private MarginCalcResult dailyCalculate(MarginForCampaign mfc, LocalDate date, Map<Long, MarginForCampaignChangedByPeriod> changesForDate, Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap) {
+    private MarginCalcResult dailyCalculate(MarginForCampaign mfc,
+                                            LocalDate date,
+                                            Map<Long, MarginForCampaignChangedByPeriod> changesForDate,
+                                            Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> netSalesMap) {
         return getNetSales(netSalesMap, mfc, date)
-                .map(netSales -> {
+                .map(dto -> { //
                     MarginForCampaignChangedByPeriod changed = changesForDate.get(mfc.getId());
-                    return calculateForOption(mfc, changed, netSales);
+                    return calculateForOption(mfc, changed, dto);
                 })
                 .orElse(MarginCalcResult.createZero());
     }
 
-    private static Optional<NetSales> getNetSales(Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap, MarginForCampaign mfc, LocalDate date) {
-
+    private static Optional<NetSalesSummaryDto> getNetSales(
+            Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> netSalesMap,
+            MarginForCampaign mfc,
+            LocalDate date
+    ) {
         NetSalesKey key = new NetSalesKey(mfc.getMfcProductName(), mfc.getMfcType());
 
         return Optional.ofNullable(netSalesMap.get(date))
                 .map(innerMap -> innerMap.get(key));
-
     }
 
     private MarginCalcResult calculateForOption(
             MarginForCampaign mfc,
             MarginForCampaignChangedByPeriod changed,
-            NetSales netSales
+            NetSalesSummaryDto netSales
     ) {
-        long actualSales = netSales.getNetSalesCount() - netSales.getNetReturnCount();
-
+        long actualSales = netSales.totalSalesCount() - netSales.totalReturnCount();
         long perPiece = (changed != null) ? changed.getSalePrice() : mfc.getMfcPerPiece();
         long returnPrice = (changed != null) ? changed.getReturnPrice() : mfc.getMfcReturnPrice();
 
         long adMargin = actualSales * perPiece;
-        long returnCount = netSales.getNetReturnCount();
-        double returnCost = netSales.getNetReturnCount() * (double) returnPrice;
+        long returnCount = netSales.totalReturnCount();
+        double returnCost = netSales.totalReturnCount() * (double) returnPrice;
 
         return new MarginCalcResult(actualSales, adMargin, returnCount, returnCost);
     }
@@ -288,18 +293,19 @@ public class MarginService {
         return marginRepository.findByCampaignIdAndDates(campaignId, start, end);
     }
 
-    public Map<LocalDate, Map<NetSalesKey, NetSales>> getNetSalesMap(
+    public Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> getNetSalesMap(
             LocalDate start,
             LocalDate end,
             String email
     ) {
-        List<NetSales> list = netSalesService.getNetSalesByEmailAndDateRange(email, start, end);
+        List<NetSalesSummaryDto> summaries = netSalesService.getNetSalesByEmailAndDateRange(email, start, end);
 
-        return list.stream()
+        // 2. Map으로 변환 (데이터 양이 적어서 순식간에 끝남)
+        return summaries.stream()
                 .collect(Collectors.groupingBy(
-                        NetSales::getNetDate,
+                        NetSalesSummaryDto::netDate,
                         Collectors.toMap(
-                                ns -> new NetSalesKey(ns.getNetProductName(), ns.getNetType()),
+                                ns -> new NetSalesKey(ns.netProductName(), ns.netType()),
                                 ns -> ns
                         )
                 ));
@@ -423,18 +429,10 @@ public class MarginService {
                 .orElseGet(LocalDate::now);
     }
 
+
     @Transactional
-    public int deleteMarginsForNetSale(LocalDate date, List<Long> campaignIds) {
-        List<Margin> margins = getAllMyCampaignMargin(date, campaignIds);
-
-        if (margins.isEmpty()) return 0;
-
-        int count = 0;
-        for (Margin m : margins) {
-            m.deleteMarginAboutNetSale();
-            count++;
-        }
-        return count;
+    public int refactoryDeleteMarginsForNetSale(LocalDate date, List<Long> campaignIds) {
+        return marginRepository.resetNetSalesInfo(date, campaignIds);
     }
 
     public List<MarginOverviewResponseDto> getMarginOverview(LocalDate start, LocalDate end, String email) {

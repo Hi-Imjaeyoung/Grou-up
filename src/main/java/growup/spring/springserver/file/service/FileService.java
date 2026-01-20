@@ -108,7 +108,7 @@ public class FileService {
         List<Long> campaignList = getCampaignList(email);
 
         // 2) 마진 관련 MarginService에 위임
-        return marginService.deleteMarginsForNetSale(date, campaignList);
+        return marginService.refactoryDeleteMarginsForNetSale(date, campaignList);
     }
 
     public List<Long> getCampaignList(String email) {

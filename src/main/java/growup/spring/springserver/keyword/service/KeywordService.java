@@ -1,11 +1,14 @@
 package growup.spring.springserver.keyword.service;
 
+import com.querydsl.core.Tuple;
+import growup.spring.springserver.campaign.dto.CampaignAnalysisDto;
 import growup.spring.springserver.exception.global.InvalidDateFormatException;
 import growup.spring.springserver.exception.exclusionKeyword.ExclusionKeyNotFound;
 import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.keyword.CampaignKeywordNotFoundException;
 import growup.spring.springserver.exclusionKeyword.dto.ExclusionKeywordResponseDto;
 import growup.spring.springserver.exclusionKeyword.service.ExclusionKeywordService;
+import growup.spring.springserver.global.cache.SegTreeCacheManager;
 import growup.spring.springserver.keyword.domain.Keyword;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
 import growup.spring.springserver.keyword.TypeChangeKeyword;
@@ -15,6 +18,8 @@ import growup.spring.springserver.keywordBid.dto.KeywordBidDto;
 import growup.spring.springserver.keywordBid.dto.KeywordBidResponseDto;
 import growup.spring.springserver.keywordBid.service.KeywordBidService;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +29,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
+import static growup.spring.springserver.campaign.domain.QCampaign.campaign;
+import static growup.spring.springserver.keyword.domain.QKeyword.keyword;
+
 @Service
+@AllArgsConstructor
+@Slf4j
 public class KeywordService {
-    @Autowired
-    private KeywordRepository keywordRepository;
-    @Autowired
-    private ExclusionKeywordService exclusionKeywordService;
-    @Autowired
-    private KeywordBidService keywordBidService;
+    private final KeywordRepository keywordRepository;
+    private final ExclusionKeywordService exclusionKeywordService;
+    private final KeywordBidService keywordBidService;
+    private final SegTreeCacheManager segTreeCacheManager;
+
     public List<KeywordResponseDto> getKeywordsByCampaignId(LocalDate start, LocalDate end , Long campaignId){
         List<Keyword> data = keywordRepository.findAllByDateANDCampaign(start,end,campaignId);
         List<KeywordResponseDto> result = checkKeyTypeExclusion(summeryKeywordData(data),getExclusionKeywordToSet(campaignId));
@@ -126,5 +135,66 @@ public class KeywordService {
 
     public int deleteKeywordByCampaignIds(List<Long> campaignIds){
         return keywordRepository.deleteAllByCampaignIds(campaignIds);
+    }
+
+    //
+    public Map<String, CampaignAnalysisDto> getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByCache(String email,LocalDate start, LocalDate end){
+        List<Tuple> queryResult = keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByCache(start,end,email);
+        Map<String, CampaignAnalysisDto> campaignTypeResultMap = new HashMap<>();
+        double totalCost = 0.0;
+        double totalSales = 0.0;
+        for (Tuple tuple : queryResult) {
+            LocalDate date = tuple.get(keyword.date);
+            String type = tuple.get(campaign.camAdType);
+            Double cost = tuple.get(keyword.adCost.sum());
+            Double sales = tuple.get(keyword.adSales.sum());
+            double safeCost = (cost != null) ? cost : 0.0;
+            double safeSales = (sales != null) ? sales : 0.0;
+            segTreeCacheManager.addLeafNode(email,date,type,safeCost,safeSales);
+            campaignTypeResultMap.merge(type,
+                    new CampaignAnalysisDto(safeCost, safeSales), // 1. 새로운 값 (초기값으로 쓰임)
+                    (oldDto, newDto) -> oldDto.add(newDto.getAdCost(), newDto.getAdSales()) // 2. 합치는 로직 (람다)
+            );
+            totalCost += safeCost;
+            totalSales += safeSales;
+        }
+        campaignTypeResultMap.put("총 매출", new CampaignAnalysisDto(totalCost, totalSales));
+        return campaignTypeResultMap;
+    }
+
+    public List<Tuple> getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(String email,LocalDate start, LocalDate end){
+        return keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByCache(start,end,email);
+    }
+
+    public Map<String, CampaignAnalysisDto> getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(String email,LocalDate start, LocalDate end){
+        List<Tuple> queryResult = keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(start,end,email);
+        Map<String,CampaignAnalysisDto> map = new HashMap<>();
+        Double totalAdCost = 0.0;
+        Double totalAdSale = 0.0;
+        for(Tuple tuple: queryResult){
+            Double adCostSum = tuple.get(keyword.adCost.sum());
+            Double adSaleSum = tuple.get(keyword.adSales.sum());
+            totalAdSale += adSaleSum;
+            totalAdCost += adCostSum;
+            map.put(tuple.get(campaign.camAdType),new CampaignAnalysisDto(adCostSum,adSaleSum));
+        }
+        map.put("총 매출",new CampaignAnalysisDto(totalAdCost,totalAdSale));
+        return map;
+    }
+
+    public Map<String, CampaignAnalysisDto> getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(String email,LocalDate start, LocalDate end){
+        List<Tuple> queryResult = keywordRepository.getEachCampaignAdCostSumAndAdSalesByEmail(start,end,email);
+        return queryResult.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(campaign.camCampaignName),
+                        tuple -> {
+                            Double adCostSum = tuple.get(keyword.adCost.sum());
+                            Double adSaleSum = tuple.get(keyword.adSales.sum());
+                            return new CampaignAnalysisDto(
+                                    adCostSum != null ? adCostSum : 0,
+                                    adSaleSum != null ? adSaleSum : 0
+                            );
+                        }
+                ));
     }
 }

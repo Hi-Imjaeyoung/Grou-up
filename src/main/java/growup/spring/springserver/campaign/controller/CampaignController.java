@@ -1,6 +1,7 @@
 package growup.spring.springserver.campaign.controller;
 
 import growup.spring.springserver.campaign.facade.CampaignDeleteFacade;
+import growup.spring.springserver.campaign.facade.CampaignTotalDataFacade;
 import growup.spring.springserver.campaign.service.CampaignAnalysisService;
 import growup.spring.springserver.campaign.TypeChangeCampaign;
 import growup.spring.springserver.campaign.domain.Campaign;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@RequestMapping("/api/campaign")
+    @RequestMapping("/api/campaign")
 @RestController
 @AllArgsConstructor
 public class CampaignController {
@@ -54,6 +55,7 @@ public class CampaignController {
     private final MemberService memberService;
     private final CampaignAnalysisService campaignAnalysisService;
     private final CampaignDeleteFacade campaignDeleteFacade;
+    private final CampaignTotalDataFacade campaignTotalDataFacade;
 
 
     @GetMapping("/getMyCampaigns")
@@ -116,5 +118,48 @@ public class CampaignController {
         return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
                 .data(totalCampaignsData)
                 .build(),HttpStatus.OK);
+    }
+
+    @GetMapping("/totalAnalysisData2")
+    public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis2(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
+                                                                                    @AuthenticationPrincipal UserDetails userDetails){
+        TotalCampaignsData totalCampaignsData =
+                campaignTotalDataFacade.getCampaignTotalDataByCache(userDetails.getUsername(), dateRangeRequest.getStart(),dateRangeRequest.getEnd());
+        return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
+                .data(totalCampaignsData)
+                .build(),HttpStatus.OK);
+    }
+
+    @GetMapping("/totalAnalysisData3")
+    public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis3(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
+                                                                                     @AuthenticationPrincipal UserDetails userDetails){
+        TotalCampaignsData totalCampaignsData =
+                campaignTotalDataFacade.getCampaignTotalData(userDetails.getUsername(), dateRangeRequest.getStart(),dateRangeRequest.getEnd());
+        return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
+                .data(totalCampaignsData)
+                .build(),HttpStatus.OK);
+    }
+
+    @GetMapping("/totalAnalysisData4")
+    public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis4(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
+                                                                                     @AuthenticationPrincipal UserDetails userDetails){
+        TotalCampaignsData totalCampaignsData =
+                campaignTotalDataFacade.getCampaignTotalDataByLazyLoadingTree(userDetails.getUsername(), dateRangeRequest.getStart(),dateRangeRequest.getEnd());
+        return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
+                .data(totalCampaignsData)
+                .build(),HttpStatus.OK);
+    }
+
+
+    @GetMapping("/cacheRate")
+    public Map<String, Object> getStats() {
+        Map<String, Long> stats = campaignTotalDataFacade.getCacheHitRate();
+        // 보기 좋게 합쳐서 리턴
+        return new HashMap<>(stats);
+    }
+
+    @PostMapping("/cacheReset")
+    public void reset() {
+        campaignTotalDataFacade.resetCacheStats();
     }
 }

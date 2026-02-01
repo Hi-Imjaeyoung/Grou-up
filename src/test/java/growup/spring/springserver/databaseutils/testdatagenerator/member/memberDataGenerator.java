@@ -21,7 +21,6 @@ public class memberDataGenerator {
     private MemberRepository memberRepository;
     final Role defaultRole = Role.USER;
 
-
     @ParameterizedTest
     @ValueSource(ints = {500})
     @DisplayName("MemberGenerator")
@@ -38,5 +37,4 @@ public class memberDataGenerator {
             );
         }
     }
-
 }

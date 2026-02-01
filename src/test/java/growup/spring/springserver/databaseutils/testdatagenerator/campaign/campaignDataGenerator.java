@@ -18,6 +18,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.util.Random;
 
 @SpringBootTest
 @ActiveProfiles("bottleNeckTest")
@@ -40,12 +41,14 @@ public class campaignDataGenerator {
         int startNum = Integer.parseInt(startUserNumber);
         int endNum = Integer.parseInt(endUserNumber);
         Long campaignId = 1L;
+        Random random = new Random();
         while(startNum <= endNum){
             Member member;
             String counter = String.valueOf(startNum);
             if(startNum<10) {
                 counter = "0" + startNum;
             }
+
             String email = DataFormat.USERNAME.getValue() +counter+ DataFormat.EMAIL_FORMAT.getValue();
             try {
                  member = memberRepository.findByEmail(email).orElseThrow(
@@ -59,7 +62,7 @@ public class campaignDataGenerator {
                 if(i%3==0){
                     campaignRepository.save(Campaign.builder()
                             .campaignId(campaignId)
-                            .camCampaignName("테스트캠패인"+counter)
+                            .camCampaignName("테스트캠패인"+counter+random.nextInt())
                             .member(member)
                             .camAdType("매출최적화")
                             .build()
@@ -70,7 +73,7 @@ public class campaignDataGenerator {
                 if(i%3==1){
                     campaignRepository.save(Campaign.builder()
                             .campaignId(campaignId)
-                            .camCampaignName("테스트캠패인"+counter)
+                            .camCampaignName("테스트캠패인"+counter+random.nextInt())
                             .member(member)
                             .camAdType("수동 성과형")
                             .build()
@@ -80,7 +83,7 @@ public class campaignDataGenerator {
                 }
                 campaignRepository.save(Campaign.builder()
                         .campaignId(campaignId)
-                        .camCampaignName("테스트캠패인"+counter)
+                        .camCampaignName("테스트캠패인"+counter+random.nextInt())
                         .member(member)
                         .camAdType("간편 매출 스타트")
                         .build()

@@ -44,8 +44,8 @@ public class CoupangExcelTestDataGenerator {
             "17000," +
             "user476," +
             "user500," +
-            "2025-07-01,"+
-            "2025-07-30"
+            "2025-06-01,"+
+            "2025-06-30"
     })
     @DisplayName("쿠팡 액셀 데이터 형식 생성")
     void coupangDataGenerator(int numberOfData,

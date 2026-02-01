@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface KeywordRepository extends JpaRepository <Keyword,Long>{
+public interface KeywordRepository extends JpaRepository <Keyword,Long>, KeywordRepositoryCustom{
 
     //TODO: 쿼리 순서 check!
     @Query("SELECT k FROM Keyword k WHERE k.date BETWEEN :startDate AND :endDate " +

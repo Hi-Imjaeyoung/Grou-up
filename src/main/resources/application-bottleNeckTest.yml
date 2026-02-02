@@ -17,6 +17,7 @@ spring:
       hibernate:
         show_sql: false
         format_sql: false
+        generate_statistics: true # 통계 수집 활성화
         jdbc:
           batch_size: 5000
   security:
@@ -56,12 +57,14 @@ spring:
 logging:
   level:
     root: info
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
     org.springframework.web: WARN
     org.springframework.security: WARN
     # 프로메테우스 관련 로그 Level WARN 설정.
     org.springframework.boot.actuate: WARN
+    # 이 녀석이 'Session Metrics { ... }' 로그를 찍는 주범임
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: OFF
     growup.spring.springserver.global.config: WARN
 
 jwt:

@@ -3,6 +3,10 @@ spring:
     activate:
       on-profile: bottleNeckTest
   datasource:
+    hikari:
+      # 기본값이 10이라서 병목이 온 거야.
+      # ioExecutor의 MaxPoolSize와 비슷하게(혹은 더 크게) 맞춰줘야 해.
+      maximum-pool-size: 30
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}

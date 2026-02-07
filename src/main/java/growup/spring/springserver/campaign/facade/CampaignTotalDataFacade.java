@@ -11,6 +11,10 @@ import growup.spring.springserver.keyword.service.KeywordService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -26,14 +30,34 @@ public class CampaignTotalDataFacade {
     private final SegTreeCacheManager segTreeCacheManager;
     private final LazySegmentTreeService lazySegmentTreeService;
 
+    @Transactional(readOnly = true)
     public TotalCampaignsData getCampaignTotalDataByLazyLoadingTree(String email, LocalDate start, LocalDate end){
-        AllCampaignTypeData allCampaignTypeData = lazySegmentTreeService.getCachedOrSelectAllCampaignTypeDataByPeriod(email,start,end);
+        // only start year same to end year
+        int startCount = lazySegmentTreeService.convertLocalDateToCount(start);
+        int endCount = lazySegmentTreeService.convertLocalDateToCount(end);
 //        Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
 //                keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
+        AllCampaignTypeData allCampaignTypeData;
+        if(lazySegmentTreeService.isTreeBuild(email,start.getYear())){
+            allCampaignTypeData =
+                    lazySegmentTreeService.find(email,start.getYear(),START_ROOT_COUNT,END_ROOT_COUNT,startCount,endCount);
+            return TotalCampaignsData.builder()
+                    .adSalesAndAdCostByCampaignName(new HashMap<>())
+                    .sumOfAdSalesAndAdCostByCampaignType(new HashMap<>(allCampaignTypeData.getCampaignAnalysisDtoMap()))
+                    .build();
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                lazySegmentTreeService.buildTreeAsync(email,start.getYear());
+            }
+        });
+        Map<String, CampaignAnalysisDto> campaignAnalysisDataKeyCampaignType =
+                keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(email,start,end);
+
         return TotalCampaignsData.builder()
-//                .adSalesAndAdCostByCampaignName(new HashMap<>(campaignAnalysisDataKeyCampaignName))
                 .adSalesAndAdCostByCampaignName(new HashMap<>())
-                .sumOfAdSalesAndAdCostByCampaignType(new HashMap<>(allCampaignTypeData.getCampaignAnalysisDtoMap()))
+                .sumOfAdSalesAndAdCostByCampaignType(campaignAnalysisDataKeyCampaignType)
                 .build();
     }
 

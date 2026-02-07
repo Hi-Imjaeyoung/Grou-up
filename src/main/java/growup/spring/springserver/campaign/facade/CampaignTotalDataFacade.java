@@ -74,11 +74,11 @@ public class CampaignTotalDataFacade {
                     lazySegmentTreeService.find(email,start.getYear(),START_ROOT_COUNT,END_ROOT_COUNT,startCount,endCount);
         }
 
-        Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
-                keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
+//        Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
+//                keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
 
         return TotalCampaignsData.builder()
-                .adSalesAndAdCostByCampaignName(campaignAnalysisDataKeyCampaignName)
+                .adSalesAndAdCostByCampaignName(new HashMap<>())
                 .sumOfAdSalesAndAdCostByCampaignType(new HashMap<>(allCampaignTypeData.getCampaignAnalysisDtoMap()))
                 .build();
     }

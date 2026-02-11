@@ -19,7 +19,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.LongAdder;
 
 @Component
 @AllArgsConstructor
@@ -35,8 +34,8 @@ public class CampaignTotalDataFacade {
         // only start year same to end year
         int startCount = lazySegmentTreeService.convertLocalDateToCount(start);
         int endCount = lazySegmentTreeService.convertLocalDateToCount(end);
-//        Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
-//                keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
+        Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
+                keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
         AllCampaignTypeData allCampaignTypeData;
         if(lazySegmentTreeService.isTreeBuild(email,start.getYear())){
             allCampaignTypeData =
@@ -56,7 +55,7 @@ public class CampaignTotalDataFacade {
                 keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(email,start,end);
 
         return TotalCampaignsData.builder()
-                .adSalesAndAdCostByCampaignName(new HashMap<>())
+                .adSalesAndAdCostByCampaignName(campaignAnalysisDataKeyCampaignName)
                 .sumOfAdSalesAndAdCostByCampaignType(campaignAnalysisDataKeyCampaignType)
                 .build();
     }

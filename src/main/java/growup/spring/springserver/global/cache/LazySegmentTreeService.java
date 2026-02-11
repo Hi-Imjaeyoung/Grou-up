@@ -3,6 +3,8 @@ package growup.spring.springserver.global.cache;
 import com.querydsl.core.Tuple;
 import growup.spring.springserver.campaign.dto.CampaignAnalysisDto;
 import growup.spring.springserver.global.config.ThreadPoolConfig;
+import growup.spring.springserver.global.exception.ErrorCode;
+import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.keyword.service.KeywordService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,6 @@ public class LazySegmentTreeService {
     private final LongAdder requestCount = new LongAdder();
     private final Executor ioExecutor;
     private final Executor cpuExecutor;
-//    private final ExecutorService treeBuildExecutor = Executors.newFixedThreadPool(10); // 적절한 사이즈 조절
 
     private static class SegmentNodeData {
         // key : My bitPacking
@@ -146,54 +147,35 @@ public class LazySegmentTreeService {
         }
     }
     public void buildTreeAsync(String email, int year){
-        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
         // 트리를 빌드는 비동기로 실시
-        triggerAsyncTreeBuild(segmentNodeData,year,email);
+        triggerAsyncTreeBuild(year,email);
     }
 
-    private void triggerAsyncTreeBuild(SegmentNodeData segmentNodeData,
-                                       int year, String email){
+    private void triggerAsyncTreeBuild(int year, String email){
+        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
         String key = email+":"+year;
         if(!buildingInProgress.add(key)){
-//            log.info("이미 해당 키 범위의 트리가 빌드 중입니다. {}",key);
+            log.info("이미 해당 키 범위의 트리가 빌드 중입니다. {}",key);
             return;
         }
         Executor delayedIoExecutor = CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS, ioExecutor);
         CompletableFuture.supplyAsync(()->{
-//                    log.info("[IO] DB 조회 시작: {}", Thread.currentThread().getName());
                     LocalDate startDate = LocalDate.of(year,1,1);
                     LocalDate endDate = LocalDate.of(year,12,31);
                     return keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(email,startDate,endDate);
             },delayedIoExecutor)
             .thenAcceptAsync(dbResult ->{
                 try {
-//                    log.info("[CPU] 트리 빌드 시작: {}", Thread.currentThread().getName());
                     Map<Integer, AllCampaignTypeData> dailyDataMap = mapDbResultToDailyData(dbResult);
                     fillLeafNodes(segmentNodeData, dailyDataMap, 1, 365);
                     buildTree(segmentNodeData,1,365);
                 }catch (Exception e){
-//                    log.error("트리 빌드 중 에러 발생",e);
+                    log.error("트리 빌드 중 에러 발생",e);
+                    throw new GrouException(ErrorCode.UN_KNOWN_ERROR);
                 }finally {
                     buildingInProgress.remove(key);
                 }
             },cpuExecutor);
-
-
-//        CompletableFuture.runAsync(()->{
-//                try {
-//                    LocalDate startDate = LocalDate.of(year,1,1);
-//                    LocalDate endDate = LocalDate.of(year,12,31);
-//                    List<Tuple> dbResult =
-//                            keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(email,startDate,endDate);
-//                    Map<Integer, AllCampaignTypeData> dailyDataMap = mapDbResultToDailyData(dbResult);
-//                    fillLeafNodes(segmentNodeData, dailyDataMap, 1, 365);
-//                    buildTree(segmentNodeData,1,365);
-//                }catch (Exception e){
-//                    log.error("트리 빌드 중 에러 발생",e);
-//                }finally {
-//                    buildingInProgress.remove(key);
-//                }
-//        });
     }
 
     private void fillLeafNodes(SegmentNodeData segmentNodeData, Map<Integer, AllCampaignTypeData> dailyDataMap, int start, int end) {

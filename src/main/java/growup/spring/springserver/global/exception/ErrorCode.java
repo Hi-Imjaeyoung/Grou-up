@@ -54,7 +54,10 @@ public enum ErrorCode {
     FILE_INVALID_DATA_FORM(HttpStatus.BAD_REQUEST,"파일 내 누락된 값이 존재합니다."),
 
     // etc
-    FK_CONSTRAINT(HttpStatus.BAD_REQUEST,"제약조건 위반으로 인한 삭제 취소")
+    FK_CONSTRAINT(HttpStatus.BAD_REQUEST,"제약조건 위반으로 인한 삭제 취소"),
+
+    // global
+    UN_KNOWN_ERROR(HttpStatus.BAD_REQUEST,"알 수 없는 에러 발생! error 로그 확인 요망")
     ;
 
 

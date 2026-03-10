@@ -8,6 +8,7 @@ import growup.spring.springserver.exception.global.RequestException;
 import growup.spring.springserver.exception.keyword.CampaignKeywordNotFoundException;
 import growup.spring.springserver.exclusionKeyword.dto.ExclusionKeywordResponseDto;
 import growup.spring.springserver.exclusionKeyword.service.ExclusionKeywordService;
+import growup.spring.springserver.global.cache.AllCampaignTypeData;
 import growup.spring.springserver.global.cache.SegTreeCacheManager;
 import growup.spring.springserver.keyword.domain.Keyword;
 import growup.spring.springserver.keyword.dto.KeywordResponseDto;
@@ -21,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -196,5 +198,20 @@ public class KeywordService {
                             );
                         }
                 ));
+    }
+    public Map<LocalDate,AllCampaignTypeData> extractDeleteCampaignDataByPeriod(LocalDate start, LocalDate end, List<Long> campaignIds){
+        List<Tuple> queryResult =
+                keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds(start,end,campaignIds);
+        Map<LocalDate,AllCampaignTypeData> map = new HashMap<>();
+        for(Tuple tuple : queryResult){
+            LocalDate date = tuple.get(keyword.date);
+            AllCampaignTypeData allCampaignTypeData = map.getOrDefault(date,new AllCampaignTypeData());
+            String type = tuple.get(campaign.camAdType);
+            Double cost = tuple.get(keyword.adCost.sum());
+            Double sales = tuple.get(keyword.adSales.sum());
+            AllCampaignTypeData oldData = new AllCampaignTypeData(type,cost,sales);
+            allCampaignTypeData.sum(oldData);
+        }
+        return map;
     }
 }

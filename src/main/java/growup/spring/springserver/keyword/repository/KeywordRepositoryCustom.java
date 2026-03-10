@@ -12,4 +12,6 @@ public interface KeywordRepositoryCustom {
     List<Tuple> getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByCache(LocalDate start, LocalDate end, String email);
 
     List<Tuple> getEachCampaignAdCostSumAndAdSalesByEmail(LocalDate start, LocalDate end, String email);
+
+    List<Tuple> getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds(LocalDate start, LocalDate end, List<Long> campaignIds);
 }

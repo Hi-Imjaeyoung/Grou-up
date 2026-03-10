@@ -66,4 +66,16 @@ public class KeywordRepositoryImpl implements KeywordRepositoryCustom{
                 .groupBy(campaign.camCampaignName)
                 .fetch();
     }
+    public List<Tuple> getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds(LocalDate start,
+                                                                                        LocalDate end,
+                                                                                        List<Long> campaignIds){
+        var dateBetween = keyword.date.between(start,end);
+        return queryFactory
+                .select(keyword.date,campaign.camAdType,keyword.adCost.sum(),keyword.adSales.sum())
+                .from(keyword)
+                .join(keyword.campaign,campaign)
+                .where(dateBetween,campaign.campaignId.in(campaignIds))
+                .groupBy(campaign.camAdType)
+                .fetch();
+    }
 }

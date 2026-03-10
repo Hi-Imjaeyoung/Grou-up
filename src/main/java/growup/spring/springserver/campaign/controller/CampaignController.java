@@ -36,6 +36,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,35 +78,29 @@ public class CampaignController {
 
     @DeleteMapping("/deleteCampaign")
     public ResponseEntity<CommonResponse<Integer>> refactoringDeleteCampaign(@RequestBody List<Long> campaignIds,
+                                                                  @AuthenticationPrincipal UserDetails userDetails,
                                                                   BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors() || campaignIds.isEmpty()){
             log.error(bindingResult.toString());
             throw new RequestException();
         }
-        int deletedCampaignNumber = campaignDeleteFacade.deleteCampaign(campaignIds);
+        int deletedCampaignNumber = campaignDeleteFacade.deleteCampaign(userDetails.getUsername(),campaignIds);
         return new ResponseEntity<>(CommonResponse.<Integer>builder("success delete")
                 .data(deletedCampaignNumber)
                 .build(),HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteCampaignData")
-    public ResponseEntity<CommonResponse<Map>> deleteCampaignData(@RequestBody @Valid CampaignDeleteDto campaignDeleteDto,
+    public ResponseEntity<CommonResponse<Map<String,Integer>>> deleteCampaignData(@RequestBody @Valid CampaignDeleteDto campaignDeleteDto,
+                                                                      @AuthenticationPrincipal UserDetails userDetails,
                                                                       BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors()){
             log.error(bindingResult.toString());
             throw new RequestException();
         }
         if(campaignDeleteDto.getEnd().isBefore(campaignDeleteDto.getStart())) throw new GrouException(ErrorCode.INVALID_DATE_FORMAT);
-        Map<String,Integer> result = new HashMap<>();
-        result.put("keyword",keywordService.deleteKeywordByCampaignIdsAndDate(campaignDeleteDto.getCampaignIds(),campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
-        result.put("margin",marginService.deleteKeywordByCampaignIdsAndDate(campaignDeleteDto.getCampaignIds(),campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
-        List<Long> executionIds = new ArrayList<>();
-        for(Long campaignId : campaignDeleteDto.getCampaignIds()){
-            executionIds.addAll(executionService.getMyExecutionData(campaignId).stream().map(ExecutionMarginResDto::getExeId).toList());
-        }
-        result.put("campaignOptionDetail",campaignOptionDetailsService.deleteKeywordByExecutionIdsAndDate(executionIds,campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
-        result.put("memo",memoService.deleteKeywordByCampaignIdsAndDate(campaignDeleteDto.getCampaignIds(),campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
-        return new ResponseEntity<>(CommonResponse.<Map>builder("success delete")
+        Map<String,Integer> result = campaignDeleteFacade.deleteCampaignDataByPeriod(userDetails.getUsername(),campaignDeleteDto);
+        return new ResponseEntity<>(CommonResponse.<Map<String,Integer>>builder("success delete")
                 .data(result)
                 .build(),HttpStatus.OK);
     }
@@ -115,16 +110,6 @@ public class CampaignController {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         List<Campaign> campaigns = campaignService.getCampaignsByMember(member);
         TotalCampaignsData totalCampaignsData = campaignAnalysisService.getMyAllCampaignsDataByDate(dateRangeRequest.getStart(),dateRangeRequest.getEnd(),campaigns);
-        return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
-                .data(totalCampaignsData)
-                .build(),HttpStatus.OK);
-    }
-
-    @GetMapping("/totalAnalysisData2")
-    public ResponseEntity<CommonResponse<TotalCampaignsData>> campaignTotalAnalysis2(@Valid @ModelAttribute DateRangeRequest dateRangeRequest,
-                                                                                    @AuthenticationPrincipal UserDetails userDetails){
-        TotalCampaignsData totalCampaignsData =
-                campaignTotalDataFacade.getCampaignTotalDataByCache(userDetails.getUsername(), dateRangeRequest.getStart(),dateRangeRequest.getEnd());
         return new ResponseEntity<>(CommonResponse.<TotalCampaignsData>builder("success get")
                 .data(totalCampaignsData)
                 .build(),HttpStatus.OK);

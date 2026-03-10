@@ -1,7 +1,8 @@
 package growup.spring.springserver.global.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.querydsl.core.Tuple;
-import growup.spring.springserver.campaign.dto.CampaignAnalysisDto;
 import growup.spring.springserver.keyword.service.KeywordService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 import static growup.spring.springserver.campaign.domain.QCampaign.campaign;
@@ -58,10 +59,17 @@ public class LazySegmentTreeService {
         public boolean containsKey(int year) {
             return treeMap.containsKey(year);
         }
+
+        public void remove(int year){
+            treeMap.remove(year);
+        }
     }
 
     // key : email
-    private final Map<String, UserSegmentTree> lazyCacheTree = new ConcurrentHashMap<>();
+    private final Cache<String, UserSegmentTree> lazyCacheTree = Caffeine.newBuilder()
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .maximumSize(5000)
+            .build();
 
     public Long getCacheHitCount(){
         return hitCount.sum();
@@ -69,9 +77,9 @@ public class LazySegmentTreeService {
 
     private SegmentNodeData getSegmentNodeDataSafe(String email, int year) {
         return lazyCacheTree
-                .computeIfAbsent(email, k -> new UserSegmentTree()) // 유저 없으면 생성
+                .get(email, k -> new UserSegmentTree()) // Map의 computeIfAbsent -> Cache의 get
                 .treeMap
-                .computeIfAbsent(year, k -> new SegmentNodeData()); // 연도 없으면 생성
+                .computeIfAbsent(year, k -> new SegmentNodeData()); // treeMap은 일반 Map이므로 그대로 사용
     }
 
     public int makeKey(int start, int end) {
@@ -79,12 +87,31 @@ public class LazySegmentTreeService {
     }
 
     public int convertLocalDateToCount(LocalDate localDate) {
-        LocalDate startOfYear = LocalDate.of(localDate.getYear(), 1, 1);
-        return (int) ChronoUnit.DAYS.between(startOfYear, localDate) + 1;
+        return localDate.getDayOfYear();
     }
 
     public LocalDate convertCountToLocalDate(int year, int count) {
         return LocalDate.of(year, 1, 1).plusDays(count - 1);
+    }
+
+    public AllCampaignTypeData getCachedOrSelectAllCampaignTypeDataByPeriod(String email,
+                                                                    LocalDate start,
+                                                                    LocalDate end){
+
+        int nodeStart = 1;
+        int nodeEnd = 365;
+        if (start.isLeapYear()) nodeEnd++;
+        int startCount = convertLocalDateToCount(start);
+        int endCount = convertLocalDateToCount(end);
+        if(start.getYear() == end.getYear()){
+            return find(email,start.getYear(),nodeStart,nodeEnd,startCount,endCount);
+        }
+        AllCampaignTypeData preYear = find(email,start.getYear(),nodeStart,nodeEnd,startCount,nodeEnd);
+        if(nodeEnd == 366 && !end.isLeapYear() ){
+            nodeEnd--;
+        }
+        AllCampaignTypeData postYear = find(email,end.getYear(),nodeStart,nodeEnd,nodeStart,endCount);
+        return  postYear.sum(preYear);
     }
 
     public AllCampaignTypeData find(String email, int year, int nodeStart, int nodeEnd, int targetStart, int targetEnd) {
@@ -95,8 +122,6 @@ public class LazySegmentTreeService {
         int mid = (nodeStart + nodeEnd) / 2;
         return find(email,year, nodeStart, mid, targetStart, targetEnd).sum(find(email,year, mid + 1, nodeEnd, targetStart, targetEnd));
     }
-
-
 
     private AllCampaignTypeData getOrLoadNode(String email, int year, int start, int end) {
         requestCount.increment();
@@ -141,7 +166,6 @@ public class LazySegmentTreeService {
 
     private  Map<Integer, AllCampaignTypeData> mapDbResultToDailyData(List<Tuple> dbResult){
         Map<Integer, AllCampaignTypeData> map = new HashMap<>();
-
         for (Tuple tuple : dbResult) {
             LocalDate date = tuple.get(keyword.date);
 
@@ -175,5 +199,65 @@ public class LazySegmentTreeService {
 
     public void incrementRequestCount(){
         requestCount.increment();;
+    }
+
+    public void reBuildTree(String email,LocalDate start, LocalDate end){
+        // start와 end의 year이 같을때
+        removeTreeDataByEmailAndYear(email,start.getYear());
+        int startCount = convertLocalDateToCount(start);
+        int endCount = convertLocalDateToCount(end);
+        getOrLoadNode(email,start.getYear(),startCount,endCount);
+    }
+    public void removeTreeDataByEmailAndYear(String email, int year){
+        // Map의 containsKey + get -> Cache의 getIfPresent
+        UserSegmentTree userSegmentTree = lazyCacheTree.getIfPresent(email);
+        if(userSegmentTree != null){
+            userSegmentTree.remove(year);
+        }
+    }
+    public void removeAllTreeDataByEmail(String email){
+        lazyCacheTree.invalidate(email); // Map의 remove -> Cache의 invalidate
+    }
+    private SegmentNodeData getSegmentNodeData(String email, int year){
+        UserSegmentTree userSegmentTree = lazyCacheTree.getIfPresent(email);
+        if(userSegmentTree != null){
+            return userSegmentTree.get(year);
+        }
+        return null;
+    }
+    public void updateTreeByPeriodData(String email, Map<LocalDate,AllCampaignTypeData> dataMap){
+        for(LocalDate localDate : dataMap.keySet()){
+            updateDay(email,localDate,dataMap.get(localDate));
+        }
+    }
+
+    private void updateDay(String email,LocalDate changedDate, AllCampaignTypeData changedData){
+        int year = changedDate.getYear();
+        SegmentNodeData segmentNodeData = getSegmentNodeData(email,year);
+        if(segmentNodeData == null){
+            return;
+        }
+        int changedDateKey = convertLocalDateToCount(changedDate);
+        int nodeEnd = changedDate.isLeapYear() ? 366 : 365;
+        findAndUpdateTargetNode(segmentNodeData, 1, nodeEnd, changedDateKey, changedData);
+    }
+
+    private void findAndUpdateTargetNode(SegmentNodeData segmentNodeData,
+                                       int rootS,
+                                       int rootE,
+                                       int target,
+                                       AllCampaignTypeData changedData){
+        if(rootS > target || rootE < target){
+            return;
+        }
+        int key = makeKey(rootS,rootE);
+        AllCampaignTypeData data = segmentNodeData.getCampaignAnalysisDto(key);
+        if (data != null) {
+            data.add(changedData);
+        }
+        if(rootS == rootE) return;
+        int mid = (rootS + rootE)/2;
+        findAndUpdateTargetNode(segmentNodeData,rootS,mid,target,changedData);
+        findAndUpdateTargetNode(segmentNodeData,mid+1,rootE,target,changedData);
     }
 }

@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Data
@@ -19,4 +20,12 @@ public class CampaignDeleteDto {
     LocalDate end;
     @NotEmpty(message = "캠패인 id 누락")
     List<Long> campaignIds;
+
+    public boolean checkThreshold(){
+        if(start.getYear() == end.getYear()){
+            long daysBetween = ChronoUnit.DAYS.between(start, end);
+            return daysBetween >= 40;
+        }
+        return false;
+    }
 }

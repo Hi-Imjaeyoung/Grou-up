@@ -54,6 +54,10 @@ public class CampaignAnalysisService {
                 .nonSearch(nonSearch)
                 .build();
     }
+//    public TotalCampaignsData getMyAllCampaignsDataByDate2(LocalDate start, LocalDate end, String email){
+//        return keywordQueryService.getMyAllCampaignsDataByDate2(start,end,email);
+//    }
+
     public TotalCampaignsData getMyAllCampaignsDataByDate(LocalDate start, LocalDate end, List<Campaign> campaigns){
         Map<String,CampaignAnalysisDto> sumOfAdSalesAndAdCostByCampaignType = new HashMap<>();
         Map<String,CampaignAnalysisDto> adSalesAndAdCostByCampaignName = new HashMap<>();
@@ -74,7 +78,8 @@ public class CampaignAnalysisService {
                             ,sumOfAdSalesAndAdCostByCampaignType.get(TOTAL_SALE_KEY)
                             ,campaign.getCampaignId()
                             ,campaign.getCamAdType()
-                            ,keywordList));
+                            ,keywordList)
+            );
         }
 
         return TotalCampaignsData.builder()

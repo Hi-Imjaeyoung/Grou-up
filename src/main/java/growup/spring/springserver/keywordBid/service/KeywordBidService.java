@@ -97,4 +97,7 @@ public class KeywordBidService {
                 .responseNumber(deleteNumber)
                 .build();
     }
+    public int deleteKeywordBidsByCampaignIds(List<Long> campaignIds){
+        return keywordBidRepository.deleteAllByCampaignIds(campaignIds);
+    }
 }

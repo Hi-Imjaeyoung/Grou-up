@@ -51,7 +51,13 @@ public enum ErrorCode {
 
     // File
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 파일이 존재하지 않습니다."),
-    FILE_INVALID_DATA_FORM(HttpStatus.BAD_REQUEST,"파일 내 누락된 값이 존재합니다.")
+    FILE_INVALID_DATA_FORM(HttpStatus.BAD_REQUEST,"파일 내 누락된 값이 존재합니다."),
+
+    // etc
+    FK_CONSTRAINT(HttpStatus.BAD_REQUEST,"제약조건 위반으로 인한 삭제 취소"),
+
+    // global
+    UN_KNOWN_ERROR(HttpStatus.BAD_REQUEST,"알 수 없는 에러 발생! error 로그 확인 요망")
     ;
 
 

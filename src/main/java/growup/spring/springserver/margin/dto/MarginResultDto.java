@@ -1,9 +1,11 @@
 package growup.spring.springserver.margin.dto;
 
+import growup.spring.springserver.global.domain.CoupangExcelData;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -23,4 +25,15 @@ public class MarginResultDto {
     private Double marTargetEfficiency;  // 목표 효율성
     private Double marAdBudget;  // 광고 예산
     private Long marActualSales;  // 실제 판매 수
+
+    public void plusData(CoupangExcelData coupangExcelData) {
+        if (coupangExcelData == null) {
+            return;
+        }
+        this.marImpressions += Optional.ofNullable(coupangExcelData.getImpressions()).orElse(0L);
+        this.marClicks += Optional.ofNullable(coupangExcelData.getClicks()).orElse(0L);
+        this.marAdConversionSales += Optional.ofNullable(coupangExcelData.getTotalSales()).orElse(0L);
+        this.marAdCost += Optional.ofNullable(coupangExcelData.getAdCost()).orElse(0.0);
+        this.marSales += Optional.ofNullable(coupangExcelData.getAdSales()).orElse(0.0);
+    }
 }

@@ -3,6 +3,8 @@ package growup.spring.springserver.campaign.service;
 import growup.spring.springserver.campaign.domain.Campaign;
 import growup.spring.springserver.campaign.repository.CampaignRepository;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
+import growup.spring.springserver.global.exception.ErrorCode;
+import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.login.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,17 +56,11 @@ public class CampaignService {
     @Transactional
     @CacheEvict(value = "campaigns", allEntries = true)
     public int deleteCampaign(List<Long> campaignIds){
-        int deletedCampaignNumber = 0;
-        for(Long campaignId : campaignIds){
             try {
-                if (campaignRepository.findByCampaignId(campaignId).isPresent()) {
-                    campaignRepository.deleteById(campaignId);
-                    deletedCampaignNumber++;
-                }
+                return campaignRepository.deleteAllByCampaignIds(campaignIds);
             }catch (ConstraintViolationException exception){
-                log.error("FK 제약조건 설정이 위배되어 "+campaignId+" 캠패인이 삭제 되지 않았습니다.");
+                log.error("FK 제약조건 설정이 위배되어 캠패인이 삭제 되지 않았습니다.");
+                throw new GrouException(ErrorCode.FK_CONSTRAINT);
             }
-        }
-        return deletedCampaignNumber;
     }
 }

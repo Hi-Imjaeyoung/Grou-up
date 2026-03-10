@@ -28,8 +28,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/marginforcam")
-@Slf4j
 @AllArgsConstructor
+@Slf4j
 public class ExcelDownUpLoadController {
 
     private final ExcelService excelService;
@@ -81,18 +81,12 @@ public class ExcelDownUpLoadController {
             if(e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)){
                 return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                         .data(e.getErrorCode().getMessage())
-                        .build(), HttpStatus.BAD_REQUEST);
-            }
-            if(e.getErrorCode().equals(ErrorCode.CAMPAIGN_NOT_FOUND)){
-                return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
-                        .data("캠패인 ID가 잘못되었습니다. 액셀을 다시 다운로드해주세요.")
-                        .build(), HttpStatus.BAD_REQUEST);
+                        .build(), HttpStatus.OK);
             }
             return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
                     .data(e.getErrorCode().getMessage())
-                    .build(), HttpStatus.BAD_REQUEST);
+                    .build(), HttpStatus.OK);
         } catch (Exception e) {
-            log.error(e.toString());
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")
                     .build(), HttpStatus.BAD_REQUEST);

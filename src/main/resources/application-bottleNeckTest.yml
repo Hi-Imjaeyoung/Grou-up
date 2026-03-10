@@ -1,0 +1,102 @@
+spring:
+  config:
+    activate:
+      on-profile: bottleNeckTest
+  datasource:
+    hikari:
+      # 기본값이 10이라서 병목이 온 거야.
+      # ioExecutor의 MaxPoolSize와 비슷하게(혹은 더 크게) 맞춰줘야 해.
+      maximum-pool-size: 30
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+        generate_statistics: true # 통계 수집 활성화
+        jdbc:
+          batch_size: 5000
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            client-name: kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: ${KAKAO_URL}
+            scope:
+              - profile_nickname
+              - account_email
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-name: google
+            authorization-grant-type: authorization_code
+            redirect-uri:  ${GOOGLE_URL} # 구글에 추가함
+            scope:
+              - profile
+              - email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    # 프로메테우스 관련 로그 Level WARN 설정.
+    org.springframework.boot.actuate: WARN
+    # 이 녀석이 'Session Metrics { ... }' 로그를 찍는 주범임
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: OFF
+    growup.spring.springserver.global.config: WARN
+
+jwt:
+  expiration: ${JWT_EXPIRATION}
+  secretKey: ${JWT_SECRET_KEY}
+redirect:
+  kakao: ${RE_DIRECT_URL_KAKAO}
+  google: ${RE_DIRECT_URL_GOOGLE}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+springdoc:
+  swagger-ui:
+    groups-order: ASC
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: 2
+    defaultModelExpandDepth: 2
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
+  model-and-view-allowed: true
+  paths-to-match:
+    - /api/**

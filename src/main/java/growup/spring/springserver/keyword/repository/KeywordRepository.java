@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface KeywordRepository extends JpaRepository <Keyword,Long>{
+public interface KeywordRepository extends JpaRepository <Keyword,Long>, KeywordRepositoryCustom{
 
     //TODO: 쿼리 순서 check!
     @Query("SELECT k FROM Keyword k WHERE k.date BETWEEN :startDate AND :endDate " +
@@ -36,4 +36,8 @@ public interface KeywordRepository extends JpaRepository <Keyword,Long>{
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
                                   @Param("campaignIds") List<Long> campaignIds);
+
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
+    @Query("DELETE FROM Keyword k WHERE k.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 }

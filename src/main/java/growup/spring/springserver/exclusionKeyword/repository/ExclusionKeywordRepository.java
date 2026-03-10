@@ -22,4 +22,7 @@ public interface ExclusionKeywordRepository extends JpaRepository<ExclusionKeywo
     @Query("DELETE FROM ExclusionKeyword k WHERE k.campaign.campaignId = :campaignId AND k.exclusionKeyword = :exclusionKeyword")
     int deleteByCampaign_campaignIdANDExclusionKeyword(@Param("campaignId") Long campaignId,
                                                         @Param("exclusionKeyword") String exclusionKeyword);
+    @Modifying
+    @Query("DELETE FROM ExclusionKeyword k WHERE k.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 }

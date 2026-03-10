@@ -9,7 +9,6 @@ import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.global.dto.req.DateRangeRequest;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
-import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,6 @@ public class MarginController {
                                                                              @AuthenticationPrincipal UserDetails userDetails) {
 
         List<MarginResponseDto> marginResponseDtos = marginService.getALLMargin(start, end, campaignId, userDetails.getUsername());
-
         return new ResponseEntity<>(CommonResponse
                 .<List<MarginResponseDto>>builder("success :getMargin ")
                 .data(marginResponseDtos)

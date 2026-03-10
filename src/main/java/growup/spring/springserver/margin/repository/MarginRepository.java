@@ -68,6 +68,10 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
                                   @Param("end") LocalDate end,
                                   @Param("campaignIds") List<Long> campaignIds);
 
+    @Modifying
+    @Query("DELETE FROM Margin m WHERE m.campaign.campaignId IN:campaignIds")
+    int deleteByCampaignId(@Param("campaignIds") List<Long> campaignIds);
+
     @Query("SELECT MAX(m.marDate) FROM Margin m WHERE m.campaign.member.email = :email")
     Optional<LocalDate> findLatestMarginDateByEmail(@Param("email") String email);
 
@@ -119,4 +123,15 @@ public interface MarginRepository extends JpaRepository<Margin, Long> {
     Set<LocalDate> findExistingDatesByCampaignIdAndDateIn(
             @Param("campaignId") Long campaignId,
             @Param("dates") List<LocalDate> dates);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Margin m " +
+            "SET m.marAdMargin = 0," +
+            " m.marNetProfit = 0 ," +
+            " m.marActualSales=0," +
+            " m.marReturnCost=0," +
+            " m.marReturnCount=0," +
+            " m.marUpdated = true " +
+            "WHERE m.marDate = :date AND m.campaign.campaignId IN :campaignIds")
+    int resetNetSalesInfo(@Param("date") LocalDate date, @Param("campaignIds") List<Long> campaignIds);
 }

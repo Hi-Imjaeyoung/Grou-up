@@ -7,9 +7,6 @@ import growup.spring.springserver.global.config.GsonConfig;
 import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.margin.dto.*;
 import growup.spring.springserver.margin.service.MarginService;
-import growup.spring.springserver.marginforcampaign.dto.MfcDto;
-import growup.spring.springserver.marginforcampaign.dto.MfcRequestWithDatesDto;
-import growup.spring.springserver.marginforcampaign.support.MarginType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +30,9 @@ import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -314,36 +311,6 @@ class MarginControllerTest {
         result.andExpectAll(
                 status().isOk(),
                 jsonPath("$.message").value("success : updateEfficiencyAndAdBudget")
-        );
-    }
-
-    @Test
-    @DisplayName("marginUpdatesByPeriod() : failCase. ")
-    @WithAuthUser
-    void marginUpdatesByPeriod_failCase() throws Exception {
-
-        Gson gson = GsonConfig.getGson();
-        final String url = "/api/margin/marginUpdatesByPeriod";
-        MfcRequestWithDatesDto body = MfcRequestWithDatesDto.builder()
-                .startDate(LocalDate.of(2024, 4, 1))
-                .endDate(LocalDate.of(2024, 4, 10))
-                .campaignId(1L)
-                .data(List.of(
-                        MfcDto.builder()
-                                .mfcProductName("방한마스크 빨강색")
-                                .mfcType(MarginType.SELLER_DELIVERY)
-                                .mfcPerPiece(500L)
-                                .mfcReturnPrice(100L)
-                                .build()
-                ))
-                .build();
-        ResultActions result = mockMvc.perform(patch(url)
-                .content(gson.toJson(body))
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(csrf()));
-        result.andExpectAll(
-                status().isOk(),
-                jsonPath("$.message").value("success: marginUpdatesByPeriod")
         );
     }
 

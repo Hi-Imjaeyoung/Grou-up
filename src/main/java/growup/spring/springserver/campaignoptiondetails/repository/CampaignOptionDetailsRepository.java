@@ -29,4 +29,8 @@ public interface CampaignOptionDetailsRepository extends JpaRepository<CampaignO
     int deleteByCampaignIdAndDate(@Param("start") LocalDate start,
                                   @Param("end") LocalDate end,
                                   @Param("executionIds") List<Long> executionIds);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM CampaignOptionDetails c WHERE c.execution.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 }

@@ -1,6 +1,7 @@
 package growup.spring.springserver.keyword.domain;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import growup.spring.springserver.global.domain.CoupangExcelData;
 import growup.spring.springserver.campaign.domain.Campaign;
 import jakarta.persistence.*;
@@ -28,7 +29,8 @@ public class Keyword extends CoupangExcelData {
 
     private String keySearchType;  // 검색 비검색
 
-    @Type(JsonBinaryType.class) // JSON 필드 매핑
+//    @Type(JsonBinaryType.class) // JSON 필드 매핑
+    @Type(JsonStringType.class)   // 이걸로 바꿔봐!
     @Column(columnDefinition = "json")
     private Map<String, Long> keyProductSales; // JSON 형태로 상품ID와 판매량 저장
 

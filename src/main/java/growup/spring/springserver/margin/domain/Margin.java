@@ -79,20 +79,4 @@ public class Margin {
         this.marTargetEfficiency = targetEfficiency;
         this.marUpdated = Boolean.FALSE;
     }
-
-    // 캠페인 ID와 날짜로 마진 데이터 삭제
-    public void deleteMarginAboutNetSale() {
-        // 광고 마진
-        this.marAdMargin = 0L;
-        // 순수익
-        this.marNetProfit =0.0;
-        // 실제 판매수
-        this.marActualSales = 0L;
-        // 반품 총 비용
-        this.marReturnCost = 0.0;
-        // 반품 갯수
-        this.marReturnCount = 0L;
-        // 업데이트 유무 True => 추후 netSales 들어오면 로직 탐
-        this.marUpdated = Boolean.TRUE;
-    }
 }

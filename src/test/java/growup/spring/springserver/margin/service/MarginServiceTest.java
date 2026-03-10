@@ -17,6 +17,7 @@ import growup.spring.springserver.marginforcampaign.support.MarginType;
 import growup.spring.springserver.marginforcampaignchangedbyperiod.domain.MarginForCampaignChangedByPeriod;
 import growup.spring.springserver.marginforcampaignchangedbyperiod.service.MarginForCampaignChangedByPeriodService;
 import growup.spring.springserver.netsales.domain.NetSales;
+import growup.spring.springserver.netsales.dto.NetSalesSummaryDto;
 import growup.spring.springserver.netsales.service.NetSalesService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -398,6 +400,44 @@ class MarginServiceTest {
         verify(marginRepository, times(0)).saveAll(anyList());
         assertThat(result).isEmpty();
     }
+    @Test
+    @DisplayName("getMargin_netSalesMap_SuccessCase. 순매출 맵 생성 성공")
+    void getMargin_netSalesMap_SuccessCase() {
+        String email = "test@test.com";
+        LocalDate startDate = LocalDate.of(2024, 3, 1);
+        LocalDate endDate = LocalDate.of(2024, 3, 2);
+
+
+        NetSales ns1 = createNetSales(1L, "방한마스크", MarginType.ROCKET_GROWTH, 1000L, 10L, 0L, 0L, LocalDate.of(2024, 3, 1));
+        NetSales ns2 = createNetSales(2L, "여름마스크", MarginType.ROCKET_GROWTH, 1000L, 10L, 0L, 0L, LocalDate.of(2024, 3, 2));
+        NetSalesSummaryDto summary1 = createNetSalesSummaryDto(ns1);
+
+        NetSalesSummaryDto summary2 = createNetSalesSummaryDto(ns2);
+
+        when(netSalesService.getNetSalesByEmailAndDateRange(email, startDate, endDate))
+                .thenReturn(List.of(summary1, summary2));
+
+        Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> result = marginService.getNetSalesMap(startDate, endDate, email);
+        // then
+        // 1. 사이즈가 쳌
+        assertThat(result).isNotNull().hasSize(2);
+
+        // 2. [3월 1일] 데이터 검증 - groupingBy가 날짜별로 잘 묶었는지
+        Map<NetSalesKey, NetSalesSummaryDto> mapDay1 = result.get(startDate);
+        assertThat(mapDay1).isNotNull();
+
+        // 3. [3월 1일]
+        NetSalesKey key1 = new NetSalesKey("방한마스크", MarginType.ROCKET_GROWTH);
+        assertThat(mapDay1).containsKey(key1); // 키가 제대로 생성되었는지
+        assertThat(mapDay1.get(key1)).isEqualTo(summary1); // 값이 제대로 들어있는지
+
+        // 4. [3월 2일]
+        Map<NetSalesKey, NetSalesSummaryDto> mapDay2 = result.get(endDate);
+        NetSalesKey key2 = new NetSalesKey("여름마스크", MarginType.ROCKET_GROWTH);
+
+        assertThat(mapDay2).containsKey(key2);
+        assertThat(mapDay2.get(key2)).isEqualTo(summary2);
+    }
 
     @Test
     @DisplayName("getMargin_getUpdatableMargins_successCase 1. 업데이트 가능한 마진 조회")
@@ -612,23 +652,23 @@ class MarginServiceTest {
         NetSales ns5 = createNetSales(5L, "방한마스크 기본값", MarginType.ROCKET_GROWTH, 2000L, 7L, 7L, 0L, LocalDate.of(2024, 3, 2));
 
 
-        Map<LocalDate, Map<NetSalesKey, NetSales>> netSalesMap =
+        Map<LocalDate, Map<NetSalesKey, NetSalesSummaryDto>> netSalesMap =
                 Map.of(
                         LocalDate.of(2024, 3, 1),
                         Map.of(
                                 createNetSalesKey("방한마스크 빨강색", MarginType.ROCKET_GROWTH),
-                                ns1,
+                                createNetSalesSummaryDto(ns1),
                                 createNetSalesKey("방한마스크 파랑색", MarginType.ROCKET_GROWTH),
-                                ns2
+                                createNetSalesSummaryDto(ns2)
                         ),
                         LocalDate.of(2024, 3, 2),
                         Map.of(
                                 createNetSalesKey("방한마스크 빨강색", MarginType.ROCKET_GROWTH),
-                                ns3,
+                                createNetSalesSummaryDto(ns3),
                                 createNetSalesKey("방한마스크 없는색", MarginType.ROCKET_GROWTH),
-                                ns4,
+                                createNetSalesSummaryDto(ns4),
                                 createNetSalesKey("방한마스크 기본값", MarginType.ROCKET_GROWTH),
-                                ns5
+                                createNetSalesSummaryDto(ns5)
                         ));
 
         when(marginForCampaignRepository.MarginForCampaignByCampaignId(campaignId))
@@ -787,7 +827,7 @@ class MarginServiceTest {
         //3/1, 3/2 둘 다 판매 있음
         NetSales ns1 = createNetSales(1L, "방한마스크", MarginType.ROCKET_GROWTH, 1000L, 10L, 0L, 0L, LocalDate.of(2024, 3, 1));
         NetSales ns2 = createNetSales(2L, "방한마스크", MarginType.ROCKET_GROWTH, 1000L, 10L, 0L, 0L, LocalDate.of(2024, 3, 2));
-        List<NetSales> netSalesList = List.of(ns1, ns2);
+        List<NetSalesSummaryDto> netSalesList = List.of(createNetSalesSummaryDto(ns1), createNetSalesSummaryDto(ns2));
         List<LocalDate> datesWithSales = List.of(
                 LocalDate.of(2024, 3, 1),
                 LocalDate.of(2024, 3, 2));
@@ -823,7 +863,6 @@ class MarginServiceTest {
 
         // when
         List<MarginResponseDto> result = marginService.getALLMargin(start, end, campaignId, email);
-        System.out.println("result = " + result);
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getData())
                 .extracting(MarginResultDto::getMarDate, MarginResultDto::getMarAdMargin)
@@ -942,28 +981,6 @@ class MarginServiceTest {
 
         assertThat(result).isEqualTo(LocalDate.now());
 
-    }
-
-    @Test
-    @DisplayName("deleteMarginsForNetSale - successCase")
-    void deleteMarginsForNetSale() {
-        LocalDate targetDate = LocalDate.of(2025, 11, 12);
-        List<Long> campaignIds = List.of(1L, 2L);
-
-        Margin m1 = newMargin(targetDate, Campaign.builder().campaignId(1L).build(), 100.0, 10.0);
-        Margin m2 = newMargin(targetDate, Campaign.builder().campaignId(2L).build(), 200.0, 20.0);
-        List<Margin> mockMargins = List.of(m1, m2);
-
-        when(marginService.getAllMyCampaignMargin(targetDate, campaignIds)).thenReturn(mockMargins);
-
-        int result = marginService.deleteMarginsForNetSale(targetDate, campaignIds);
-
-        assertThat(result).isEqualTo(2);
-
-        assertAll(
-                () -> assertThat(m1.getMarReturnCost()).isZero(),
-                () -> assertThat(m2.getMarReturnCost()).isZero()
-        );
     }
 
     @Test
@@ -1174,4 +1191,17 @@ class MarginServiceTest {
                 .netDate(netDate)
                 .build();
     }
+
+    private NetSalesSummaryDto createNetSalesSummaryDto(NetSales ns) {
+        return new NetSalesSummaryDto(
+                ns.getNetDate(),
+                ns.getNetProductName(),
+                ns.getNetType(),
+                ns.getNetSalesAmount(),
+                ns.getNetSalesCount(),
+                ns.getNetReturnCount(),
+                ns.getNetCancelPrice()
+        );
+    }
+
 }

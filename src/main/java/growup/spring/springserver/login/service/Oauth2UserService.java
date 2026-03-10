@@ -1,17 +1,14 @@
 package growup.spring.springserver.login.service;
 
-import growup.spring.springserver.global.config.JwtTokenProvider;
 import growup.spring.springserver.global.domain.TypeChange;
+import growup.spring.springserver.global.oauth.OAuth2UserInfo;
+import growup.spring.springserver.global.oauth.OAuth2UserInfoFactory;
 import growup.spring.springserver.login.domain.Member;
 import growup.spring.springserver.login.dto.request.LoginSignUpReqDto;
 import growup.spring.springserver.login.repository.MemberRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -27,61 +24,53 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class Oauth2UserService extends DefaultOAuth2UserService {
-
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final TypeChange typeChange;
 
     @Override
-    @Transactional // 트랜잭션 관리 추가
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("Oauth2UserService.loadUser called");
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        // OAuth 공급자 확인
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        log.info("OAuth provider: {}", registrationId);
+        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User);
+        String userNameAttributeName = userRequest.getClientRegistration()
+                .getProviderDetails()
+                .getUserInfoEndpoint()
+                .getUserNameAttributeName();
 
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        String email = null;
-        String nickname = null;
-        String nameAttributeKey;  // 기본 ID 필드 (카카오는 "id" 사용)
+        log.info("OAuth provider: {}", userInfo.getProvider());
+        log.info("User email: {}", userInfo.getEmail());
 
-        switch (registrationId) {
-            case "kakao" -> {
-                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-                email = (String) kakaoAccount.get("email");
-                nickname = (String) ((Map<String, Object>) attributes.get("properties")).get("nickname");
-                nameAttributeKey = "id";  // 카카오는 "id"를 기본 키로 사용
-            }
-            case "google" -> {
-                email = (String) attributes.get("email");
-                nickname = (String) attributes.get("name");
-                nameAttributeKey = "sub";  // 구글은 "sub"을 기본 ID로 사용
-            }
-            default -> throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
+
+        Member member = findOrCreateMember(userInfo);
+
+        if (member.getRecommendationCode() == null || member.getRecommendationCode().isEmpty()) {
+            String newCode = MemberService.createRecommendationCode();
+            member.updateMember(newCode);
         }
 
-        log.info("User email: {}", email);
-        log.info("User nickname: {}", nickname);
-
-        // 기존 사용자 체크
-        Member member = memberRepository.findByEmail(email).orElse(null);
-        String myCode = MemberService.createRecommendationCode();
-
-        // 기존 사용자가 없으면 새로 생성
-        if (member == null) {
-            member = typeChange.memberCreateDtoToMember(new LoginSignUpReqDto(email, null, nickname), null, myCode);
-            memberRepository.save(member);
-        } else if (member.getRecommendationCode() == null || member.getRecommendationCode().isEmpty()) {
-            member.updateMember(myCode);
-        }
+        memberRepository.save(member);
 
         return new DefaultOAuth2User(
                 List.of(new SimpleGrantedAuthority("ROLE_USER")),
-                attributes,
-                nameAttributeKey  // 공급자에 따라 ID 필드 변경
+                oAuth2User.getAttributes(),
+                userNameAttributeName
+        );
+    }
+    private Member findOrCreateMember(OAuth2UserInfo userInfo) {
+        return memberRepository.findByEmail(userInfo.getEmail())
+                .orElseGet(() -> createNewMember(userInfo));
+    }
+
+    // 신규 회원 생성 로직 분리 (private method)
+    private Member createNewMember(OAuth2UserInfo userInfo) {
+        return typeChange.memberCreateDtoToMember(
+                new LoginSignUpReqDto(userInfo.getEmail(), null, userInfo.getNickname()),
+                null,
+                null // 일단 코드는 null로 생성 (아래에서 통합 처리)
         );
     }
 }

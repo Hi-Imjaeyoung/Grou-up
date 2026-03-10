@@ -9,6 +9,7 @@ import growup.spring.springserver.marginforcampaign.dto.MfcDto;
 import growup.spring.springserver.marginforcampaign.dto.MfcRequestDtos;
 import growup.spring.springserver.marginforcampaign.dto.MfcValidationResponseDto;
 import growup.spring.springserver.marginforcampaign.service.MarginForCampaignService;
+import growup.spring.springserver.marginforcampaignchangedbyperiod.service.MarginForCampaignChangedByPeriodService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +53,8 @@ class MarginForCampaignControllerTest {
 
     @MockBean
     private MarginForCampaignService marginForCampaignService;
+    @MockBean
+    private MarginForCampaignChangedByPeriodService marginForCampaignChangedByPeriodService;
 
 
     @WithAuthUser

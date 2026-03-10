@@ -1,17 +1,33 @@
 package growup.spring.springserver.campaign.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
 public class CampaignAnalysisDto {
     Double adCost;
     Double adSales;
     String campAdType;
     Long campaignId;
+    public CampaignAnalysisDto(Double adCost,Double adSales){
+        this.adCost = adCost;
+        this.adSales = adSales;
+    }
+    public void add(CampaignAnalysisDto other){
+        this.adSales += other.adSales;
+        this.adCost += other.adCost;
+    }
+    public CampaignAnalysisDto add(double adCost,double adSales){
+        return new CampaignAnalysisDto(
+                this.adCost + adCost,
+                this.adSales + adSales
+        );
+    }
     public void plusAdCost(Double adCost){
         this.adCost += adCost;
     }

@@ -62,4 +62,8 @@ public interface MarginForCampaignRepository extends JpaRepository<MarginForCamp
             @Param("optionNamesInExcels") List<String> optionNamesInExcels,
             @Param("email") String email,
             @Param("campaignId")Long campaignId);
+
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
+    @Query("DELETE FROM MarginForCampaign mfc WHERE mfc.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 }

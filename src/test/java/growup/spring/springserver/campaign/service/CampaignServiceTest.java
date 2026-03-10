@@ -108,8 +108,6 @@ class CampaignServiceTest {
         //then
         assertThat(result).isEqualTo(1);
     }
-
-
     public Member getMember(){
         return Member.builder()
                 .email("test@test.com")

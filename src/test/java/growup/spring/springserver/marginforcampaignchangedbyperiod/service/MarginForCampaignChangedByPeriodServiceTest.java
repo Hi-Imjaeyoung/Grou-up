@@ -171,7 +171,6 @@ class MarginForCampaignChangedByPeriodServiceTest {
         Map<LocalDate, Map<Long, MarginForCampaignChangedByPeriod>> result =
                 marginForCampaignChangedByPeriodService.findAllByMfcCbpIdsAndDateRange(
                         mfcIds, startDate, endDate);
-        System.out.println("result = " + result);
         assertThat(result).hasSize(3);
     }
     private MarginForCampaignChangedByPeriod newRecord(Long id ,MarginForCampaign mfc, LocalDate date) {

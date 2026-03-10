@@ -20,6 +20,9 @@ public interface KeywordBidRepository extends JpaRepository<KeywordBid,Long> {
     @Query("DELETE FROM KeywordBid k WHERE k.campaign.campaignId = :campaignId AND k.keyword = :keyword")
     int deleteByCampaign_CampaignIdANDKeyword(@Param("campaignId") Long campaignId,
                                               @Param("keyword") String exclusionKeyword);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM KeywordBid k WHERE k.campaign.campaignId IN :campaignIds")
+    int deleteAllByCampaignIds(@Param("campaignIds") List<Long> campaignIds);
 
     boolean existsByCampaign_CampaignIdAndKeyword(Long campaignId, String keyword);
     List<KeywordBid> findAllByCampaign_CampaignId(Long campaignId);

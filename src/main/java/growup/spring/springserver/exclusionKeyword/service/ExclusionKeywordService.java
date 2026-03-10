@@ -78,4 +78,8 @@ public class ExclusionKeywordService {
         if(exclusionKeywords.isEmpty()) throw new ExclusionKeyNotFound();
         return exclusionKeywords.stream().map(TypeChangeExclusionKeyword::entityToResponseDTO).toList();
     }
+
+    public int deleteExclusionKeywordByCampaignIds (List<Long> campaignIds){
+        return exclusionKeywordRepository.deleteAllByCampaignIds(campaignIds);
+    }
 }

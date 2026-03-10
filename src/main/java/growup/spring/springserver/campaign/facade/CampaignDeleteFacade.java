@@ -8,6 +8,8 @@ import growup.spring.springserver.execution.dto.ExecutionMarginResDto;
 import growup.spring.springserver.execution.service.ExecutionService;
 import growup.spring.springserver.global.cache.AllCampaignTypeData;
 import growup.spring.springserver.global.cache.LazySegmentTreeService;
+import growup.spring.springserver.global.listener.TreeBuildEvent;
+import growup.spring.springserver.global.listener.TreeUpdateEvent;
 import growup.spring.springserver.keyword.service.KeywordService;
 import growup.spring.springserver.keywordBid.service.KeywordBidService;
 import growup.spring.springserver.margin.service.MarginService;
@@ -15,13 +17,11 @@ import growup.spring.springserver.marginforcampaign.service.MarginForCampaignSer
 import growup.spring.springserver.memo.service.MemoService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -36,6 +36,7 @@ public class CampaignDeleteFacade {
     private final KeywordBidService keywordBidService;
     private final MarginForCampaignService marginForCampaignService;
     private final LazySegmentTreeService lazySegmentTreeService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public int deleteCampaign(String email, List<Long> campaignIds){
@@ -71,9 +72,10 @@ public class CampaignDeleteFacade {
         result.put("campaignOptionDetail",campaignOptionDetailsService.deleteKeywordByExecutionIdsAndDate(executionIds,campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
         result.put("memo",memoService.deleteKeywordByCampaignIdsAndDate(campaignDeleteDto.getCampaignIds(),campaignDeleteDto.getStart(),campaignDeleteDto.getEnd()));
         if(checkThreshold && extractDeleteData != null){
-            lazySegmentTreeService.updateTreeByPeriodData(email,extractDeleteData);
+            applicationEventPublisher.publishEvent(new TreeUpdateEvent(email,extractDeleteData));
         }else{
-            lazySegmentTreeService.reBuildTree(email,campaignDeleteDto.getStart(),campaignDeleteDto.getEnd());
+            int year = campaignDeleteDto.getStart().getYear();
+            applicationEventPublisher.publishEvent(new TreeBuildEvent(email,year));
         }
         return result;
     }

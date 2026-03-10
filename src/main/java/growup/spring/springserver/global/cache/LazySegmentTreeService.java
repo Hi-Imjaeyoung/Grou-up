@@ -1,5 +1,7 @@
 package growup.spring.springserver.global.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.querydsl.core.Tuple;
 import growup.spring.springserver.campaign.dto.CampaignAnalysisDto;
 import growup.spring.springserver.global.config.ThreadPoolConfig;
@@ -26,11 +28,8 @@ import static growup.spring.springserver.keyword.domain.QKeyword.keyword;
 @Slf4j
 @AllArgsConstructor
 public class LazySegmentTreeService {
-    private final KeywordService keywordService;
     private final LongAdder hitCount = new LongAdder();
     private final LongAdder requestCount = new LongAdder();
-    private final Executor ioExecutor;
-    private final Executor cpuExecutor;
 
     private static class SegmentNodeData {
         // key : My bitPacking
@@ -64,10 +63,15 @@ public class LazySegmentTreeService {
         public boolean containsKey(int year) {
             return treeMap.containsKey(year);
         }
+
+        public void remove(int year){treeMap.remove(year);}
     }
 
     // key : email
-    private final Map<String, UserSegmentTree> lazyCacheTree = new ConcurrentHashMap<>();
+    private final Cache<String, UserSegmentTree> lazyCacheTree = Caffeine.newBuilder()
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .maximumSize(5000)
+            .build();
 
     private final Set<String> buildingInProgress = ConcurrentHashMap.newKeySet();
 
@@ -77,7 +81,7 @@ public class LazySegmentTreeService {
 
     private SegmentNodeData getSegmentNodeDataSafe(String email, int year) {
         return lazyCacheTree
-                .computeIfAbsent(email, k -> new UserSegmentTree()) // 유저 없으면 생성
+                .get(email, k -> new UserSegmentTree()) // 유저 없으면 생성
                 .treeMap
                 .computeIfAbsent(year, k -> new SegmentNodeData()); // 연도 없으면 생성
     }
@@ -96,8 +100,10 @@ public class LazySegmentTreeService {
     }
 
     public boolean isTreeBuild(String email, int year){
-        if(lazyCacheTree.containsKey(email)){
-            return lazyCacheTree.get(email).containsKey(year);
+        boolean isExist = lazyCacheTree.asMap().containsKey(email);
+        if(isExist){
+            UserSegmentTree value = lazyCacheTree.get(email,k-> new UserSegmentTree());
+            return value.containsKey(year);
         }
         return false;
     }
@@ -105,7 +111,6 @@ public class LazySegmentTreeService {
     public AllCampaignTypeData getCachedOrSelectAllCampaignTypeDataByPeriod(String email,
                                                                     LocalDate start,
                                                                     LocalDate end){
-
         int nodeStart = 1;
         int nodeEnd = 365;
         if (start.isLeapYear()) nodeEnd++;
@@ -131,8 +136,6 @@ public class LazySegmentTreeService {
         return find(email,year, nodeStart, mid, targetStart, targetEnd).sum(find(email,year, mid + 1, nodeEnd, targetStart, targetEnd));
     }
 
-
-
     private AllCampaignTypeData getOrLoadNode(String email, int year, int start, int end) {
         requestCount.increment();
         int key = makeKey(start, end);
@@ -146,36 +149,21 @@ public class LazySegmentTreeService {
             return new AllCampaignTypeData();
         }
     }
-    public void buildTreeAsync(String email, int year){
-        // 트리를 빌드는 비동기로 실시
-        triggerAsyncTreeBuild(year,email);
-    }
-
-    private void triggerAsyncTreeBuild(int year, String email){
-        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
+    public void removeTreeBuildingKey(String email, int year){
         String key = email+":"+year;
-        if(!buildingInProgress.add(key)){
-            log.info("이미 해당 키 범위의 트리가 빌드 중입니다. {}",key);
-            return;
-        }
-        Executor delayedIoExecutor = CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS, ioExecutor);
-        CompletableFuture.supplyAsync(()->{
-                    LocalDate startDate = LocalDate.of(year,1,1);
-                    LocalDate endDate = LocalDate.of(year,12,31);
-                    return keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(email,startDate,endDate);
-            },delayedIoExecutor)
-            .thenAcceptAsync(dbResult ->{
-                try {
-                    Map<Integer, AllCampaignTypeData> dailyDataMap = mapDbResultToDailyData(dbResult);
-                    fillLeafNodes(segmentNodeData, dailyDataMap, 1, 365);
-                    buildTree(segmentNodeData,1,365);
-                }catch (Exception e){
-                    log.error("트리 빌드 중 에러 발생",e);
-                    throw new GrouException(ErrorCode.UN_KNOWN_ERROR);
-                }finally {
-                    buildingInProgress.remove(key);
-                }
-            },cpuExecutor);
+        buildingInProgress.remove(key);
+        return;
+    }
+    public boolean treeIsBuilding(String email,int year){
+        String key = email+":"+year;
+        return !buildingInProgress.add(key);
+    }
+    public void buildTree(String email, int year, List<Tuple> dbResult){
+        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
+        Map<Integer, AllCampaignTypeData> dailyDataMap = mapDbResultToDailyData(dbResult);
+        int nodeEnd = LocalDate.of(year,1,1).isLeapYear() ? 366 : 365;
+        fillLeafNodes(segmentNodeData, dailyDataMap, 1, nodeEnd);
+        buildTree(segmentNodeData, 1, nodeEnd);
     }
 
     private void fillLeafNodes(SegmentNodeData segmentNodeData, Map<Integer, AllCampaignTypeData> dailyDataMap, int start, int end) {
@@ -185,7 +173,6 @@ public class LazySegmentTreeService {
             segmentNodeData.put(leafKey, data);
         }
     }
-
     private AllCampaignTypeData buildTree(SegmentNodeData segmentNodeData, int startCount, int endCount){
         if(startCount == endCount) {
             int key = makeKey(startCount,endCount);

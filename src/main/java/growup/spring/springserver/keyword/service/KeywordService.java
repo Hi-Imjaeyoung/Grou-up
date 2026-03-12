@@ -199,19 +199,7 @@ public class KeywordService {
                         }
                 ));
     }
-    public Map<LocalDate,AllCampaignTypeData> extractDeleteCampaignDataByPeriod(LocalDate start, LocalDate end, List<Long> campaignIds){
-        List<Tuple> queryResult =
-                keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds(start,end,campaignIds);
-        Map<LocalDate,AllCampaignTypeData> map = new HashMap<>();
-        for(Tuple tuple : queryResult){
-            LocalDate date = tuple.get(keyword.date);
-            AllCampaignTypeData allCampaignTypeData = map.getOrDefault(date,new AllCampaignTypeData());
-            String type = tuple.get(campaign.camAdType);
-            Double cost = tuple.get(keyword.adCost.sum());
-            Double sales = tuple.get(keyword.adSales.sum());
-            AllCampaignTypeData oldData = new AllCampaignTypeData(type,cost,sales);
-            allCampaignTypeData.sum(oldData);
-        }
-        return map;
+    public List<Tuple> extractDeleteCampaignDataByPeriod(LocalDate start, LocalDate end, List<Long> campaignIds){
+        return keywordRepository.getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds(start,end,campaignIds);
     }
 }

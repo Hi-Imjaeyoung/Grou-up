@@ -1,5 +1,6 @@
 package growup.spring.springserver.campaign.facade;
 
+import com.querydsl.core.Tuple;
 import growup.spring.springserver.campaign.dto.CampaignDeleteDto;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.campaignoptiondetails.service.CampaignOptionDetailsService;
@@ -57,7 +58,7 @@ public class CampaignDeleteFacade {
     public Map<String,Integer> deleteCampaignDataByPeriod(String email, CampaignDeleteDto campaignDeleteDto){
         //임계값 확인
         boolean checkThreshold = campaignDeleteDto.checkThreshold();
-        Map<LocalDate,AllCampaignTypeData> extractDeleteData = null;
+        List<Tuple> extractDeleteData = null;
         if(checkThreshold){
         extractDeleteData =
             keywordService.extractDeleteCampaignDataByPeriod(campaignDeleteDto.getStart(),campaignDeleteDto.getEnd(),campaignDeleteDto.getCampaignIds());

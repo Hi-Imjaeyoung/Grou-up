@@ -251,9 +251,19 @@ public class LazySegmentTreeService {
         }
         return null;
     }
-    public void updateTreeByPeriodData(String email, Map<LocalDate,AllCampaignTypeData> dataMap){
-        for(LocalDate localDate : dataMap.keySet()){
-            updateDay(email,localDate,dataMap.get(localDate));
+    public void updateTreeByPeriodData(String email,List<Tuple> removedDat){
+        Map<LocalDate,AllCampaignTypeData> map = new HashMap<>();
+        for(Tuple tuple : removedDat){
+            LocalDate date = tuple.get(keyword.date);
+            AllCampaignTypeData allCampaignTypeData = map.getOrDefault(date,new AllCampaignTypeData());
+            String type = tuple.get(campaign.camAdType);
+            Double cost = tuple.get(keyword.adCost.sum());
+            Double sales = tuple.get(keyword.adSales.sum());
+            AllCampaignTypeData oldData = new AllCampaignTypeData(type,cost,sales);
+            allCampaignTypeData.sum(oldData);
+        }
+        for(LocalDate localDate : map.keySet()){
+            updateDay(email,localDate,map.get(localDate));
         }
     }
 

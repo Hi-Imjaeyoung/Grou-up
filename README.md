@@ -43,7 +43,7 @@
 - **문제** 대시보드 조회 기간 확장(1개월 ➡️ 6개월)에 따라 대용량 데이터 조회 시 DB I/O 병목 현상 발생.
 - **해결** 단순 K-V 캐싱이 아닌, 구간 합 쿼리(Range Query)에 최적화된 **'세그먼트 트리(Segment Tree)' 구조를 인메모리에 직접 구현**하여 캐시 적중률과 조회 성능을 극대화함.
 - **결과** $O(N)$의 조회 시간복잡도를 $O(\log N)$으로 단축, 중복 구간 조회 시 Cache Hit 100% 당성 및 **P95 응답속도 최대 82% 단축 (1.7s ➡️ 0.6s)**.
-- 💡 **[💻 Segment Tree 핵심 구현 코드 보기]**
+- 💡 **[💻 Segment Tree 핵심 구현 코드 보기](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/cache/LazySegmentTreeService.java#L161C1-L191)**
 
 ### 2. Spring Event & 논블로킹(Non-blocking) 기반 비동기 격벽(Bulkhead) 패턴
 - **문제** 대용량 트리 초기 빌드 시, 메인 스레드와 비동기 스레드 간의 HikariCP DB 커넥션 및 CPU 자원 경합(Resource Contention) 발생.
@@ -51,7 +51,7 @@
   - `CompletableFuture.delayedExecutor()`를 도입하여 스레드를 기절시키는(Blocking) `sleep()` 대신 **논블로킹 스케줄링(500ms 지연)** 적용.
   - 상태 확인 및 DB 조회는 **I/O 스레드 풀**, 무거운 트리 빌드 연산은 **CPU 스레드 풀**로 역할을 격리(Bulkhead).
 - **결과** 초기 로딩 지연(Cold Start) 시간 **50.5% 단축** 및 안정적인 트래픽 처리 환경 구축.
-- 💡 **[💻 비동기 스레드 제어 및 Event 리스너 코드 보기]**
+- 💡 **[💻 비동기 스레드 제어 및 Event 리스너 코드 보기](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java#L30-L55)**
 
 ### 3. 임계값(Threshold) 기반 동적 캐시 업데이트/재빌드 전략
 - **문제** 데이터 삭제/수정 발생 시, 매번 1년 치 전체 트리를 다시 빌드($O(N)$)하는 것은 CPU 자원 낭비 및 GC 오버헤드를 유발.

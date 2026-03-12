@@ -44,6 +44,6 @@
 | **세부 조회 요청 최적화**<br>`인메모리 캐싱` | 빈번한 사용자 정의 기간 집계 쿼리로 인한 극심한 DB I/O 병목 | 구간 합 쿼리에 최적화된 **세그먼트 트리**를 인메모리에 구현<br>➡️ **P95 응답속도 82% 단축 (1.7s ➡️ 0.6s)** | [🔗 Link](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/cache/LazySegmentTreeService.java#L161C1-L191) |
 | **비동기 격벽(Bulkhead)**<br>`초기 로딩(Cold Start) 단축` | 메인 트랜잭션 커밋과 무거운 트리 빌드 작업 간의 HikariCP 커넥션 및 자원 경합 | **Spring Event + 논블로킹 스케줄링(500ms 지연)**으로 스레드 풀 완벽 분리<br>➡️ **초기 로딩(Cold Start) 지연 50.5% 단축** | [🔗 Link](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java#L30-L55) |
 | **캐시 무효화 전략 최적화**<br>`동적 업데이트 라우팅` | 데이터 변경 시 매번 1년 치 전체 재빌드($O(N)$) 수행에 따른 CPU 낭비 및 GC 오버헤드 | **임계값(Threshold)** 도출로, 부분 업데이트($O(T \log N)$)와 전체 재빌드를 동적 라우팅 적용 | [🔗 Link](#) |
-| **쿼리 실행 계획 개선**<br>`DB 인덱스 튜닝` | 조회 기간 확장(1개월 ➡️ 6개월) 시 대용량 테이블 Full Scan으로 인한 쿼리 지연 | 파레토 법칙 기반 헤비 유저 더미 데이터 부하 테스트 및 **복합 인덱스(Composite Index)** 설계 | [🔗 Link](#) |
+| **쿼리 실행 계획 개선**<br>`DB 인덱스 튜닝` | 조회 기간 확장(1개월 ➡️ 6개월) 시 대용량 테이블의 **단일 인덱스 스캔(Single Index Scan) 한계로 인한 쿼리 지연** | 파레토 법칙 기반 헤비 유저 더미 데이터 부하 테스트 및 **복합 인덱스(Composite Index)** 설계 | [🔗 Link](#) |
 
 > 💡 **자세한 고민 과정과 아키텍처 설계도는 [포트폴리오 PDF](링크)에서 확인하실 수 있습니다.**

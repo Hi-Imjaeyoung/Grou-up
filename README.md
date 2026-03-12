@@ -5,7 +5,7 @@
 
 ---
 
-## 👨‍💻 Team & My Role
+## 팀 및 역할
 - **구성:** 2인 팀 프로젝트 (풀스택 개발)
 - **My Role (Backend & Architecture Focus):**
   - 서비스 기획 및 전반적인 DB 스키마 설계
@@ -16,7 +16,7 @@
 
 ---
 
-## 🛠 Tech Stack
+## 프로젝트 기술 스택
 
 ### Backend
 <img src="https://img.shields.io/badge/Java 17-007396?style=flat-square&logo=OpenJDK&logoColor=white"/> <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white"/>
@@ -32,12 +32,12 @@
 
 ---
 
-## 🏛 System Architecture
+## 시스템 아키텍처
 <img width="671" height="808" alt="Image" src="https://github.com/user-attachments/assets/e334bf09-b318-4973-9059-58efb6ccd2a9" />
 
 ---
 
-## 🔥 핵심 엔지니어링 및 리팩토링 경험
+## 핵심 엔지니어링 및 리팩토링 경험
 
 ### 1. 세그먼트 트리 기반 인메모리 캐싱 아키텍처 도입
 - **문제:** 대시보드 조회 기간 확장(1개월 ➡️ 6개월)에 따라 대용량 데이터 조회 시 DB I/O 병목 현상 발생.
@@ -48,7 +48,7 @@
 ### 2. Spring Event & 논블로킹(Non-blocking) 기반 비동기 격벽(Bulkhead) 패턴
 - **문제:** 대용량 트리 초기 빌드 시, 메인 스레드와 비동기 스레드 간의 HikariCP DB 커넥션 및 CPU 자원 경합(Resource Contention) 발생.
 - **해결:** - `@TransactionalEventListener(AFTER_COMMIT)`을 활용한 **이벤트 기반 설계(EDD)** 로 핵심 비즈니스 로직(Facade)과 캐시 동기화 책임을 완벽히 분리.
-  - `CompletableFuture.delayedExecutor()`를 도입하여 스레드를 기절시키는(Blocking) `sleep()` 대신 **논블로킹 스케줄링(500ms 지연)** 적용.
+  - `CompletableFuture.delayedExecutor()`를 도입하여 **논블로킹 스케줄링(500ms 지연)** 적용하여 메언 스레드와 자원 경합 차단.
   - 상태 확인 및 DB 조회는 **I/O 스레드 풀**, 무거운 트리 빌드 연산은 **CPU 스레드 풀**로 역할을 격리(Bulkhead).
 - **결과:** 초기 로딩 지연(Cold Start) 시간 **50.5% 단축** 및 안정적인 트래픽 처리 환경 구축.
 - 💡 **[💻 비동기 스레드 제어 및 Event 리스너 코드 보기](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java#L30-L55)**

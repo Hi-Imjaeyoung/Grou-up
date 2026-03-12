@@ -39,30 +39,11 @@
 
 ## 핵심 엔지니어링 및 리팩토링 경험
 
-### 1. 세그먼트 트리 기반 인메모리 캐싱 아키텍처 도입
-- **문제:** 대시보드 조회 기간 확장(1개월 ➡️ 6개월)에 따라 대용량 데이터 조회 시 DB I/O 병목 현상 발생.
-- **해결:** 단순 K-V 캐싱이 아닌, 구간 합 쿼리(Range Query)에 최적화된 **'세그먼트 트리(Segment Tree)' 구조를 인메모리에 직접 구현**하여 캐시 적중률과 조회 성능을 극대화함.
-- **결과:** $O(N)$의 조회 시간복잡도를 $O(\log N)$으로 단축, 중복 구간 조회 시 Cache Hit 100% 당성 및 **P95 응답속도 최대 82% 단축 (1.7s ➡️ 0.6s)**.
-- 💡 **[💻 Segment Tree 핵심 구현 코드 보기](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/cache/LazySegmentTreeService.java#L161C1-L191)**
+| 핵심 목표  | 문제 상황  | 해결 전략 및 성과 | 핵심 코드 |
+|:---|:---|:---|:---:|
+| **세부 조회 요청 최적화**<br>`인메모리 캐싱` | 빈번한 사용자 정의 기간 집계 쿼리로 인한 극심한 DB I/O 병목 | 구간 합 쿼리에 최적화된 **세그먼트 트리**를 인메모리에 구현<br>➡️ **P95 응답속도 82% 단축 (1.7s ➡️ 0.6s)** | [🔗 Link](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/cache/LazySegmentTreeService.java#L161C1-L191) |
+| **비동기 격벽(Bulkhead)**<br>`초기 로딩(Cold Start) 단축` | 메인 트랜잭션 커밋과 무거운 트리 빌드 작업 간의 HikariCP 커넥션 및 자원 경합 | **Spring Event + 논블로킹 스케줄링(500ms 지연)**으로 스레드 풀 완벽 분리<br>➡️ **초기 로딩(Cold Start) 지연 50.5% 단축** | [🔗 Link](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java#L30-L55) |
+| **캐시 무효화 전략 최적화**<br>`동적 업데이트 라우팅` | 데이터 변경 시 매번 1년 치 전체 재빌드($O(N)$) 수행에 따른 CPU 낭비 및 GC 오버헤드 | **임계값(Threshold)** 도출로, 부분 업데이트($O(T \log N)$)와 전체 재빌드를 동적 라우팅 적용 | [🔗 Link](#) |
+| **쿼리 실행 계획 개선**<br>`DB 인덱스 튜닝` | 조회 기간 확장(1개월 ➡️ 6개월) 시 대용량 테이블 Full Scan으로 인한 쿼리 지연 | 파레토 법칙 기반 헤비 유저 더미 데이터 부하 테스트 및 **복합 인덱스(Composite Index)** 설계 | [🔗 Link](#) |
 
-### 2. Spring Event & 논블로킹(Non-blocking) 기반 비동기 격벽(Bulkhead) 패턴
-- **문제:** 대용량 트리 초기 빌드 시, 메인 스레드와 비동기 스레드 간의 HikariCP DB 커넥션 및 CPU 자원 경합(Resource Contention) 발생.
-- **해결:** - `@TransactionalEventListener(AFTER_COMMIT)`을 활용한 **이벤트 기반 설계(EDD)** 로 핵심 비즈니스 로직(Facade)과 캐시 동기화 책임을 완벽히 분리.
-  - `CompletableFuture.delayedExecutor()`를 도입하여 **논블로킹 스케줄링(500ms 지연)** 적용하여 메언 스레드와 자원 경합 차단.
-  - 상태 확인 및 DB 조회는 **I/O 스레드 풀**, 무거운 트리 빌드 연산은 **CPU 스레드 풀**로 역할을 격리(Bulkhead).
-- **결과:** 초기 로딩 지연(Cold Start) 시간 **50.5% 단축** 및 안정적인 트래픽 처리 환경 구축.
-- 💡 **[💻 비동기 스레드 제어 및 Event 리스너 코드 보기](https://github.com/Hi-Imjaeyoung/Grou-up/blob/7825c75c7788ce7fe8865ccaaf9586d4f5367bf8/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java#L30-L55)**
-
-### 3. 임계값(Threshold) 기반 동적 캐시 업데이트/재빌드 전략
-- **문제:** 데이터 삭제/수정 발생 시, 매번 1년 치 전체 트리를 다시 빌드($O(N)$)하는 것은 CPU 자원 낭비 및 GC 오버헤드를 유발.
-- **해결:** 삭제되는 데이터의 양과 연산을 분석하여 **임계값(Threshold)** 을 도출.
-  - 임계값 미만: 기존 트리에서 해당 구간만 부분 업데이트 ($O(T \log N)$).
-  - 임계값 초과: 부분 업데이트 비용이 전체 재빌드보다 커지는 크로스오버 지점에서는 트리를 비동기로 전체 재빌드.
-- **결과:** 상황에 맞는 동적 캐시 무효화/갱신 전략을 통해 시스템 리소스 낭비 최소화.
-- 💡 **[💻 동적 캐시 업데이트 분기 로직 코드 보기]**(여기에 Facade나 Event 처리 분기 코드 링크 삽입)
-
-### 4. 데이터 기반 스트레스 테스트 및 DB 인덱스 최적화
-- **문제:** 서비스 오픈 전, 타겟 트래픽(PCU 50명) 도달 시 잠재적 병목 파악 필요.
-- **해결:** 실제 데이터 누적 추세를 분석하고, 파레토 법칙에 기반한 상위 5% 헤비 유저의 더미 데이터를 구축하여 K6 부하 테스트 진행. 실행 계획(Explain) 분석을 통해 서비스 구조에 맞춘 복합 인덱스(Composite Index) 설계 및 적용.
-- **결과:** 잠재적 DB 병목을 선제적으로 검증하고 쿼리 성능 최적화 완료.
-- 💡 **[💻 K6 부하 테스트 스크립트 / 인덱스 튜닝 쿼리 보기]**(관련 폴더나 파일 링크 삽입))*
+> 💡 **자세한 고민 과정과 아키텍처 설계도는 [포트폴리오 PDF](링크)에서 확인하실 수 있습니다.**

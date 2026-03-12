@@ -81,6 +81,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     
     implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    testImplementation 'org.openjdk.jmh:jmh-core:1.37'
+    testAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 tasks.named('test') {

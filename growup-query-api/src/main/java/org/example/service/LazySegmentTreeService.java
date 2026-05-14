@@ -2,11 +2,15 @@ package org.example.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.AllCampaignTypeData;
 import org.openjdk.jol.info.GraphLayout;
 import org.springframework.stereotype.Service;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -17,7 +21,7 @@ import java.util.concurrent.atomic.LongAdder;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LazySegmentTreeService {
     private static class UserSegmentTree {
         // key : year
@@ -32,11 +36,18 @@ public class LazySegmentTreeService {
         public void remove(int year){treeMap.remove(year);}
     }
 
+    @PostConstruct
+    public void initMetrics() {
+        CaffeineCacheMetrics.monitor(meterRegistry, lazyCacheTree, "lazySegmentCache");
+//        System.out.println("✅ [Actuator] lazySegmentCache 수동 바인딩 완료 (PostConstruct)!");
+    }
     // key : email
     private final Cache<String, UserSegmentTree> lazyCacheTree = Caffeine.newBuilder()
             .expireAfterAccess(1, TimeUnit.HOURS)
             .maximumSize(500)
+            .recordStats()
             .build();
+    private final MeterRegistry meterRegistry;
 
     private final Set<String> buildingInProgress = ConcurrentHashMap.newKeySet();
 

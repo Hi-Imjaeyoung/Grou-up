@@ -2,6 +2,7 @@ package org.example.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.AllCampaignTypeData;
@@ -15,17 +16,25 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TreeUpdateEventProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private static final String TOPIC = "tree-update";
     private final ObjectMapper objectMapper;
+    private int updateCount;
+
+    TreeUpdateEventProducer(KafkaTemplate<String,String> kafkaTemplate,
+                            ObjectMapper objectMapper){
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
+        updateCount = 1;
+    }
 
     public void sendUpdateEvent(String email,Long memberId,int year,Map<LocalDate, AllCampaignTypeData> deletedData) {
         try {
             String partitionKey = String.valueOf(memberId);
             String eventId = UUID.randomUUID().toString();
+//            String eventId = String.valueOf(updateCount++);
             TreeUpdateEvent event = new TreeUpdateEvent(email,year,deletedData,eventId);
             String message = objectMapper.writeValueAsString(event);
             kafkaTemplate.send(TOPIC,email,message)

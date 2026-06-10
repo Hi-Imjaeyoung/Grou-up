@@ -33,4 +33,15 @@ public class ThreadPoolConfig {
         executor.initialize();
         return executor;
     }
+
+    @Bean(name = "updateWorkerExecutor")
+    public Executor updateWorkerExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(20);
+        executor.setMaxPoolSize(30);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("Update-Worker-");
+        executor.initialize();
+        return executor;
+    }
 }

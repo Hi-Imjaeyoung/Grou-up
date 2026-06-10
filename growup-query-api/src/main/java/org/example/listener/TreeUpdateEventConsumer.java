@@ -35,7 +35,7 @@ public class TreeUpdateEventConsumer {
             log.info("[이벤트 드롭] 중복 수신 또는 Redis 장애로 인해 처리를 중단합니다. (EventID: {})", event.eventId());
             return;
         }
-        log.debug("[Kafka 수신 완료] 회원: {}, 수신된 변화량 크기: {}일치", memberEmail, event.deltaData().size());
+        log.warn("[Kafka 수신 완료] 회원: {}, 이벤트 Id: {}", memberEmail,event.eventId());
         // 메인 비즈니스 로직
         try {
             // [1차 L1 삭제 방송]

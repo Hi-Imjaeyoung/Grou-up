@@ -17,4 +17,6 @@ public class TotalCampaignsData {
 
     //key : campaignName
     Map<String,CampaignAnalysisDto> adSalesAndAdCostByCampaignName;
+
+    double maxAdCost, maxAdSales, minAdCost, minAdSales;
 }

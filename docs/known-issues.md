@@ -8,8 +8,8 @@
 | # | 위치 | 문제 | 재현 / 근거 |
 |---|---|---|---|
 | C1 ✅ 해결 (`ec6fc8b`) | `global/cache/LazySegmentTreeService.java` `buildTree` | `leftValue.add(rightValue)`에서 `AllCampaignTypeData.add()`가 자기 자신을 수정해 반환한다. 그래서 부모 노드와 가장 왼쪽 자손 노드가 같은 객체를 공유한다. | 1/1~1/10 데이터를 하루 광고비 10, 매출 100으로 빌드하고 조회한 결과: 1/1 단일 조회가 **100/1000(10배)**, 1/1~1/10 조회가 **150/1500**으로 나온다. 기대값은 각각 10/100, 100/1000. → 부모 노드를 새 객체를 만드는 `sum()`으로 생성하도록 수정. 재현 테스트 `LazySegmentTreeServiceBuildTest`. |
-| C2 | 같은 파일 `findAndUpdateTargetNode` | 삭제를 반영할 때 값을 빼지 않고 `add`로 더한다. C1의 객체 공유 때문에 같은 객체에 여러 번 더해지기도 한다. | 코드 확인 |
-| C3 | 같은 파일 `updateTreeByPeriodData(List<Tuple>)` | 결과 맵을 만드는 루프가 `map.put`을 하지 않아, 부분 업데이트가 아무것도 반영하지 않는다. | 코드 확인 |
+| C2 ✅ 해결 (`bffa518`) | 같은 파일 `findAndUpdateTargetNode` | 삭제를 반영할 때 값을 빼지 않고 `add`로 더한다. C1의 객체 공유 때문에 같은 객체에 여러 번 더해지기도 한다. | 코드 확인 → `AllCampaignTypeData.subtract()`를 추가해 값을 빼고, 노드 객체를 수정하지 않고 결과로 교체하도록 수정. 재현 테스트 `LazySegmentTreeServiceUpdateTest`. |
+| C3 ✅ 해결 (`bffa518`) | 같은 파일 `updateTreeByPeriodData(List<Tuple>)` | 결과 맵을 만드는 루프가 `map.put`을 하지 않아, 부분 업데이트가 아무것도 반영하지 않는다. | 1/1~1/10을 하루 10/100으로 빌드하고 1/3~1/5를 삭제 반영한 뒤 조회하면 100/1000 그대로 나온다(기대값 70/700). → `map.merge`로 날짜별 합계를 담도록 수정. 재현 테스트 `LazySegmentTreeServiceUpdateTest`. |
 | C4 | `keyword/service/KeywordService.java` `extractDeleteCampaignDataByPeriod` | `sum()` 반환값을 버리고 맵에 넣지 않아 항상 빈 맵을 반환한다. | 코드 확인 |
 | C5 | `keyword/repository/KeywordRepositoryImpl.java` `getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds` | `date`를 SELECT 하지만 GROUP BY에는 `camAdType`만 있다. MariaDB가 날짜를 임의로 골라 반환한다. | 코드 확인 |
 | C6 | `campaign/facade/CampaignTotalDataFacade.java` | 연도를 넘는 조회에서 `end.getYear()` 대신 `start.getYear()`로 빌드 이벤트를 두 번 발행한다. | 코드 확인 |

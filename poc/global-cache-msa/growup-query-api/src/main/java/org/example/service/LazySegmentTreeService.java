@@ -39,7 +39,7 @@ public class LazySegmentTreeService {
     @PostConstruct
     public void initMetrics() {
         CaffeineCacheMetrics.monitor(meterRegistry, lazyCacheTree, "lazySegmentCache");
-//        System.out.println("✅ [Actuator] lazySegmentCache 수동 바인딩 완료 (PostConstruct)!");
+//        System.out.println(" [Actuator] lazySegmentCache 수동 바인딩 완료 (PostConstruct)!");
     }
     // key : email
     private final Cache<String, UserSegmentTree> lazyCacheTree = Caffeine.newBuilder()
@@ -170,20 +170,24 @@ public class LazySegmentTreeService {
         findAndUpdateTargetNode(oldData,1, 1, nodeEnd, changedDateKey, changedData);
     }
 
-    private void findAndUpdateTargetNode(AllCampaignTypeData[] tree,
+    private AllCampaignTypeData findAndUpdateTargetNode(AllCampaignTypeData[] tree,
                                          int node,int rootS,int rootE,int target,
                                          AllCampaignTypeData changedData){
         if(rootS > target || rootE < target){
-            return;
+            return tree[node];
         }
-        AllCampaignTypeData data = tree[node];
-        if (data != null) {
-            data.minus(changedData);
+        if(rootS == rootE) {
+            if (tree[node] != null) {
+                tree[node] = tree[node].minus(changedData);
+            }
+            return tree[node];
         }
-        if(rootS == rootE) return;
         int mid = (rootS + rootE)/2;
-        findAndUpdateTargetNode(tree,node*2,rootS,mid,target,changedData);
-        findAndUpdateTargetNode(tree,(node*2)+1,mid+1,rootE,target,changedData);
+        AllCampaignTypeData left = findAndUpdateTargetNode(tree,node*2,rootS,mid,target,changedData);
+        AllCampaignTypeData right = findAndUpdateTargetNode(tree,(node*2)+1,mid+1,rootE,target,changedData);
+        if (left == null) return tree[node] = right;
+        if (right == null) return tree[node] = left;
+        return tree[node] = left.sum(right);
     }
 
     public long getTreeMemory(String email){

@@ -76,6 +76,7 @@ public class AllCampaignTypeData {
                     oldVal.minus(newVal.getAdCost(), newVal.getAdSales())
             );
         });
+        minusOne.calculateMaxMin();
         return minusOne;
     }
 
@@ -98,12 +99,16 @@ public class AllCampaignTypeData {
     }
 
     public void calculateMaxMin(){
+        this.maxAdCost = Double.MIN_VALUE;
+        this.minAdCost = Double.MAX_VALUE;
+        this.maxAdSales = Double.MIN_VALUE;
+        this.minAdSales = Double.MAX_VALUE;
         for(String key:campaignAnalysisDtoMap.keySet()){
             CampaignAnalysisDto campaignAnalysisDto = campaignAnalysisDtoMap.get(key);
-            this.maxAdCost = Math.max(this.maxAdCost,campaignAnalysisDto.adCost);
-            this.minAdCost = Math.min(this.minAdCost,campaignAnalysisDto.adCost);
-            this.maxAdSales = Math.max(this.maxAdSales,campaignAnalysisDto.adSales);
-            this.minAdSales = Math.min(this.maxAdSales,campaignAnalysisDto.adSales);
+            this.maxAdCost = Math.max(this.maxAdCost,campaignAnalysisDto.getAdCost());
+            this.minAdCost = Math.min(this.minAdCost,campaignAnalysisDto.getAdCost());
+            this.maxAdSales = Math.max(this.maxAdSales,campaignAnalysisDto.getAdSales());
+            this.minAdSales = Math.min(this.minAdSales,campaignAnalysisDto.getAdSales());
         }
     }
 }

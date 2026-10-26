@@ -60,6 +60,21 @@ public class AllCampaignTypeData {
         return sumOne;
     }
 
+    public AllCampaignTypeData subtract(AllCampaignTypeData other){
+        AllCampaignTypeData result = new AllCampaignTypeData();
+        result.campaignAnalysisDtoMap = new HashMap<>(this.campaignAnalysisDtoMap);
+        if (other == null || other.campaignAnalysisDtoMap.isEmpty()) {
+            return result;
+        }
+        other.campaignAnalysisDtoMap.forEach((type, otherDto) ->{
+            result.campaignAnalysisDtoMap.merge(type,
+                    new CampaignAnalysisDto(-otherDto.getAdCost(), -otherDto.getAdSales()),
+                    (oldVal, newVal) -> oldVal.add(newVal.getAdCost(), newVal.getAdSales())
+            );
+        });
+        return result;
+    }
+
     public void calculateTotalData(){
 
     }

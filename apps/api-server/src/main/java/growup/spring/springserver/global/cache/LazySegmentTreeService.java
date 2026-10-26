@@ -253,12 +253,12 @@ public class LazySegmentTreeService {
         Map<LocalDate,AllCampaignTypeData> map = new HashMap<>();
         for(Tuple tuple : removedDat){
             LocalDate date = tuple.get(keyword.date);
-            AllCampaignTypeData allCampaignTypeData = map.getOrDefault(date,new AllCampaignTypeData());
             String type = tuple.get(campaign.camAdType);
             Double cost = tuple.get(keyword.adCost.sum());
             Double sales = tuple.get(keyword.adSales.sum());
-            AllCampaignTypeData oldData = new AllCampaignTypeData(type,cost,sales);
-            allCampaignTypeData.sum(oldData);
+            double safeCost = (cost != null) ? cost : 0.0;
+            double safeSales = (sales != null) ? sales : 0.0;
+            map.merge(date, new AllCampaignTypeData(type,safeCost,safeSales), AllCampaignTypeData::add);
         }
         for(LocalDate localDate : map.keySet()){
             updateDay(email,localDate,map.get(localDate));
@@ -287,7 +287,8 @@ public class LazySegmentTreeService {
         int key = makeKey(rootS,rootE);
         AllCampaignTypeData data = segmentNodeData.getCampaignAnalysisDto(key);
         if (data != null) {
-            data.add(changedData);
+            // 삭제된 값을 빼고, 조회 중인 스레드가 보고 있을 수 있는 기존 객체는 수정하지 않고 교체한다
+            segmentNodeData.put(key, data.subtract(changedData));
         }
         if(rootS == rootE) return;
         int mid = (rootS + rootE)/2;

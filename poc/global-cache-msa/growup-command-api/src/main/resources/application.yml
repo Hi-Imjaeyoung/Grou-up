@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  config:
+    import: "optional:classpath:application-rabbitmq.yml"
+  application:
+    name: command-api
+  datasource:
+    url: jdbc:mysql://localhost:3306/growup_db?rewriteBatchedStatements=true
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092 # 아까 띄운 도커 카프카 주소!
+      # 데이터를 카프카가 이해할 수 있는 '바이트(Byte) 배열'로 변환해 주는 번역기 설정
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+logging:
+  level:
+    root: INFO
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

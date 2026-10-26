@@ -181,7 +181,8 @@ public class LazySegmentTreeService {
         AllCampaignTypeData rightValue = buildTree(segmentNodeData,mid+1,endCount);
 
         int key = makeKey(startCount,endCount);
-        AllCampaignTypeData sumValue = leftValue.add(rightValue);
+        // add()는 leftValue 자체를 수정하므로, 자식 노드와 객체를 공유하지 않도록 새 객체를 만든다
+        AllCampaignTypeData sumValue = leftValue.sum(rightValue);
         segmentNodeData.put(key,sumValue);
         return sumValue;
     }

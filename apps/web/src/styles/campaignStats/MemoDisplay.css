@@ -1,0 +1,68 @@
+.memo-container {
+    /* padding: 15px; */
+    /* height: 100%; */
+    overflow-y: auto;
+}
+
+.memo-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.memo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.memo-table th,
+.memo-table td {
+    border-bottom: 1px solid #eee;
+    /* padding: 8px; */
+    text-align: left;
+    vertical-align: top;
+}
+
+.memo-table th {
+    background-color: #ffff;
+    font-weight: 600;
+}
+
+.memo-table td:first-child {
+    width: 10px;
+    color: #555;
+    font-size: 13px;
+}
+
+.memo-table {
+    margin: 0;
+}
+
+.no-memo-text {
+    color: #999;
+}
+
+.memo-container::-webkit-scrollbar {
+    width: 8px;
+    /* 스크롤바의 너비 */
+}
+
+.memo-container::-webkit-scrollbar-track {
+    background-color: transparent;
+    /* background-color: #E9E9E9; */
+    /* 스크롤바 뒷 배경 색상 */
+}
+
+.memo-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    /* background-color: #3b70e2af; */
+    /* 스크롤바의 실제 움직이는 막대 색상 */
+    border-radius: 4px;
+    /* 스크롤바 막대의 모서리를 둥글게 */
+}
+
+/* 스크롤바 막대에 마우스 올렸을 때 색상 */
+.memo-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}

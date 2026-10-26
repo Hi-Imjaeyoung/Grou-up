@@ -1,0 +1,120 @@
+/* ================================== */
+/* MarginOverview 페이지 전체 스타일    */
+/* ================================== */
+
+.dashboard-page-container {
+    height: 100%;
+    padding: 1rem;
+    /* p-4 */
+    font-family: sans-serif;
+    /* font-sans */
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-content-wrapper {
+    width: 100%;
+    max-width: 1700px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* --- 헤더 --- */
+.dashboard-header {
+    display: flex;
+    flex-direction: column;
+    /* 기본: 세로 배치 */
+    justify-content: space-between;
+    align-items: flex-start;
+    /* 기본: 시작점 정렬 */
+    margin-bottom: 1rem;
+    /* mb-4 */
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    /* text-2xl */
+    line-height: 2rem;
+    font-weight: 700;
+    /* font-bold */
+    color: #576FA3;
+    margin-bottom: 0.75rem;
+    /* mb-3 */
+}
+
+/* --- 상단 카드 섹션 --- */
+.dashboard-cards-section {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    /* grid-cols-1 */
+    gap: 1rem;
+    /* gap-4 */
+    margin-bottom: 1rem;
+    /* mb-4 */
+}
+
+/* --- 로딩 및 에러 메시지 --- */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.error-message {
+    color: #ef4444;
+    /* text-red-500 */
+}
+
+/* --- 차트 툴팁 --- */
+.pie-tooltip-custom {
+    background-color: white;
+    padding: 0.5rem;
+    /* p-2 */
+    border: 1px solid #e5e7eb;
+    /* border-gray-200 */
+    border-radius: 0.375rem;
+    /* rounded-md */
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* shadow-lg */
+    font-size: 0.875rem;
+    /* text-sm */
+    line-height: 1.25rem;
+}
+
+.pie-tooltip-custom p {
+    font-weight: 500;
+    /* font-medium */
+}
+
+/* --- 반응형 (화면이 넓어질 때) --- */
+/* 768px 이상일 때 (md) */
+@media (min-width: 768px) {
+    .dashboard-page-container {
+        padding: 1.5rem;
+        /* md:p-6 */
+    }
+
+    .dashboard-header {
+        flex-direction: row;
+        /* md:flex-row */
+        align-items: center;
+        /* md:items-center */
+    }
+
+    .dashboard-title {
+        margin-bottom: 0;
+        /* md:mb-0 */
+    }
+}
+
+/* 1024px 이상일 때 (lg) */
+@media (min-width: 1024px) {
+    .dashboard-cards-section {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        /* lg:grid-cols-12 */
+    }
+}

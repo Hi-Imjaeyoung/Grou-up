@@ -1,0 +1,186 @@
+.meet-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 자식 요소의 절대 위치를 위해 */
+}
+
+.main-title {
+    position: relative;
+    /* 위치를 상대적으로 설정하여 점을 배치할 수 있게 함 */
+    font-size: 9rem;
+    font-weight: bold;
+    color: black;
+    margin-top: 15%;
+}
+
+.main-title::before,
+.main-title::after,
+.main-title span::before {
+    content: '';
+    position: absolute;
+    background-color: red;
+    border-radius: 50%;
+    width: 20px;
+    /* 점의 크기 */
+    height: 20px;
+    /* 점의 크기 */
+}
+
+.main-title::before {
+    top: -15%;
+    /* 첫 번째 점 위치 */
+    left: 10%;
+    /* 첫 번째 점 위치 조정 */
+}
+
+.main-title span::before {
+    top: -15%;
+    /* 두 번째 점 위치 */
+    left: 45%;
+    /* 두 번째 점 위치 조정 */
+    transform: translateX(-50%);
+    /* 중앙 정렬 */
+}
+
+.main-title::after {
+    top: -15%;
+    /* 세 번째 점 위치 */
+    right: 22%;
+    /* 세 번째 점 위치 조정 */
+}
+
+.sub-title {
+    font-size: 5.5rem;
+    /* 부제목 크기 */
+    color: black;
+    /* 텍스트 색상 */
+    margin-bottom: 15%;
+    /* 아래쪽 간격 */
+    font-weight: bold;
+}
+
+.images-container {
+    display: flex;
+    width: 100%;
+    /* 전체 너비 사용 */
+    position: relative;
+    /* 자식 요소의 절대 위치를 위해 */
+    background: linear-gradient(140deg, #BDC0EA 40%, #5C62B8 60%);
+}
+
+
+.dev-container {
+    margin-top: 10%;
+    margin-bottom: 10%;
+    width: 50%;
+    /* 개발자 영역 크기 */
+    padding: 1%;
+    /* 대각선 배경 */
+}
+
+.seller-container {
+    margin-top: 10%;
+    width: 50%;
+    /* 셀러 영역 크기 */
+    padding: 1%;
+    /* 패딩 */
+}
+
+.dev-image {
+    width: 100%;
+    /* 개발자 이미지 크기 */
+    border-radius: 10px;
+    /* 모서리 둥글게 */
+}
+
+.seller-image {
+    width: 100%;
+    /* 셀러 이미지 크기 */
+    border-radius: 10px;
+    /* 모서리 둥글게 */
+}
+
+.together-image {
+    width: 22%;
+    /* 주먹 이미지 크기 */
+    max-width: 50%;
+    /* 최대 너비 설정 */
+    position: absolute;
+    /* 중앙에 배치하기 위해 절대 위치 설정 */
+    left: 50%;
+    bottom: 22%;
+    /* 중앙 정렬 */
+    transform: translateX(-50%);
+    /* 좌우 간격 */
+}
+
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 3rem;
+        /* 모바일에서 글씨 크기 줄이기 */
+    }
+
+    .sub-title {
+        font-size: 2rem;
+        /* 모바일에서 부제목 크기 줄이기 */
+    }
+
+
+    .dev-container,
+    .seller-container {
+        width: 800%;
+        /* 모바일에서 너비 조정 */
+        margin-top: 10%;
+        margin-bottom: 10%;
+    }
+
+    .together-image {
+        width: 25%;
+        /* 모바일에서 주먹 이미지 크기 조정 */
+    }
+
+
+    .main-title::before,
+    .main-title span::before,
+    .main-title::after {
+        width: 10px;
+        /* 모바일에서 동그라미 크기 줄이기 */
+        height: 10px;
+        /* 모바일에서 동그라미 크기 줄이기 */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2rem;
+        /* 더 작게 줄이기 */
+    }
+
+    .sub-title {
+        font-size: 1.5rem;
+        /* 부제목 크기 조정 */
+    }
+
+    .dev-container,
+    .seller-container {
+        width: 50%;
+        /* 모바일에서 이미지 크기 조정 */
+        margin-top: 10%;
+        margin-bottom: 10%;
+    }
+
+    .together-image {
+        width: 20%;
+        /* 모바일에서 주먹 이미지 크기 조정 */
+    }
+
+    .main-title::before,
+    .main-title span::before,
+    .main-title::after {
+        width: 8px;
+        /* 모바일에서 동그라미 크기 줄이기 */
+        height: 8px;
+        /* 모바일에서 동그라미 크기 줄이기 */
+    }
+}

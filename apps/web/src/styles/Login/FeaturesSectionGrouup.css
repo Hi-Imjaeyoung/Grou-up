@@ -1,0 +1,127 @@
+.grouup-features-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15%;
+    background-color: white;
+    /* 배경색 */
+    min-height: 100vh;
+    /* 화면 높이에 맞춤 */
+}
+
+.grouup-logo {
+    width: 200px;
+    /* 로고 크기 조절 */
+    margin-bottom: 20px;
+    /* 로고와 텍스트 사이의 간격 */
+}
+
+.grouup-main-text {
+    padding: 5%;
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+}
+
+.grouup-highlight {
+    background-color: #5C62B8;
+    /* 강조 배경색 */
+    color: white;
+    /* 강조 텍스트 색상 */
+    padding: 0.5rem 1rem;
+    /* 패딩 */
+}
+
+.grouup-sub-text {
+    font-size: 5rem;
+    /* 서브 텍스트 크기 */
+    color: #5C62B8;
+    /* 서브 텍스트 색상 */
+    /* 위쪽 간격 */
+}
+
+.grouup-emoji {
+    width: 20rem;
+    /* 원하는 크기로 조정 */
+    height: 20rem;
+    /* 원하는 크기로 조정 */
+}
+
+.mobile-manage {
+    color: black;
+}
+
+/* 반응형 */
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .grouup-logo {
+        width: 150px;
+        /* 로고 크기 줄이기 */
+    }
+
+    .grouup-main-text {
+        font-size: 4rem;
+        /* 폰트 크기 줄이기 */
+    }
+
+    .grouup-sub-text {
+        font-size: 4rem;
+        /* 서브 텍스트 크기 줄이기 */
+    }
+
+    .mobile-manage {
+        display: block;
+        /* 모바일에서 줄 바꿈을 위해 블록으로 표시 */
+    }
+
+    .grouup-highlight {
+        padding: 0.3rem 0.6rem;
+        /* 패딩 */
+    }
+
+    .grouup-emoji {
+        width: 18rem;
+        /* 이모지 크기 줄이기 */
+        height: 18rem;
+        /* 이모지 크기 줄이기 */
+    }
+}
+
+@media (max-width: 480px) {
+    .grouup-logo {
+        width: 120px;
+        /* 로고 크기 더 줄이기 */
+    }
+
+    .grouup-main-text {
+        font-size: 3rem;
+        /* 폰트 크기 더 줄이기 */
+        line-height: 1.3;
+    }
+
+    .grouup-highlight {
+        padding: 0.2rem 0.5rem;
+        /* 패딩 */
+    }
+
+    .grouup-sub-text {
+        font-size: 3rem;
+        /* 서브 텍스트 크기 더 줄이기 */
+    }
+
+    .mobile-manage {
+        display: block;
+        /* 모바일에서 줄 바꿈을 위해 블록으로 표시 */
+    }
+
+    .grouup-emoji {
+        width: 15rem;
+        /* 이모지 크기 더 줄이기 */
+        height: 15rem;
+        /* 이모지 크기 더 줄이기 */
+    }
+}

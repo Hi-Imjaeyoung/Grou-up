@@ -1,0 +1,113 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    /* 테이블과 검색바 사이 여백 추가 */
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    /* border-bottom: 1px solid #e0e0e0; */
+    /* 하단 테두리 */
+    font-size: 13px;
+}
+
+th {
+    background-color: #f7f7f7;
+    /* 헤더 배경색 */
+    color: #333;
+    /* 헤더 글자색 */
+    border-bottom: 1.6px solid #6E6E6E;
+}
+
+.sortable-header {
+    display: inline-flex;
+    gap: 5px;
+    font-size: 14px;
+    /* 기본 글꼴 크기 (16px) */
+    font-weight: bold;
+    white-space: nowrap;
+    /* 텍스트를 한 줄로 유지 */
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+    /* 행에 마우스 오버 시 배경색 */
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+    /* 체크박스 커서 */
+}
+
+th svg {
+    margin-left: 5px;
+    /* 텍스트와 아이콘 사이의 간격 */
+    width: 16px;
+    /* 아이콘 크기 */
+    height: 16px;
+}
+
+.badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 2px 5px;
+    background-color: #5C62B8;
+    /* 또는 원하는 색상 */
+    color: white;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+
+.icon-button {
+    background: none;
+    /* 배경 없음 */
+    border: none;
+    /* 테두리 없음 */
+    cursor: pointer;
+    /* 포인터 커서 */
+    font-size: 16px;
+    /* 아이콘 크기 조정 */
+    padding: 0;
+    /* 패딩 없음 */
+    transition: background-color 0.2s, transform 0.2s;
+    /* 부드러운 효과 */
+    margin-left: 5px;
+}
+
+.icon-button:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    /* 호버 시 배경색 변경 */
+    border-radius: 5px;
+    /* 모서리 둥글게 */
+    transform: scale(1.1);
+    /* 마우스 오버 시 확대 */
+}
+
+.keyword-table {
+    max-height: 600px;
+    /* 예시: 테이블의 최대 높이를 지정해야 스크롤이 생깁니다. */
+    overflow-y: auto;
+    /* 세로 스크롤을 활성화합니다. */
+    position: relative;
+    /* 일부 브라우저/상황에서 sticky 기준점으로 필요할 수 있습니다. */
+    margin-top: 10px;
+}
+
+/* thead 안의 모든 th 요소에 sticky 속성 적용 */
+.keyword-table thead th {
+    position: sticky;
+    top: 0;
+    /* 스크롤 컨테이너(.keyword-table)의 상단에 고정 */
+    background-color: #ffffff;
+    /* 중요: 스크롤되는 내용이 비치지 않도록 배경색 지정 */
+    /* z-index: 10;
+    다른 요소 위에 표시되도록 z-index 설정 (필요에 따라 조정) */
+    padding: 12px 8px;
+    /* 예시 정렬 */
+    font-weight: bold;
+    /* 예시 폰트 두께 */
+    border-bottom: 1.6px solid #6E6E6E;
+}

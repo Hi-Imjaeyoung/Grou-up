@@ -1,0 +1,34 @@
+name: Sync Fork with Upstream
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    if: github.repository == 'grou-up/FrontServer'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Set up Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Add Fork as Remote
+        run: git remote add fork https://github.com/fa7271/FrontServer.git
+
+      - name: Push changes to Fork
+        env:
+          GITHUB_USERNAME: fa7271
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          # 현재 이벤트가 발생한 브랜치 이름을 가져와서 해당 브랜치를 푸시하도록 수정
+          BRANCH_NAME=${{ github.ref_name }}
+          git push -f https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/fa7271/FrontServer.git $BRANCH_NAME

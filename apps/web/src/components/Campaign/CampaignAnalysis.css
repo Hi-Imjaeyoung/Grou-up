@@ -1,0 +1,181 @@
+/* 페이지 전체 컨테이너 */
+.CampaignAnalysisPage {
+    margin-left: 210px;
+    /* 좌측 메뉴 등을 고려한 여백 */
+    padding: 30px;
+    background-color: #f0f2f7;
+    /* 이미지와 유사한 배경색 */
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* --- 페이지 헤더 --- */
+.PageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.PageTitle {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.DatePicker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #e3e8f6;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+/* --- 상단 카드 --- */
+.CampaignCardContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4개의 카드를 동일한 너비로 배치 */
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.CampaignCard {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.CampaignCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.CampaignCard.active-tab {
+    border-left: 5px solid #4a90e2;
+    /* 활성 탭 표시 */
+}
+
+.CampaignCard_label {
+    font-weight: bold;
+    color: #4a5568;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.CampaignCard_content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.MetricRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.MetricLabel {
+    font-size: 14px;
+    color: #718096;
+}
+
+.MetricValue {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+
+/* --- 하단 콘텐츠 그리드 --- */
+.ContentGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* 2개의 블록을 동일한 너비로 배치 */
+    gap: 20px;
+}
+
+.ContentBlock {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    /* 테이블 컨테이너의 스크롤바가 넘치지 않도록 */
+}
+
+.ContentBlock h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.TableContainer {
+    max-height: 300px;
+    /* 테이블의 최대 높이 지정 */
+    overflow-y: auto;
+    /* 내용이 넘칠 경우 세로 스크롤바 생성 */
+}
+
+/* --- 테이블 스타일 --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th,
+td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+thead th {
+    font-weight: 600;
+    color: #4a5568;
+    background-color: #f7fafc;
+    position: sticky;
+    /* 스크롤 시 헤더 고정 */
+    top: 0;
+}
+
+tbody tr:hover {
+    background-color: #f7fafc;
+}
+
+/* --- 테이블 내 태그 및 아이콘 --- */
+.Tag {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+}
+
+.TagBlue {
+    background-color: #4a90e2;
+}
+
+.TagGreen {
+    background-color: #50e3c2;
+}
+
+.TagYellow {
+    background-color: #ecbd3b;
+}
+
+.ExternalLinkIcon {
+    color: #a0aec0;
+    cursor: pointer;
+    font-size: 12px;
+}

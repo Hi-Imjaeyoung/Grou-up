@@ -1,0 +1,45 @@
+.memo-view {
+    margin-top: 30px;
+    height: 65%;
+    overflow-y: auto;
+}
+
+
+table {
+    margin-top: 0px;
+    width: 100%;
+    /* 테이블 너비 */
+    border-collapse: collapse;
+    /* 테이블 경계선 합치기 */
+}
+
+.memo-view-td-contents {
+    padding: 8px;
+    /* 셀 패딩 */
+    border-bottom: 1px solid #e5e7eb;
+    /* 셀 경계선 */
+}
+
+.memo-view-td-date {
+    padding: 8px;
+    vertical-align: top;
+    /* 내용 상단 정렬 */
+    white-space: nowrap;
+    /* 자동 줄바꿈 비활성화 */
+}
+
+.memo-view-td-delete-button {
+    padding: 8px;
+    vertical-align: top;
+    color: #5157AB;
+}
+
+.memo-view-td-delete-button button {
+    transition: transform 0.2s ease;
+    /* 부드러운 전환 효과 */
+}
+
+.memo-view-td-delete-button button:hover {
+    transform: translateY(-2px) rotate(5deg);
+    /* 위로 이동하고 약간 회전 */
+}

@@ -1,0 +1,55 @@
+/* Mainform.css */
+
+/* 메인 컨텐츠 */
+.main-content {
+    margin-left: 210px;
+    /* Sidebar 너비 */
+    min-height: 100vh;
+    /* 화면 전체 높이 */
+    height: auto;
+    /* 자동으로 높이 설정 */
+    overflow: hidden;
+    /* 스크롤 제거 */
+    background-color: #EBEFF9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 고정된 전체 화면 */
+.fixed-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* 부모 높이 100% */
+    justify-content: space-between;
+}
+
+/* 메인 컨텐츠 */
+.form-main-content {
+    /* Sidebar 너비만큼 여백 */
+    margin-left: 210px;
+    height: calc(100vh);
+    /* 화면 전체 높이 */
+    overflow: auto;
+    /* 스크롤 제거 */
+    background-color: #EBEFF9;
+}
+
+/* 고정된 전체 화면 */
+.form-fixed-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* 부모 높이 100% */
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    /* 배경색 */
+}
+
+/* 대시보드 컨테이너 */
+.form-dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}

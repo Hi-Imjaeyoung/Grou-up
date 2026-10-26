@@ -1,0 +1,66 @@
+.memo-component {
+    position: fixed;
+    /* 왼쪽 고정 */
+    left: 0;
+    width: 210px;
+    /* Sidebar와 동일한 너비 */
+    height: 100%;
+    /* 화면 전체 높이에서 Header 높이 제거 */
+    background-color: #E0E0F1;
+    /* Sidebar와 동일한 배경색 */
+    border-right: 1px solid #e5e7eb;
+    /* Sidebar와 동일한 경계선 */
+    overflow-y: auto;
+    /* 내용 스크롤 가능 */
+    overflow-x: hidden;
+    z-index: 1000;
+    /* Sidebar와 CampaignDetail보다 위에 위치하도록 설정 */
+    /* Sidebar와 동일한 패딩 */
+    border-radius: 10px;
+    /* 좌측 위 모서리 둥글게 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.memo-componet-header {
+    width: 210px;
+    /* Sidebar와 동일한 너비 */
+    background-color: #5157AB;
+    /* Sidebar와 동일한 너비 */
+    color: white;
+    position: fixed;
+    top: 0;
+    /* 상단 위치 */
+    left: 0;
+    /* 왼쪽 위치 */
+    z-index: 901;
+    /* 내용보다 높은 z-index */
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    /* 왼쪽 고정 */
+    font-size: 18px;
+    border-top-left-radius: 10px;
+    /* 좌측 위 모서리 둥글게 */
+    border-top-right-radius: 10px;
+    /* 우측 위 모서리 둥글게 */
+}
+
+.slide-in {
+    animation: slideIn 0.5s forwards;
+    /* 애니메이션 효과 적용 */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        /* 왼쪽에서 시작 */
+        opacity: 0;
+        /* 투명도 0 */
+    }
+
+    to {
+        transform: translateX(0);
+        /* 원래 위치로 이동 */
+        opacity: 1;
+        /* 완전 불투명 */
+    }
+}

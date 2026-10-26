@@ -1,0 +1,92 @@
+/* DashboardCampaign.css */
+
+
+
+.campaign-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.campaign-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    table-layout: fixed;
+}
+
+.campaign-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e6ed;
+    color: #6e6e6e;
+    font-weight: 700;
+    padding: 12px 10px;
+    text-align: left;
+    z-index: 1;
+}
+
+.campaign-table-body-scroll {
+    max-height: 300px;
+    /* 원하는 스크롤 영역 높이 */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.campaign-table tbody {
+    display: block;
+    width: 100%;
+}
+
+.campaign-table thead,
+.campaign-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.campaign-table td {
+    color: #000000;
+    font-weight: 600;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: none;
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+.campaign-table tr:hover {
+    background-color: #f0f4fa;
+    transition: background-color 0.2s;
+}
+
+.campaign-table td:first-child {
+    font-weight: 700;
+    text-align: left;
+}
+
+.view-button {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* 스크롤바 안쪽으로 */
+.campaign-table-body-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.campaign-table-body-scroll::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.campaign-table-body-scroll::-webkit-scrollbar-track {
+    background-color: transparent;
+}

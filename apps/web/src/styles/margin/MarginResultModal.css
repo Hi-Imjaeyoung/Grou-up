@@ -1,0 +1,299 @@
+/* Modal.css */
+/* Modal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* 다른 요소들 위에 오도록 z-index 추가 */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    /* border-radius 값을 10px로 조정 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 1500px;
+
+    /* ✅ 핵심 수정 사항 */
+    display: flex;
+    /* Flexbox 레이아웃 적용 */
+    flex-direction: column;
+    /* 아이템을 세로로 쌓음 */
+    max-height: 90vh;
+    /* 모달의 최대 높이를 화면 높이의 90%로 제한 */
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    /* 크기 살짝 키움 */
+    cursor: pointer;
+    position: absolute;
+    /* content 기준 위치 */
+    top: 15px;
+    right: 20px;
+}
+
+.modal-body {
+    flex-grow: 1;
+    /* 남은 공간을 모두 차지하도록 설정 */
+    overflow-y: auto;
+    /* 내용이 길어지면 세로 스크롤바 자동 생성 */
+    margin-top: 16px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* MarginResultModal.css */
+.date-picker-container {
+    display: flex;
+    align-items: center;
+    /* 수직 정렬 */
+    justify-content: space-between;
+    /* 버튼과 날짜 선택기를 양쪽 끝으로 배치 */
+    padding-left: 20px;
+    /* 왼쪽 여백 추가 */
+    gap: 10px;
+    margin-bottom: 1%;
+}
+
+.date-picker-group {
+    display: flex;
+    /* 날짜 선택기 그룹을 Flexbox로 설정 */
+    align-items: center;
+    /* 수직 정렬 */
+}
+
+.save-button {
+    background-color: #4caf50;
+    /* 저장 버튼 색상 */
+    color: white;
+    /* 글자 색상 */
+    border: none;
+    /* 테두리 제거 */
+    padding: 10px 15px;
+    /* 패딩 */
+    cursor: pointer;
+    /* 커서 변경 */
+    border-radius: 5px;
+    /* 모서리 둥글게 */
+}
+
+.date-separator {
+    margin: 0 4px;
+    /* 날짜 사이의 간격 */
+}
+
+.marginupdate-action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.marginupdate-save {
+    padding: 5px 25px;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    background-color: #4caf50;
+    font-size: 15px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.data-table input[type="number"] {
+    border: 1px solid #ccc;
+    /* 테두리 색상 */
+    border-radius: 4px;
+    /* 모서리 둥글기 */
+    padding: 5px;
+    /* 내부 여백 */
+    width: 100%;
+    /* 너비를 100%로 설정 */
+    box-sizing: border-box;
+    /* 패딩과 테두리를 포함하여 크기 계산 */
+}
+
+.data-table input[type="number"]:focus {
+    border-color: #007bff;
+    /* 포커스 시 테두리 색상 */
+    outline: none;
+    /* 기본 아웃라인 제거 */
+}
+
+/* 각 열의 너비 조정 */
+.data-table th:nth-child(3),
+/* 상품타입 */
+.data-table td:nth-child(3) {
+    width: 10%;
+    /* 상품타입 열 넓이 */
+}
+
+.data-table th:nth-child(4),
+/* 판매가 */
+.data-table td:nth-child(4) {
+    width: 10%;
+    /* 판매가 열 넓이 */
+}
+
+.data-table th:nth-child(5),
+/* 총비용 */
+.data-table td:nth-child(5) {
+    width: 10%;
+    /* 총비용 열 넓이 */
+}
+
+.data-table th:nth-child(6),
+/* 원가 */
+.data-table td:nth-child(6) {
+    width: 10%;
+    /* 원가 열 넓이 */
+}
+
+/* 나머지 열은 기본 너비 */
+.data-table th:nth-child(n+7),
+/* 마진, 제로ROAS */
+.data-table td:nth-child(n+7) {
+    width: auto;
+    /* 기본 너비 */
+}
+
+/* 날짜 컨트롤 컨테이너 */
+.date-controls {
+    display: flex;
+    justify-content: center;
+    /* 중앙 정렬 */
+    align-items: center;
+    /* 아래 여백 */
+    gap: px;
+    /* 화살표와 날짜 간격 */
+}
+
+/* 날짜 화살표 버튼 */
+.date-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    /* 화살표 크기 */
+    color: #333;
+    cursor: pointer;
+    padding: 4px 8px;
+    /* 버튼 크기 */
+    transition: color 0.2s, transform 0.2s;
+}
+
+.date-button:hover {
+    color: #007bff;
+    /* 호버 시 색상 변경 */
+    transform: scale(1.5);
+    /* 약간 커지는 효과 */
+}
+
+.date-button:active {
+    transform: scale(0.95);
+    /* 눌리는 효과 */
+    color: #1f04b5;
+    /* 더 어두운 색으로 변경 */
+}
+
+/* 날짜 입력 스타일 */
+.date-picker-tab {
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 4px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    width: 120px;
+    /* 입력 필드의 너비 */
+    text-align: center;
+}
+
+/* 년월 선택기만 간격 추가 */
+.month-picker-group {
+    margin-right: 20px;
+}
+
+.date-picker {
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 4px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    width: 120px;
+    /* 입력 필드의 너비 */
+    text-align: center;
+}
+
+.data-table tbody td {
+    border-bottom: none
+}
+
+/* 새로운 캠페인 그룹이 시작되는 행의 스타일 */
+.data-table tbody tr.group-start td {
+    /* 위쪽에 굵은 회색 구분선을 추가합니다. */
+    border-top: 2px dashed #e0e0e0;
+}
+
+/* 첫 번째 행에는 위쪽 테두리가 보이지 않도록 처리 */
+.data-table tbody tr:first-child.group-start td {
+    border-top: none;
+}
+
+/* ✅ 그룹의 중간 행 스타일 (가로 구분선 안보이게) */
+.data-table tbody tr.group-middle td {
+    /* 옵션 간의 얇은 구분선을 제거하여 병합된 것처럼 보이게 함 */
+    border-bottom: none;
+}
+
+
+/* 테이블 헤더(th)에 오른쪽 테두리 추가 */
+.data-table thead th {
+    border-right: 1px solid #e9ecef;
+    /* 세로선 스타일 */
+}
+
+/* 마지막 헤더에는 오른쪽 테두리 제거 */
+.data-table thead th:last-child {
+    border-right: none;
+}
+
+/* '캠페인 명' 열의 스타일 */
+.data-table tbody tr td:nth-child(2) {
+    font-size: 16px;
+    /* 기존보다 글자 크기를 약간 키웁니다 */
+    font-weight: 1000;
+    /* 글자를 살짝 두껍게 만듭니다 */
+    color: #1f2937;
+    /* 밝은 파란색으로 변경합니다 */
+}
+
+.data-table thead th:nth-child(2),
+.data-table tbody td:nth-child(2) {
+    max-width: 250px;
+    /* 최대 너비 (이 값을 조절해 길이를 제어) */
+    white-space: nowrap;
+    /* 텍스트가 한 줄로 표시되도록 강제 */
+    overflow: hidden;
+    /* 너비를 넘어가는 텍스트 숨기기 */
+    text-overflow: ellipsis;
+    /* 숨겨진 텍스트를 ...으로 표시 */
+
+    /* 가독성을 위해 좌측 정렬과 여백을 추가하는 것을 추천합니다. */
+    text-align: left;
+    padding-left: 10px;
+}

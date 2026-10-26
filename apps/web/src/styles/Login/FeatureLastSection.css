@@ -1,0 +1,133 @@
+.header-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+    background-color: white;
+    /* 배경색 */
+    color: black;
+    /* 기본 텍스트 색상 */
+    min-height: 100vh;
+    /* 화면 높이에 맞춤 */
+}
+
+.header-text {
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 4.5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+    margin-bottom: 20px;
+    /* 아래쪽 간격 */
+    line-height: 1.3;
+    /* 줄 간격 조정 */
+    /* Pretendard 폰트 적용 */
+}
+
+.blue-highlight {
+    background-color: #5C62B8;
+    /* 파란색 배경 */
+    color: white;
+    /* 텍스트 색상 */
+    padding: 0.2rem 0.5rem;
+}
+
+.red-highlight {
+    background-color: #D3264F;
+    /* 빨간색 배경 */
+    color: white;
+    /* 텍스트 색상 */
+    padding: 0.2rem 0.5rem;
+}
+
+.sub-text {
+    font-size: 4.5rem;
+    /* 서브 텍스트 크기 */
+    margin-top: 10px;
+    /* 위쪽 간격 */
+    font-weight: bold;
+    /* 일반 두께 */
+    font-family: 'Pretendard', sans-serif;
+    /* Pretendard 폰트 적용 */
+}
+
+.Lastlogo {
+    width: 17rem;
+    /* 원하는 크기로 조정 */
+    height: 12rem;
+    /* 원하는 크기로 조정 */
+    margin-top: 3rem;
+    /* 위쪽 간격 */
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .header-text {
+        font-size: 3.3rem;
+        /* 폰트 크기 줄이기 */
+    }
+
+    .sub-text {
+        font-size: 3.3rem;
+        /* 서브 텍스트 크기 줄이기 */
+    }
+
+    .Lastlogo {
+        width: 15rem;
+        /* 로고 크기 줄이기 */
+        height: 10rem;
+        /* 로고 크기 줄이기 */
+    }
+
+    .blue-highlight {
+        padding: 0.2rem 0.1rem;
+
+    }
+
+    .red-highlight {
+        padding: 0.2rem 0.3rem;
+        /* 패딩 줄이기 */
+        display: block;
+        /* 블록으로 표시하여 줄 바꿈 유도 */
+        font-size: 3.3rem;
+        /* 글씨 크기 조정 */
+    }
+
+}
+
+@media (max-width: 480px) {
+    .header-text {
+        font-size: 3.0rem;
+        /* 폰트 크기 더 줄이기 */
+        line-height: 1.5;
+    }
+
+    .sub-text {
+        font-size: 3.0rem;
+        /* 서브 텍스트 크기 더 줄이기 */
+    }
+
+    .Lastlogo {
+        width: 12rem;
+        /* 로고 크기 더 줄이기 */
+        height: 8rem;
+        /* 로고 크기 더 줄이기 */
+    }
+
+    .blue-highlight {
+        padding: 0.3rem 0.2rem;
+
+    }
+
+    /* 모바일에서 각 줄을 분리하기 위한 스타일 */
+    .red-highlight {
+        padding: 0.3rem 0.2rem;
+        /* 패딩 줄이기 */
+        display: inline;
+        /* 블록으로 표시하여 줄 바꿈 유도 */
+        font-size: 3.0rem;
+        /* 글씨 크기 조정 */
+    }
+}

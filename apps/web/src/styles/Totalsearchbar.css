@@ -1,0 +1,88 @@
+/* TestComponent.css */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
+
+.tab-container {
+    width: 100%;
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* 상단 탭과 날짜 선택기 영역 */
+.tabs-and-dates {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 탭 버튼 영역 */
+.tabs {
+    display: flex;
+    gap: 12px;
+}
+
+.tab {
+    padding: 10px 24px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #888;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab.active {
+    background-color: #4880ff;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 날짜 선택 영역 */
+.date-picker-container {
+    position: relative;
+    /* 부모 요소의 위치 기준 */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-picker {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    z-index: 10;
+    /* 드롭다운이 위로 표시되도록 */
+}
+
+/* React DatePicker 드롭다운 위치 조정 */
+.react-datepicker-popper {
+    z-index: 20;
+    /* 드롭다운이 다른 요소 위로 표시되도록 */
+}
+
+.dropdown {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 콘텐츠 */
+.tab-content {
+    padding: 16px;
+    background-color: #ffffff;
+    border-radius: 0 0 16px 16px;
+}

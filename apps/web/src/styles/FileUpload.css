@@ -1,0 +1,163 @@
+/* FileUpload.css */
+
+/* 카드 제목 */
+.upload-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #4c4c4c;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-title-row {
+    display: flex;
+    align-items: center;
+    /* 만약 좌우 여백이 필요하면 아래처럼 padding 추가 */
+    /* padding: 0 16px; */
+}
+
+.upload-title-row .upload-title {
+    margin: 0;
+    /* 제목과 아이콘 간격이 충분치 않다면 margin-right 추가 */
+    /* margin-right: 8px; */
+}
+
+.upload-title-row .help-icon {
+    margin-left: 8px;
+}
+
+/* date-input 클래스 추가 */
+.upload-title-row .date-input {
+    margin-left: auto;
+    /* <-- 여기서 오른쪽으로 밀어냄 */
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* 도움말 버튼 */
+.upload-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 14px;
+    color: #4c4c4c;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.upload-button:hover {
+    color: #3b6fe2;
+}
+
+.icon-next-to {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.icon-next-to svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* 업로드 영역 */
+.file-upload-wrapper {
+    display: flex;
+    justify-content: center;
+    /* 가로 가운데 */
+    align-items: center;
+    /* 세로 가운데 (필요 시) */
+    width: 100%;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.file-upload-icon {
+    width: 36px;
+    height: 36px;
+    color: #3b6fe2;
+}
+
+.file-upload-text {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+/* 파일 업로드 버튼 */
+.upload-action-button {
+    padding: 5px 35px;
+    border-radius: 15px;
+    background-color: #3b6fe2;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 12px;
+    border: none;
+}
+
+.upload-action-button:hover {
+    background-color: rgb(25, 66, 180);
+}
+
+.upload-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.help-icon {
+    color: #576FA3;
+}
+
+.help-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.help-modal img {
+    width: 80%;
+    height: auto;
+    display: block;
+}
+
+.upload-action-button:disabled {
+    background-color: #cccccc;
+    /* 회색 배경 */
+    color: #666666;
+    /* 글자색도 약간 어둡게 */
+    cursor: not-allowed;
+    /* 마우스 커서를 '금지' 모양으로 */
+}
+
+/* 비활성화 됐을 때는 호버(마우스를 올리는) 효과도 없애주면 더 좋아 */
+.upload-action-button:disabled:hover {
+    background-color: #cccccc;
+    /* 호버해도 색이 변하지 않도록 */
+    box-shadow: none;
+    /* 그림자 효과도 제거 */
+}

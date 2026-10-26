@@ -1,0 +1,16 @@
+/* styles.css 또는 해당 컴포넌트의 CSS 파일에 추가 */
+.sticky-cell {
+    position: sticky;
+    left: 0;
+    color: white;
+    font-weight: 500;
+    /* 왼쪽에 고정 */
+    background-color: #5E87E3;
+    /* 배경색 설정 */
+    z-index: 0;
+    /* 다른 요소와 겹치지 않도록 설정 */
+    white-space: nowrap;
+    /* 줄바꿈 방지 */
+    border-right: 1px solid #ddd;
+    /* 오른쪽 경계 추가 (선택 사항) */
+}

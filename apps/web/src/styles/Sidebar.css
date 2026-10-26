@@ -1,0 +1,140 @@
+/* Updated Sidebar.css - Aligned with Figma Spec */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 210px;
+  height: 100vh;
+  background-color: #FFFFFF;
+  border-right: 1px solid #E5E7EB;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 900;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding-left: 11px;
+  padding-top: 46px;
+  padding-bottom: 35px;
+  gap: 10px;
+  border-bottom: 0.7px solid #E5E7EB;
+  background-color: #FFFFFF;
+}
+
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.sidebar-username {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #000000;
+  text-align: center;
+  word-break: break-word;
+}
+
+.sidebar-nav {
+  padding: 0 21px;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 헤더 ↔ 대시보드 간 간격 */
+
+/* 일반 메뉴 항목 간 간격 (ex. 대시보드 ↔ 업로드) */
+.menu-container .menu-item-content+.menu-item-content {
+  margin-top: 20px;
+}
+
+/* 구분선 전후 간격 */
+.menu-divider {
+  border: none;
+  height: 0.7px;
+  background-color: #E5E7EB;
+  margin: 21px 0 20.5px 0;
+}
+
+.menu-item-content {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-item-content:hover {
+  background-color: rgba(59, 111, 226, 0.1);
+}
+
+.menu-item-content.active {
+  color: #3B6FE2;
+  font-weight: 800;
+}
+
+.menu-item-icon {
+  margin-right: 15px;
+}
+
+.menu-item-text {
+  font-size: 15px;
+}
+
+.submenu-container {
+  margin-left: 16px;
+  border-left: 1px solid #E5E7EB;
+  padding-left: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.submenu-container .menu-item-content {
+  padding: 6px 0;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6B7280;
+  background: none;
+}
+
+.submenu-container .menu-item-content:hover {
+  background-color: transparent;
+  color: #3B6FE2;
+  font-weight: 600;
+}
+
+.submenu-container .menu-item-content.active {
+  color: #3B6FE2;
+  font-weight: 800;
+}
+
+.menu-item-description {
+  font-size: 15px;
+  color: #6B7280;
+  margin: 4px 0 4px 36px;
+}
+
+.menu-item-text {
+  /* --- 이 3줄이 마법의 말줄임표 코드 --- */
+  white-space: nowrap;
+  /* 1. 텍스트가 길어져도 줄바꿈을 하지 않음 */
+  overflow: hidden;
+  /* 2. 자기 영역을 벗어나는 텍스트는 숨김 처리 */
+  text-overflow: ellipsis;
+  /* 3. 숨겨진 텍스트가 있을 경우 말줄임표(...) 표시 */
+
+  /* (중요) 말줄임표가 적용되려면 너비 제한이 있어야 해 */
+  /* 아이콘 등 다른 요소 너비를 고려해서 적절한 최대 너비를 설정 */
+  max-width: 150px;
+  /* 이 값은 사이드바 전체 너비에 맞춰 조절해봐 */
+}

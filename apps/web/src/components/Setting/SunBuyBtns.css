@@ -1,0 +1,157 @@
+.Items {
+    display: flex;
+    justify-content: space-between;
+    /* 또는 space-around, space-evenly */
+    flex-wrap: wrap;
+    /* 화면이 좁아지면 줄바꿈 */
+    gap: 10px;
+    /* 버튼들 사이 간격 */
+    height: 500%;
+}
+
+.ItemButton {
+    position: relative;
+    text-align: center;
+    margin-top: 3px;
+    width: 24%;
+    background: #FFFFFF;
+    box-shadow: 0px 10px 30px rgba(192, 199, 239, 0.8);
+    border-radius: 30px;
+}
+
+.ItemHeader {
+    /* 햇살 충전하기 */
+    font-family: 'Pretendard';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 24px;
+    text-align: left;
+    /* 상자 높이와 동일 */
+    color: #6E6E6E;
+    margin-top: 5px;
+    margin-left: 20px;
+    /* 내부 오토레이아웃 */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.ItemButton:hover {
+    border: 2px solid #4880FF;
+    /* 경계선 스타일 지정 */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    /* 예시 */
+}
+
+.ItemButton:hover .ItemBadge {
+    background-color: #BDFEB6;
+}
+
+.ItemButton:hover .payButton {
+    background-color: rgba(72, 128, 255, 0.8);
+}
+
+.ItemBadge {
+    /* text-align: right; */
+    margin-top: 5px;
+    margin-left: 75%;
+    font-size: 8px;
+    background: #D9D9D9;
+    border-radius: 22.5px;
+    display: inline-block;
+    white-space: nowrap;
+    /* 추가 */
+}
+
+
+.ItemPriceContainer {
+    display: flex;
+    white-space: nowrap;
+}
+
+.ItemPrice {
+    height: 84px;
+    font-family: 'Pretendard';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 50px;
+    /* line-height: 84px; */
+    /* 상자 높이와 동일 */
+    text-align: center;
+    color: #000000;
+    /* 내부 오토레이아웃 */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+
+    margin-left: 20px;
+    /* margin-bottom: 20px; */
+}
+
+.unit {
+    color: #666666;
+    /* 원하는 색상 */
+}
+
+/* 70,000 */
+
+.ItemPrePrice {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    margin-top: 15px;
+    margin-left: 15px;
+    text-decoration-line: line-through;
+    color: #979797;
+}
+
+.thick-hr {
+    border-top: 0.5px solid black;
+    margin: 0 auto;
+    width: 90%;
+}
+
+.ItemButtonDetailContainer {
+    margin-top: 25px;
+    margin-left: 10px;
+}
+
+.ItemButtonDetail {
+    display: flex;
+    justify-content: flex-start;
+    /* 왼쪽 정렬 */
+    /* 광고캠패인 1개 10달 분석 */
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    /* identical to box height */
+    text-align: center;
+    color: #989797;
+
+}
+
+.payButton {
+    margin-top: 7%;
+    margin-bottom: 10%;
+    /* Rectangle 136 */
+    width: 70%;
+    height: 20%;
+
+    /* Rectangle 225 */
+    background: rgba(242, 139, 21, 0.8);
+    border-radius: 48.7963px;
+    /* 100,000원 */
+    font-family: 'Pretendard';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 48px;
+    /* 상자 높이 동일 */
+    color: #FFFFFF;
+}

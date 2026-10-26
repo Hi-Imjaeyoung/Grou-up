@@ -1,0 +1,229 @@
+/* MarginDataTable.css 전체 코드 (2025-08-07 최종 수정본) */
+
+.margin-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e9eefd;
+    border-radius: 30px;
+    background-color: #fff;
+}
+
+.margin-table-data {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    table-layout: fixed;
+}
+
+
+/* ★★★ 핵심 방어 코드 ★★★ */
+.margin-table-data,
+.margin-table-data tbody,
+.margin-table-data thead,
+.margin-table-data tr {
+    display: revert;
+    /* 브라우저 기본 테이블 스타일로 강제 복원 */
+}
+
+.margin-table-data th,
+.margin-table-data td {
+    display: table-cell;
+    /* 명시적으로 테이블 셀로 지정 */
+    padding: 3px 2px;
+    text-align: center;
+    white-space: nowrap;
+    border: none;
+    vertical-align: middle;
+}
+
+/* --- 헤더 스타일 --- */
+.margin-table-header-cell {
+    background-color: #fff;
+    color: #8c8c8c;
+    font-weight: 500;
+    border-bottom: 1px solid #e9eefd;
+}
+
+.margin-table-data .margin-table-date-cell {
+    width: 120px;
+    /* ✅ 이 한 줄을 추가해서 각 날짜 열의 최소 너비를 확보합니다. */
+    border-left: 1.5px dashed #e0e0e0;
+}
+
+/* --- 고정 컬럼 --- */
+.margin-table-sticky-col {
+    position: sticky;
+    z-index: 2;
+    background-color: #fff;
+}
+
+.margin-table-first-col {
+    left: 0;
+    width: 180px;
+    text-align: left !important;
+    padding-left: 20px !important;
+    font-weight: 1000;
+    /* 좌측에 여백을 주어 보기 좋게 만듭니다. */
+}
+
+tr.margin-table-highlight-row>td {
+    background-color: #ECEEF6;
+    /* 원하시는 다른 색으로 변경 가능합니다. (예: #f0f2f5) */
+}
+
+
+.margin-table-second-col {
+    left: 180px;
+    width: 130px;
+    font-weight: 800;
+    background-color: #ECEEF6;
+    /* ✅ 배경색 추가 */
+    color: black;
+    /* ✅ 글자색을 흰색으로 추가 */
+    background-clip: padding-box;
+}
+
+/* 고정된 헤더 컬럼이 스크롤 시 다른 내용 위로 올라오도록 z-index를 확실히 지정합니다. */
+.margin-table-header-cell.margin-table-first-col,
+.margin-table-header-cell.margin-table-second-col {
+    z-index: 3;
+}
+
+
+/* --- 행 그룹 --- */
+/* 그룹의 시작을 알리는 점선입니다. 레이아웃 안정성을 위해 표준 dashed 스타일을 사용합니다. */
+.margin-table-group-start>td {
+    border-top: 1.5px dashed #e0e0e0;
+}
+
+
+/* --- 셀 내용 --- */
+.margin-table-option-name {
+    display: flex;
+    justify-content: space-between;
+    color: #595959;
+}
+
+.margin-table-total-cell b,
+.margin-table-data-cell b {
+    color: #262626;
+    font-weight: 700;
+}
+
+.margin-table-save-button {
+    border: 1px solid #d9d9d9;
+    background-color: #5E87E3;
+    color: white;
+    padding: 1px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 8px;
+}
+
+.margin-table-save-button:hover {
+    border-color: #6d55ff;
+    color: #6d55ff;
+}
+
+.margin-table-data input {
+    width: 80%;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    padding: 8px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.margin-table-data input:focus {
+    outline: none;
+    border-color: #6d55ff;
+}
+
+/* 조건부 스타일링 */
+.margin-table-negative-profit b {
+    color: #ff4d4f;
+}
+
+/* 툴팁 관련 스타일 추가 */
+.margin-table-option-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+
+.margin-table-option-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.margin-table-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.margin-table-tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background-color: #5E87E3;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: help;
+    margin-left: 4px;
+}
+
+.margin-table-tooltip {
+    visibility: hidden;
+    width: 280px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 툴팁 화살표 */
+.margin-table-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+/* 호버 시 툴팁 표시 */
+.margin-table-tooltip-container:hover .margin-table-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 모바일에서 툴팁 위치 조정 */
+@media (max-width: 768px) {
+    .margin-table-tooltip {
+        width: 240px;
+        font-size: 11px;
+    }
+}

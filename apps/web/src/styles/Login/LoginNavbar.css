@@ -1,0 +1,90 @@
+/* LoginNavbar.css */
+
+.navbar {
+    position: fixed;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    top: 0;
+    /* 상단에 위치 */
+    left: 0;
+    /* 왼쪽에 위치 */
+    right: 0;
+    /* 오른쪽에 위치 */
+    z-index: 1000;
+    /* 다른 요소들보다 위에 있도록 설정 */
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    /* 원하는 패딩 값으로 조정 */
+}
+
+.logo {
+    height: 60px;
+    margin-left: 20%;
+    margin-top: 5%;
+    width: auto;
+    margin-right: 0.5rem;
+    /* 로고와 버튼 간의 간격 */
+}
+
+.button {
+    background-color: #5C62B8;
+    color: white;
+    border-radius: 9999px;
+    /* 둥근 버튼 */
+    padding: 0.2rem 1rem;
+    /* 위아래 크기 조정 */
+    font-size: 1.1rem;
+    /* 글자 크기 조정 (원하는 크기로 변경 가능) */
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #4a54a1;
+    /* 호버 시 색상 변경 */
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: row;
+        /* 가로 배열 유지 */
+        align-items: center;
+        /* 중앙 정렬 */
+    }
+
+    .logo {
+        margin-left: 10px;
+        /* 왼쪽 여백 줄이기 */
+    }
+
+    .button {
+        width: auto;
+        /* 버튼 너비를 자동으로 조정 */
+        margin-top: 0;
+        /* 버튼과 로고 간의 간격 */
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        height: 50px;
+        /* 작은 화면에서 로고 크기 조정 */
+    }
+
+    .button {
+        font-size: 0.8rem;
+        /* 글자 크기 줄이기 */
+        padding: 0.4rem 0.8rem;
+        /* 패딩 줄이기 */
+    }
+
+    .navbar-container {
+        padding: 0.5rem;
+        /* 패딩 줄이기 */
+    }
+}

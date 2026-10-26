@@ -1,0 +1,52 @@
+.switchable-graph-container {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 16px;
+    overflow-x: auto;
+    /* 가로 스크롤 활성화 */
+    position: relative;
+    /* 자식 요소의 위치를 잡기 위해 필요할 수 있음 */
+    margin-bottom: 10px;
+}
+
+.view-switcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    /* 점 버튼과 그래프 사이의 간격 */
+}
+
+.dot-button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    /* 동그란 모양으로 만듦 */
+    border: 1px solid #cccccc;
+    background-color: #d9d9d9;
+    /* 비활성 상태의 색 */
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.3s ease;
+    /* 부드러운 색상 전환 효과 */
+}
+
+.dot-button.active {
+    background-color: #3B6FE2;
+    /* 활성 상태의 색 (파란색) */
+    border-color: #3B6FE2;
+}
+
+.graph-content-area {
+    display: inline-block;
+    /* 또는 flexbox 컨테이너로 설정 */
+    /* 그래프가 들어갈 영역의 스타일 */
+    min-height: 300px;
+    /* 그래프가 없을 때도 최소 높이를 유지 */
+    width: 150vh;
+    /* 예시 값, 이 값은 데이터 양에 따라 조절해줘 */
+    height: 300px;
+    /* 그래프 높이와 일치시키거나, 적절히 설정 */
+}

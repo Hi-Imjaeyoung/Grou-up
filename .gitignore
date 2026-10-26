@@ -1,0 +1,25 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Secrets
+.env
+.env.*
+!.env.example
+local.env
+
+# Build outputs
+build/
+bin/
+out/
+.gradle/
+node_modules/
+__pycache__/
+*.pyc
+
+# Runtime
+logs/
+*.log

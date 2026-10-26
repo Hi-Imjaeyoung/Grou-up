@@ -27,6 +27,12 @@
 | S5 | `marginforcampaign/controller/ExcelDownUpLoadController.java` | 업로드에 실패해도 HTTP 200을 반환한다. |
 | S6 | `apps/batch-server` | `beanMapped()`는 record와 호환되지 않고, `ad_sales`와 `ad_sale` 이름이 다르다. 행 단위 upsert가 누적 덧셈이라 다시 실행하면 이중 집계된다. `monthly_summary` DDL도 없다. |
 
+## 테스트
+
+| # | 문제 |
+|---|---|
+| T1 | `apps/api-server`에서 `./gradlew test`를 실행하면 321개 중 113개가 실패합니다(통합 전 커밋 `d035a65`과 같은 결과). 주요 원인은 다음과 같습니다. ① `@ActiveProfiles("test")`가 없는 테스트가 기본 프로필 `bottleNeckTest`로 실제 MariaDB(`${DATASOURCE_URL}`)를 찾습니다. ② `testdatagenerator`는 테스트가 아니라 데이터 적재 스크립트입니다. ③ 컨트롤러 슬라이스 테스트에 `CampaignDeleteFacade` 등의 Mock이 없습니다. ④ `passwordEncoder` 빈이 중복 정의되어 있습니다. `SPRING_PROFILES_ACTIVE=test`로 실행해도 109개가 실패합니다. |
+
 ## 보안 / 운영
 
 | # | 위치 | 문제 |

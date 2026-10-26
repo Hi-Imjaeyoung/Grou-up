@@ -29,7 +29,7 @@ public class CampaignTotalDataFacade {
         Map<String,CampaignAnalysisDto> campaignAnalysisDataKeyCampaignName =
                 keywordService.getEachCampaignAdCostSumAndAdSalesByPeriodAndEmail(email,start,end);
         AllCampaignTypeData allCampaignTypeData;
-        if(lazySegmentTreeService.isTreeBuild(email,start.getYear())){
+        if(lazySegmentTreeService.isTreeBuild(email,start,end)){
             allCampaignTypeData =
                     lazySegmentTreeService.getCachedOrSelectAllCampaignTypeDataByPeriod(email,start,end);
             return TotalCampaignsData.builder()

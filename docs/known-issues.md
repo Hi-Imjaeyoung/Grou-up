@@ -13,7 +13,7 @@
 | C4 | `keyword/service/KeywordService.java` `extractDeleteCampaignDataByPeriod` | `sum()` 반환값을 버리고 맵에 넣지 않아 항상 빈 맵을 반환한다. | 코드 확인 |
 | C5 | `keyword/repository/KeywordRepositoryImpl.java` `getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds` | `date`를 SELECT 하지만 GROUP BY에는 `camAdType`만 있다. MariaDB가 날짜를 임의로 골라 반환한다. | 코드 확인 |
 | C6 | `campaign/facade/CampaignTotalDataFacade.java` | 연도를 넘는 조회에서 `end.getYear()` 대신 `start.getYear()`로 빌드 이벤트를 두 번 발행한다. | 코드 확인 |
-| C7 | `LazySegmentTreeService.isTreeBuild` / `buildTree` | 빌드 시작 시 연도 엔트리를 먼저 만들어, 빌드 도중에도 "빌드됨"으로 보인다. 그 사이 요청은 빈 노드를 0으로 합산한다. 시작 연도만 확인하는 문제도 있다. | 코드 확인 |
+| C7 ✅ 해결 (`762e2ce`) | `LazySegmentTreeService.isTreeBuild` / `buildTree` | 빌드 시작 시 연도 엔트리를 먼저 만들어, 빌드 도중에도 "빌드됨"으로 보인다. 그 사이 요청은 빈 노드를 0으로 합산한다. 시작 연도만 확인하는 문제도 있다. | 코드 확인 → 트리를 별도 객체에 다 만든 뒤 등록하고, 조회 시 빈 연도 엔트리를 만들지 않으며, 시작·끝 연도를 모두 확인하도록 수정. 2년을 넘는 구간은 중간 연도가 합산되지 않으므로 캐시를 쓰지 않는다. C6이 고쳐지기 전까지 연도를 넘는 조회는 끝 연도 트리가 만들어지지 않아 DB로 조회한다. 재현 테스트 `LazySegmentTreeServiceBuildStateTest`, `CampaignTotalDataFacadeTest`. |
 | C8 | `campaign/dto/CampaignDeleteDto.checkThreshold` | 300일 **이상**일 때 부분 업데이트를 고른다. 부분 업데이트 비용이 O(T log N)이라면 큰 범위일수록 전체 재빌드가 유리하므로 조건이 반대일 가능성이 있다. | `TreeCpuBenchmarkTest` 결과와 대조 필요 |
 
 ## 안정성

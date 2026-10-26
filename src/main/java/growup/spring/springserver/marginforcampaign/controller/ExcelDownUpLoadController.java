@@ -5,6 +5,9 @@ import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
 import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
+import growup.spring.springserver.marginforcampaign.dto.ExcelUploadContext;
+import growup.spring.springserver.marginforcampaign.service.ExcelDownloadService;
+import growup.spring.springserver.marginforcampaign.service.ExcelParsingService;
 import growup.spring.springserver.marginforcampaign.service.ExcelService;
 import growup.spring.springserver.marginforcampaign.service.MarginForCampaignService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,11 +35,11 @@ import java.util.Map;
 public class ExcelDownUpLoadController {
 
     private final ExcelService excelService;
-    private final CampaignService campaignService;
-    private final MarginForCampaignService marginForCampaignService;
+    private final ExcelParsingService excelParsingService;
+    private final ExcelDownloadService excelDownloadService;
     @GetMapping("/downloadExcel")
     public ResponseEntity<?> downloadExcel(@AuthenticationPrincipal UserDetails userDetails) {
-        try (Workbook workbook = excelService.createUsersExcel(userDetails.getUsername());
+        try (Workbook workbook = excelDownloadService.createUsersExcel(userDetails.getUsername());
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             workbook.write(out); // 엑셀 데이터를 메모리에 씁니다.
             ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
@@ -73,7 +75,8 @@ public class ExcelDownUpLoadController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         try {
-            Map<String,Integer> result = excelService.processUploadedExcel(file,userDetails.getUsername());
+            ExcelUploadContext excelUploadContext = excelParsingService.parsingExcelData(file, userDetails.getUsername());
+            Map<String,Integer> result = excelService.processUploadedExcel(excelUploadContext);
             return new ResponseEntity<>(CommonResponse.<String>builder("post success")
                     .data(result.toString())
                     .build(), HttpStatus.OK);
@@ -87,6 +90,7 @@ public class ExcelDownUpLoadController {
                     .data(e.getErrorCode().getMessage())
                     .build(), HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.toString());
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")
                     .build(), HttpStatus.BAD_REQUEST);

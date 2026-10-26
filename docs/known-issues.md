@@ -31,7 +31,7 @@
 
 | # | 문제 |
 |---|---|
-| T1 | `apps/api-server`에서 `./gradlew test`를 실행하면 321개 중 113개가 실패합니다(통합 전 커밋 `d035a65`과 같은 결과). 주요 원인은 다음과 같습니다. ① `@ActiveProfiles("test")`가 없는 테스트가 기본 프로필 `bottleNeckTest`로 실제 MariaDB(`${DATASOURCE_URL}`)를 찾습니다. ② `testdatagenerator`는 테스트가 아니라 데이터 적재 스크립트입니다. ③ 컨트롤러 슬라이스 테스트에 `CampaignDeleteFacade` 등의 Mock이 없습니다. ④ `passwordEncoder` 빈이 중복 정의되어 있습니다. `SPRING_PROFILES_ACTIVE=test`로 실행해도 109개가 실패합니다. |
+| T1 | `apps/api-server`에서 `./gradlew test`를 실행하면 321개 중 113개가 실패합니다(통합 전 커밋 `d035a65`과 같은 결과). 주요 원인은 다음과 같습니다. ① `@ActiveProfiles("test")`가 없는 테스트가 기본 프로필 `bottleNeckTest`로 실제 MariaDB(`${DATASOURCE_URL}`)를 찾습니다. ② `testdatagenerator`는 테스트가 아니라 데이터 적재 스크립트입니다. ③ 컨트롤러 슬라이스 테스트에 `CampaignDeleteFacade` 등의 Mock이 없습니다. ④ `passwordEncoder` 빈이 중복 정의되어 있습니다. `SPRING_PROFILES_ACTIVE=test`로 실행해도 109개가 실패합니다. 운영 종료로 CI는 두지 않았으므로 로컬에서 확인합니다. |
 
 ## 보안 / 운영
 

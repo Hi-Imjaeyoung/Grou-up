@@ -7,6 +7,7 @@ GrouUp 포트폴리오 모노레포에서 작업할 때 필요한 맥락입니�
 - **운영 종료.** 배포하지 않고 CI/CD도 두지 않는다. 검증은 로컬 빌드·테스트로만 하고, 배포·인프라 내용은 `docs/`에 문서로 남긴다(`docs/deployment.md`).
 - **목적:** 포트폴리오(`docs/portfolio/`)의 각 주장을 코드·k6 스크립트·결과 캡처로 뒷받침하는 것.
 - **진행 중인 일:** `docs/known-issues.md`의 결함을 고친 뒤 부하를 재측정하고 포트폴리오 수치를 갱신한다.
+- **작업 순서:** [`docs/remeasure-plan.md`](docs/remeasure-plan.md) 체크리스트를 위에서부터 진행하고, 끝낸 항목은 `[x]`와 PR 번호로 표시한다.
 
 ## 구조
 
@@ -18,7 +19,7 @@ GrouUp 포트폴리오 모노레포에서 작업할 때 필요한 맥락입니�
 | `apps/excel-parser` | Django 엑셀 파서 | `python manage.py check` (`SECRET_KEY`, `DB_*` 환경변수 필요) |
 | `poc/global-cache-msa` | MSA/CQRS 글로벌 캐시 PoC, Boot 3.2.3 멀티모듈 | `./gradlew build -x test` |
 | `load-test/` | k6 스크립트·결과. 매핑은 `load-test/README.md` | — |
-| `docs/` | `portfolio/01~04`, `known-issues.md`, `deployment.md` | — |
+| `docs/` | `portfolio/01~04`, `known-issues.md`, `remeasure-plan.md`, `deployment.md` | — |
 
 각 앱은 독립 빌드이고 루트 Gradle은 없다. 원본 저장소들(SpringServer, global-cache-poc 등)은 subtree/merge로 히스토리째 들어와 있다.
 

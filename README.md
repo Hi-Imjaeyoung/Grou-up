@@ -42,6 +42,7 @@ infra/               로컬 MySQL, Prometheus, Grafana compose
 docs/
   portfolio/         프로젝트별 상세 문서
   known-issues.md    알려진 결함과 재측정 대상
+  deployment.md      운영 당시 배포 구성 기록 (현재 운영 종료, CI/CD 없음)
 ```
 
 이 저장소는 여러 저장소를 히스토리를 보존한 채 합친 모노레포입니다.
@@ -74,7 +75,7 @@ docs/
 | Backend | Java 17, Spring Boot 3, Spring Data JPA, QueryDSL, Spring Security (JWT, OAuth2), Spring Batch |
 | Cache / MQ | Caffeine, Redis, Kafka, RabbitMQ (PoC) |
 | DB | MariaDB / MySQL (PoC: Master-Slave) |
-| Infra | AWS (EC2, S3, Lambda), Docker, GitHub Actions |
+| Infra | AWS (EC2, S3, Lambda), Docker, GitHub Actions (운영 당시, [배포 기록](docs/deployment.md)) |
 | Test / Monitoring | JUnit5, JMH, k6, Prometheus, Grafana, Loki |
 | Frontend / 기타 | React (`apps/web`), Django (`apps/excel-parser`) |
 

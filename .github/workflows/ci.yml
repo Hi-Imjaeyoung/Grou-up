@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      batch: ${{ steps.filter.outputs.batch }}
+      poc: ${{ steps.filter.outputs.poc }}
+      web: ${{ steps.filter.outputs.web }}
+      parser: ${{ steps.filter.outputs.parser }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api: ['apps/api-server/**']
+            batch: ['apps/batch-server/**']
+            poc: ['poc/global-cache-msa/**']
+            web: ['apps/web/**']
+            parser: ['apps/excel-parser/**']
+
+  api-server:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17', cache: gradle }
+      - run: chmod +x gradlew && ./gradlew build --no-daemon
+
+  batch-server:
+    needs: changes
+    if: needs.changes.outputs.batch == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/batch-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17', cache: gradle }
+      - run: chmod +x gradlew && ./gradlew compileJava compileTestJava --no-daemon
+
+  global-cache-msa:
+    needs: changes
+    if: needs.changes.outputs.poc == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: poc/global-cache-msa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17', cache: gradle }
+      - run: chmod +x gradlew && ./gradlew build -x test --no-daemon
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: npm, cache-dependency-path: apps/web/package-lock.json }
+      - run: npm ci
+      - run: npm run build
+        env:
+          CI: false
+
+  excel-parser:
+    needs: changes
+    if: needs.changes.outputs.parser == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/excel-parser
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+      - run: pip install -r requirements.txt
+      - run: python manage.py check
+        env:
+          SECRET_KEY: ci-only
+          DEBUG: 'False'

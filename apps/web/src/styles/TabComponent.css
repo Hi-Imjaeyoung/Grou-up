@@ -1,0 +1,117 @@
+/* 탭 컨테이너 */
+.tab-container {
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: 16px;
+    overflow: visible;
+}
+
+.analysis-title-prefix {
+    color: #576FA3;
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.analysis-title-main {
+    align-items: center;
+    padding: 0px 18px;
+    gap: 10px;
+    background: #576FA3;
+    border-radius: 8px;
+    color: white;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+
+/* 탭 및 날짜 선택기 영역 */
+.tabs-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-and-datePicker {
+    display: flex;
+    justify-content: space-between;
+    /* 이게 핵심! 양쪽 끝으로 보내줌 */
+    align-items: center;
+    margin-bottom: 2%;
+}
+
+/* 탭 버튼 영역 */
+.tabs {
+    display: flex;
+    gap: 7px;
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* 개별 탭 버튼 */
+.tab {
+    padding-top: 10px;
+    padding-right: 80px;
+    padding-bottom: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #6E6E6E;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 10px;
+    border-bottom: 1.6px solid #6E6E6E;
+}
+
+/* 활성화된 탭 스타일 */
+.tab.active {
+    border-bottom: 1.6px solid #3B6FE2;
+    color: #3B6FE2;
+}
+
+.tab:last-child {
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* 콘텐츠 영역 */
+.tab-content {
+    /* padding: 8px; */
+    border-radius: 0 0 16px 16px;
+}
+
+.date-picker-container {
+    /* 부모 요소 기준으로 위치 설정 */
+    margin-right: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.date-picker {
+    padding: 8px 12px;
+    border: none;
+    background-color: #D6DBF2;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #4C547B;
+    /* 드롭다운이 다른 요소 위로 표시되도록 */
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    background-color: #D6DBF2;
+    border-radius: 20px;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.dropdown {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background-color: #D6DBF2;
+    font-size: 14px;
+    cursor: pointer;
+    color: #4C547B;
+    margin-right: 5px;
+}

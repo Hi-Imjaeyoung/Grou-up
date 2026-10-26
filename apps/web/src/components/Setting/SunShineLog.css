@@ -1,0 +1,32 @@
+/* src/SunShineLog.css */
+.sunshine-log-container {
+    margin-top: 1rem;
+}
+
+.history-sections-wrapper {
+    display: flex;
+    /* Flexbox를 사용하여 가로 배치 */
+    gap: 10px;
+    /* 컴포넌트 사이 간격 */
+    align-items: stretch;
+    /* 자식 요소들의 높이를 동일하게 만듦 */
+}
+
+.charge-history-wrapper {
+    flex: 2;
+    /* 비율 설정 (햇살 충전 내역: 2) - 대략 40% */
+    /* 예시: 40%를 원하면 flex-basis: 40%; 또는 flex: 0 0 40%; */
+}
+
+.usage-history-wrapper {
+    flex: 3;
+    /* 비율 설정 (햇살 이용 내역: 3) - 대략 60% */
+    /* 예시: 60%를 원하면 flex-basis: 60%; 또는 flex: 0 0 60%; */
+}
+
+/* 만약 다른 섹션들이 있다면 여기에 스타일 추가 */
+/*
+  .other-sections {
+    margin-bottom: 20px;
+  }
+  */

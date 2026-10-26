@@ -1,0 +1,13 @@
+.positive-profit {
+    color: blue;
+    /* 양수일 때 파란색 */
+    font-weight: bold;
+    font-size: 1.0em;
+}
+
+.negative-profit {
+    color: red;
+    /* 음수일 때 빨간색 */
+    font-weight: bold;
+    font-size: 1.0em;
+}

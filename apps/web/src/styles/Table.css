@@ -1,0 +1,47 @@
+html {
+    font-size: 90%;
+    /* 기본 글꼴 크기를 16px로 설정 */
+}
+
+.sortable-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    /* 기본 글꼴 크기 (16px) */
+    font-weight: bold;
+    white-space: nowrap;
+    /* 텍스트를 한 줄로 유지 */
+    overflow: hidden;
+    /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis;
+    /* 잘린 텍스트에 "..." 표시 */
+}
+
+.sortable-header svg {
+    width: 14px;
+    /* 아이콘 크기 조정 */
+    height: 14px;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 600px) {
+    .sortable-header {
+        /* font-size: 0.9rem; */
+        /* 작은 화면에서 글씨 크기 줄이기 (14.4px) */
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+    .sortable-header {
+        /* font-size: 1.1rem; */
+        /* 중간 화면에서 글씨 크기 늘리기 (17.6px) */
+    }
+}
+
+@media (min-width: 1201px) {
+    .sortable-header {
+        /* font-size: 1.2rem; */
+        /* 큰 화면에서 글씨 크기 늘리기 (19.2px) */
+    }
+}

@@ -1,0 +1,9 @@
+.memo-componet-header {
+    width: 210px;
+    /* Sidebar와 동일한 너비 */
+    background-color: #5157AB;
+    /* Sidebar와 동일한 너비 */
+    position: fixed;
+    /* 왼쪽 고정 */
+    left: 0;
+}

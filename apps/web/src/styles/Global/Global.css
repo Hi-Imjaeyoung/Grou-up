@@ -1,0 +1,16 @@
+/* Global.css 또는 Login.css에 추가 */
+.section {
+    opacity: 0;
+    /* 초기 투명도 */
+    transform: translateY(20px);
+    /* 아래에서 시작 */
+    transition: opacity 1.5s ease, transform 1.5s ease;
+    /* 부드러운 전환 효과 */
+}
+
+.section.visible {
+    opacity: 1;
+    /* 보일 때의 투명도 */
+    transform: translateY(0);
+    /* 원래 위치로 이동 */
+}

@@ -1,0 +1,158 @@
+/* src/components/SunshineUsageHistory.css */
+.sunshine-usage-history {
+    background-color: #FFFFFF;
+    padding: 20px;
+    /* height: 100%; */
+    /* tbody에 max-height를 사용하므로, 이 부분은 주석 처리하거나 필요에 따라 조절합니다. */
+    /* 부모 요소의 높이가 명확하지 않으면 100%가 의도대로 작동하지 않을 수 있습니다. */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 10px 30px rgba(192, 199, 239, 0.8);
+    border-radius: 30px;
+}
+
+.sunshine-usage-history h2 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: left;
+}
+
+/* 1. 테이블 전체 설정 */
+.sunshine-usage-history table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    table-layout: fixed;
+    /* 컬럼 너비 고정을 위해 매우 중요! */
+}
+
+/* 2. 테이블 헤더(thead) 설정 */
+.sunshine-usage-history thead {
+    display: table;
+    /* a_thead를 테이블처럼 동작 */
+    width: 100%;
+    table-layout: fixed;
+    /* a_thead 내부 컬럼 너비도 고정 */
+    background-color: #FFFFFF;
+    /* 기존 헤더 배경색 유지 */
+    /* 스크롤바 너비만큼 padding-right 또는 width: calc() 사용 고려 (옵션) */
+}
+
+.sunshine-usage-history thead tr {
+    display: table-row;
+    /* 헤더 행 */
+}
+
+.sunshine-usage-history th {
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    /* 헤더 아래쪽 구분선 (기존 #eee보다 약간 진하게) */
+}
+
+/* 3. 테이블 바디(tbody) 설정 - 이 부분이 스크롤됩니다! */
+.sunshine-usage-history tbody {
+    display: block;
+    /* a_tbody를 블록 요소로 만들어 높이와 오버플로우 제어 */
+    max-height: 300px;
+    /* 이전 파일과 동일하게 300px 유지 */
+    overflow-y: auto;
+    /* 세로 스크롤을 필요할 때만 표시 */
+    overflow-x: hidden;
+    /* 가로 스크롤은 숨김 (테이블 내용이 가로로 넘치지 않도록 컬럼 너비 조절이 중요) */
+    width: 100%;
+    /* a_tbody가 table 너비에 꽉 차도록 */
+
+    /* 또는 auto */
+    scrollbar-color: #ffcc80 #f0f0f0;
+    /* 핸들색상 트랙색상 */
+}
+
+.sunshine-usage-history tbody tr {
+    display: table;
+    /* a_tbody의 각 행도 테이블 행처럼 동작 */
+    width: 100%;
+    table-layout: fixed;
+    /* a_tbody 행 내부의 셀들도 고정된 레이아웃 */
+}
+
+.sunshine-usage-history td {
+    border-bottom: 1px solid #eee;
+    padding: 10px 8px;
+    text-align: center;
+    word-wrap: break-word;
+    /* 내용이 길 경우 자동 줄바꿈 */
+}
+
+/* 4. 중요: thead의 th와 tbody의 td 컬럼 너비 일치시키기! */
+/* 컬럼 순서: 캠페인 이름, 이용 시작 날짜, 이용 기간, 사용 햇살 갯수, 연장하기 */
+.sunshine-usage-history th:nth-child(1),
+.sunshine-usage-history td:nth-child(1) {
+    width: 28%;
+    text-align: left;
+}
+
+.sunshine-usage-history th:nth-child(2),
+.sunshine-usage-history td:nth-child(2) {
+    width: 18%;
+}
+
+.sunshine-usage-history th:nth-child(3),
+.sunshine-usage-history td:nth-child(3) {
+    width: 18%;
+}
+
+.sunshine-usage-history th:nth-child(4),
+.sunshine-usage-history td:nth-child(4) {
+    width: 18%;
+}
+
+.sunshine-usage-history th:nth-child(5),
+.sunshine-usage-history td:nth-child(5) {
+    width: 18%;
+}
+
+/* === WebKit 기반 브라우저 스크롤바 스타일 === */
+
+
+/* 스크롤바 트랙 (스크롤바가 움직이는 배경) */
+.sunshine-usage-history tbody::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    /* 트랙의 배경색 (연한 회색) */
+}
+
+/* 스크롤바 핸들 (사용자가 드래그하는 부분) */
+.sunshine-usage-history tbody::-webkit-scrollbar-thumb {
+    background: #ffcc80;
+    /* 핸들의 배경색 (기존 버튼과 유사한 주황색 계열) */
+}
+
+/* 스크롤바 핸들에 마우스를 올렸을 때 */
+.sunshine-usage-history tbody::-webkit-scrollbar-thumb:hover {
+    background: #ffa726;
+    /* 호버 시 핸들 배경색 (조금 더 진한 주황색) */
+}
+
+/* 기존 스타일 유지 */
+.sunshine-usage-history .external-link-icon {
+    margin-left: 5px;
+    color: #888;
+    font-size: 0.9em;
+}
+
+.sunshine-usage-history .action-button {
+    background-color: #ffcc80;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.sunshine-usage-history .action-button:hover {
+    background-color: #ffa726;
+}

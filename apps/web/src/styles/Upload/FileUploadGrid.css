@@ -1,0 +1,75 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css');
+
+/* --- 전체 레이아웃을 잡는 부모 컨테이너 --- */
+.upload-container {
+    /* 1. 레이아웃 방식을 Grid로 변경 */
+    display: grid;
+    /* 2. 가로로 2개의 동일한 칸을 만듦 */
+    grid-template-columns: 1fr 1fr;
+    /* 3. 카드 사이의 간격을 줌 */
+    gap: 24px;
+
+    width: 100%;
+    height: 90vh;
+    background: #f0f2f5;
+    box-sizing: border-box;
+}
+
+/* --- 제목 --- */
+.upload-mainhead {
+    /* 제목이 2개의 칸을 모두 차지하도록 설정 (1번 칸 ~ 마지막 칸) */
+    grid-column: 1 / -1;
+    font-size: 26px;
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 800;
+    color: #576FA3;
+    margin: 0 0 8px 0;
+    /* 위, 좌우 마진은 제거하고 아래만 살짝 줌 */
+}
+
+/* --- 모든 카드의 공통 스타일 --- */
+.file-card {
+    background: #ffffff;
+    box-shadow: 0px 7.6px 22.8px rgba(192, 199, 239, 0.8);
+    border-radius: 22.8px;
+    padding: 20px;
+    /* ⭐ 중요 ⭐
+      position, top, left, width, height는 모두 제거!
+      Grid가 알아서 위치와 크기를 잡아주기 때문.
+    */
+}
+
+/* --- 각 카드의 개별 설정 --- */
+
+/* 광고 보고서 카드 - grid의 첫번째 칸에 자동으로 들어감 */
+.file-sales-report {
+    /* 특별한 설정 필요 없음 */
+}
+
+/* 마진 보고서 카드 - grid의 두번째 칸에 자동으로 들어감 */
+.file-margin-report {
+    /* 특별한 설정 필요 없음 */
+}
+
+/* 상품 판매 내역 카드 (아래쪽 긴 카드) */
+.file-sales-history {
+    /* 이 카드가 2개의 칸을 모두 차지하도록 설정 */
+    grid-column: 1 / -1;
+    height: 100%;
+}
+
+/* 마진 판매 내역 카드 (현재는 주석 처리된 카드) */
+.file-margin-history {
+    /* 이 카드는 현재 주석처리 되어있지만, 나중에 필요하면
+       어떻게 배치할지 여기에 grid-column 설정을 추가하면 됨 */
+}
+
+
+/* ⭐⭐⭐ 진짜 핵심! 반응형 처리 ⭐⭐⭐ */
+@media (max-width: 900px) {
+    .upload-container {
+        /* 화면이 900px보다 작아지면, 칸을 1개로 변경! */
+        /* 이렇게 하면 모든 카드들이 자동으로 세로로 쌓이게 됨. */
+        grid-template-columns: 1fr;
+    }
+}

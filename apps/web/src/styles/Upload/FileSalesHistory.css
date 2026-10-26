@@ -1,0 +1,23 @@
+.file-sales-history {
+    min-height: 600px;
+    /* 최소 높이 보장 */
+    display: flex;
+    flex-direction: column;
+}
+
+.calendars {
+    min-height: 400px;
+    /* 달력 영역 최소 높이 */
+    flex: 1;
+    /* 남은 공간을 모두 차지 */
+}
+
+.calendar-grid {
+    flex: 1;
+    /* 달력 그리드가 남은 공간 모두 차지 */
+}
+
+.calendar-day {
+    min-height: 3rem;
+    /* 각 날짜 셀 최소 높이 보장 */
+}

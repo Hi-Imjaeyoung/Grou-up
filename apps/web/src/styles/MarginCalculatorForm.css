@@ -1,0 +1,350 @@
+.main-table-container {
+    background-color: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.main-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.main-table-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+
+
+
+/* OptionsTable.css와 ActionButtons.css의 내용도 여기에 통합하거나 별도 파일로 관리할 수 있습니다. */
+/* 아래는 OptionsTable에 필요한 스타일 예시입니다. */
+
+.options-table-container {
+    overflow-x: auto;
+}
+
+.options-table-component {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.options-table-component th,
+.options-table-component td {
+    padding: 12px;
+    border-bottom: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.options-table-component th {
+    background-color: #f7f8fc;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* 그룹화 스타일 */
+.options-table-component tbody tr.group-start td {
+    border-top: 1.5px dashed #e0e0e0;
+}
+
+/* --- 헤더 버튼 그룹 --- */
+.header-button-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* 버튼들 사이의 간격 */
+}
+
+.action-button-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- 버튼 공통 스타일 --- */
+.add-item-button,
+.save-button,
+.excel-upload-button,
+.excel-download-button,
+.delete-button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.add-item-button:hover,
+.save-button:hover,
+.delete-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 버튼 개별 색상 --- */
+.add-item-button {
+    background-color: #6366f1;
+    color: white;
+}
+
+.add-item-button:hover {
+    background-color: #4f46e5;
+}
+
+
+.save-button {
+    background-color: #10b981;
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #059669;
+}
+
+.delete-button {
+    background-color: #ef4444;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #dc2626;
+}
+
+/* 에러 메시지 박스 */
+.error-message-box {
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.campaign-group-list {
+    margin-top: 16px;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.campaign-group {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.campaign-group:last-child {
+    border-bottom: none;
+}
+
+.campaign-group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #f7f8fc;
+}
+
+.campaign-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.add-option-in-group-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6366f1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.option-row,
+.option-row-header {
+    display: flex;
+    align-items: stretch;
+    /* 셀 높이를 동일하게 */
+}
+
+.option-row:not(:last-child) {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.option-row-header {
+    background-color: #fdfdff;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #6c757d;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.option-cell {
+    padding: 4px;
+    flex: 1 1 100px;
+    /* 기본 너비 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #eef2f7;
+}
+
+.option-cell:last-child {
+    border-right: none;
+}
+
+.option-cell.checkbox-cell {
+    flex-grow: 0;
+    flex-basis: 40px;
+}
+
+.option-cell.product-name-cell {
+    flex-grow: 2;
+    flex-basis: 250px;
+}
+
+.option-cell.delete-cell {
+    flex-grow: 0;
+    flex-basis: 60px;
+}
+
+.option-cell input,
+.option-cell select {
+    width: 100%;
+    padding: 6px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.option-cell.read-only {
+    font-size: 13px;
+}
+
+.no-options-row {
+    padding: 24px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.campaign-group-list {
+    margin-top: 16px;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.campaign-group {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.campaign-group:last-child {
+    border-bottom: none;
+}
+
+.campaign-group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #f7f8fc;
+}
+
+.campaign-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.add-option-in-group-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6366f1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.option-row,
+.option-row-header {
+    display: flex;
+    align-items: stretch;
+    /* 셀 높이를 동일하게 */
+}
+
+.option-row:not(:last-child) {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.option-row-header {
+    background-color: #fdfdff;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #6c757d;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.option-cell {
+    padding: 4px;
+    flex: 1 1 100px;
+    /* 기본 너비 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #eef2f7;
+}
+
+.option-cell:last-child {
+    border-right: none;
+}
+
+.option-cell.checkbox-cell {
+    flex-grow: 0;
+    flex-basis: 40px;
+}
+
+.option-cell.product-name-cell {
+    flex-grow: 2;
+    flex-basis: 250px;
+}
+
+.option-cell.delete-cell {
+    flex-grow: 0;
+    flex-basis: 60px;
+}
+
+.option-cell input,
+.option-cell select {
+    width: 100%;
+    padding: 6px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.option-cell.read-only {
+    font-size: 13px;
+}
+
+.no-options-row {
+    padding: 24px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.excel-upload-button {
+    color: white;
+    background-color: #eec438;
+}
+
+.excel-download-button {
+    color: white;
+    background-color: #f3844c;
+}

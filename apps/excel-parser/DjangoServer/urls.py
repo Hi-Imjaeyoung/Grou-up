@@ -1,0 +1,33 @@
+"""
+URL configuration for DjangoServer project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path
+
+from DjangoServer.lottoTest.generateS3url import generate_s3_presigned_url
+from DjangoServer.lottoTest.uploadMargin import upload_margin
+from DjangoServer.lottoTest.views import upload_excel
+from DjangoServer.views import  index
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path('django/upload_excel/', upload_excel, name='upload_excel'),
+    path('django/upload_margin/', upload_margin, name = 'upload_margin'),
+    path('django/generate_s3_presigned_url/', generate_s3_presigned_url, name='generate_s3_presigned_url'),
+
+    path('', index, name='index'),  # / 경로 추가
+
+]

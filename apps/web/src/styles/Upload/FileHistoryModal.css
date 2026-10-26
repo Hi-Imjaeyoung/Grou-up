@@ -1,0 +1,361 @@
+/* overlay */
+.file-history-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* 모달 박스 컨테이너 */
+.file-history-modal-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 닫기 버튼 */
+.file-history-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.file-history-modal-close:hover {
+    color: #333;
+}
+
+/* 제목 */
+.file-history-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+/* 파일 리스트 */
+.file-history-modal-list>.file-history-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.file-history-modal-list>.file-history-item:hover {
+    border-color: #ddd;
+    background: #fafafa;
+}
+
+.file-history-modal-item-type {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.file-history-modal-item-detail {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+
+/* ----------- */
+/* FileHistoryModal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.file-history-modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 90vw;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95) translateY(20px);
+    animation: slideUp 0.2s ease-out forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: scale(1) translateY(0);
+    }
+}
+
+
+.file-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+
+
+.file-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.file-type-badge.excel {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.file-type-badge.csv {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.file-type-badge.default {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.file-type-icon {
+    flex-shrink: 0;
+}
+
+.file-name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.delete-button {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.delete-button:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: scale(1.05);
+}
+
+.file-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border-left: 4px solid #e5e7eb;
+}
+
+.stat-item:has(.stat-value.total) {
+    border-left-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.stat-item:has(.stat-value.new) {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.stat-item:has(.stat-value.duplicate) {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.stat-icon {
+    flex-shrink: 0;
+    color: #6b7280;
+}
+
+.stat-icon.new {
+    color: #10b981;
+}
+
+.stat-icon.duplicate {
+    color: #f59e0b;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.stat-value.total {
+    color: #3b82f6;
+}
+
+.stat-value.new {
+    color: #10b981;
+}
+
+.stat-value.duplicate {
+    color: #f59e0b;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+}
+
+.empty-icon {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .file-history-modal {
+        width: 95vw;
+        max-height: 90vh;
+        margin: 16px;
+    }
+
+    .modal-header {
+        padding: 20px 20px 16px;
+    }
+
+    .header-content {
+        gap: 8px;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+    }
+
+    .date-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .file-card {
+        padding: 16px;
+    }
+
+    .file-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .delete-button {
+        align-self: flex-end;
+        width: fit-content;
+    }
+
+    .file-stats {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .stat-item {
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .modal-title {
+        font-size: 1.125rem;
+    }
+
+    .file-name {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,301 @@
+.options-table-component {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+}
+
+.options-table-component th,
+.options-table-component td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    word-wrap: break-word;
+    font-size: 13px;
+    padding: 10px;
+}
+
+/* 열 너비 지정 */
+.options-table-component th:nth-child(1),
+.options-table-component td:nth-child(1) {
+    width: 3%;
+    /* 체크박스 */
+}
+
+.options-table-component th:nth-child(2),
+.options-table-component td:nth-child(2) {
+    width: 20%;
+    max-width: 250px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    text-align: left;
+}
+
+.options-table-component th:nth-child(3),
+.options-table-component td:nth-child(3) {
+    width: 17%;
+}
+
+.options-table-component th:nth-child(4),
+.options-table-component td:nth-child(4) {
+    width: 9%;
+}
+
+.options-table-component th:nth-child(5),
+.options-table-component td:nth-child(5),
+.options-table-component th:nth-child(6),
+.options-table-component td:nth-child(6),
+.options-table-component th:nth-child(7),
+.options-table-component td:nth-child(7) {
+    width: 7%;
+}
+
+.options-table-component th:nth-child(8),
+.options-table-component td:nth-child(8) {
+    width: 6.0%;
+}
+
+.options-table-component th:nth-child(9),
+.options-table-component td:nth-child(9),
+.options-table-component th:nth-child(10),
+.options-table-component td:nth-child(10) {
+    width: 6%;
+    /* 마진, ROAS */
+}
+
+.options-table-component th:nth-child(11),
+.options-table-component td:nth-child(11) {
+    width: 6%;
+    /* 삭제 */
+}
+
+/* 입력 박스 스타일 */
+.options-table-input-name {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.options-table-input,
+.options-table-dropdown {
+    width: 100%;
+    padding: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.options-table-text {
+    display: inline-block;
+    font-size: 13px;
+    padding: 6px;
+    color: #333;
+}
+
+.options-table-delete-button {
+    padding: 6px 10px;
+    background-color: #e74c3c;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.options-table-delete-button:hover {
+    background-color: #c0392b;
+}
+
+.options-table-component td.campaign-name-cell {
+    color: #1f2937;
+    /* 진한 회색/검정 계열 색상 */
+    font-weight: 1000;
+    /* 글자를 살짝 두껍게 */
+    font-size: 16px;
+    text-align: left;
+    /* 그룹화된 셀은 좌측 정렬이 보기 좋습니다 */
+    padding-left: 15px;
+    /* 좌측 여백 추가 */
+}
+
+.campaign-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
+
+.campaign-name {
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+    min-width: 0;
+    /* flex item이 줄어들 수 있도록 */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* 인라인 옵션 추가 버튼 스타일 */
+.add-option-button-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* 버튼이 줄어들지 않도록 */
+}
+
+.placeholder-row .campaign-name-cell {
+    padding: 12px 8px;
+}
+
+/* 기존 CSS는 그대로 유지하고 아래 스타일들을 추가하세요 */
+
+/* 필수 표시 별표 */
+.required-asterisk {
+    color: #ff4444;
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+/* 입력 필드와 검증 아이콘을 감싸는 컨테이너 */
+.input-with-validation {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 필수 필드 경고 아이콘 */
+.required-field-icon {
+    color: #ff4444;
+    margin-left: 4px;
+    flex-shrink: 0;
+    cursor: help;
+}
+
+/* 비어있는 필수 필드 스타일 */
+.required-empty {
+    border: 1px solid #ff4444 !important;
+    background-color: #fff5f5 !important;
+    box-shadow: 0 0 3px rgba(255, 68, 68, 0.3) !important;
+}
+
+.required-empty:focus {
+    border-color: #ff4444 !important;
+    box-shadow: 0 0 5px rgba(255, 68, 68, 0.5) !important;
+    outline: none;
+}
+
+/* 필수 필드가 채워졌을 때의 스타일 (선택사항) */
+.options-table-input:valid,
+.options-table-dropdown:valid,
+.options-table-input-name:valid {
+    border-color: #ffffff;
+    background-color: #ffffff;
+}
+
+/* 호버 효과 */
+.required-field-icon:hover {
+    color: #cc0000;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+/* 테이블 헤더의 필수 표시 */
+th .required-asterisk {
+    font-size: 12px;
+    vertical-align: super;
+}
+
+.options-table-container {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* 헤더 고정 */
+.options-table-component thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8f9fa;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1200px) {
+
+    .options-table-component th:nth-child(2),
+    .options-table-component td:nth-child(2) {
+        width: 18%;
+    }
+
+    .options-table-component th:nth-child(3),
+    .options-table-component td:nth-child(3) {
+        width: 15%;
+    }
+}
+
+@media (max-width: 768px) {
+    .options-table-container {
+        overflow-x: auto;
+        /* 가로 스크롤 추가 */
+    }
+
+    .options-table-component {
+        min-width: 800px;
+        /* 최소 너비 설정 */
+    }
+
+    .options-table-component th,
+    .options-table-component td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .options-table-input-name {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .options-table-input,
+    .options-table-dropdown {
+        padding: 4px;
+        font-size: 11px;
+    }
+
+    .add-option-button-inline {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .options-table-component {
+        min-width: 600px;
+    }
+
+    .options-table-component th,
+    .options-table-component td {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .campaign-name {
+        font-size: 12px;
+    }
+}

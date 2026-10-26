@@ -1,0 +1,65 @@
+/* src/styles/MarginCalculatorResult.css */
+
+/* 전체적인 컨텐츠 레이아웃 */
+.form-main-content {
+    padding: 24px;
+    background-color: #f0f2f5;
+    /* 전체 배경색 */
+}
+
+/* 날짜 선택기 컨테이너 (우측 정렬을 위해) */
+.date-selection-container-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.add-button {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    padding: 6px 10px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    min-width: 160px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin-right: 2%;
+}
+
+.add-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+
+.campaign-header {
+    display: flex;
+    justify-content: space-between;
+    /* 제목과 버튼들을 양쪽 끝으로 보냅니다. */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    padding: 10px
+}
+
+.campaign-header h3 {
+    margin: 0;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.campaign-card {
+    background-color: #ffffff;
+    border: 2px solid #5C62b8;
+    border-radius: 50px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}

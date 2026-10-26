@@ -1,0 +1,330 @@
+/* MarginNetTable.css */
+
+.net-profit-table-wrapper {
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    scrollbar-width: thin;
+}
+
+
+
+.net-profit-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 800px;
+}
+
+.net-profit-table-wrapper thead tr {
+    border-bottom: 1px solid #000000;
+}
+
+/* ✅ 기본 th, td 설정에서 position 속성 제거 */
+.net-profit-table-wrapper th,
+.net-profit-table-wrapper td {
+    padding: 0;
+    height: 10px;
+    vertical-align: middle;
+    border-bottom: none;
+}
+
+/* 모든 세로선을 ::after 가상 요소로 대체 */
+.net-profit-table-wrapper th::after,
+.net-profit-table-wrapper td::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background-color: #e9ecef;
+}
+
+.net-profit-table-wrapper th:last-child::after,
+.net-profit-table-wrapper td:last-child::after {
+    display: none;
+}
+
+
+/* --- ▼▼▼ 1열, 2열 고정(Sticky)을 위한 핵심 코드 ▼▼▼ --- */
+
+/* 1열 고정 (탭/행 헤더) */
+.header-tabs,
+.row-header {
+    position: sticky;
+    /* ✅ 고정 열에는 sticky 적용 */
+    left: 0;
+    z-index: 3;
+    width: 120px;
+    min-width: 120px;
+}
+
+/* 2열 고정 (합계) */
+.header-total,
+.total-cell {
+    position: sticky;
+    /* ✅ 고정 열에는 sticky 적용 */
+    left: 120px;
+    z-index: 2;
+    width: 120px;
+}
+
+/* 스크롤 시 내용이 비치지 않도록 배경색 지정 */
+.header-tabs {
+    background-color: white;
+}
+
+.row-header {
+    background-color: white;
+}
+
+.header-total {
+    background-color: #ECEEF6;
+}
+
+.total-cell {
+    background-color: #ECEEF6;
+}
+
+/* --- ▲▲▲ 1열, 2열 고정(Sticky)을 위한 핵심 코드 ▲▲▲ --- */
+
+
+/* 좌측 탭 영역 */
+.header-tabs {
+    text-align: center;
+}
+
+.header-tabs::after {
+    width: 2px;
+}
+
+.tab-button {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 8px;
+    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+}
+
+.tab-button:hover {
+    background: #3367d6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(66, 133, 244, 0.4);
+}
+
+.tab-button.active {
+    background: #4285f4;
+}
+
+/* 합계 컬럼 헤더 */
+.header-total::after {
+    width: 2px;
+}
+
+.header-content {
+    padding: 16px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+/* 날짜 컬럼 */
+.net-profit-table-wrapper th:not(.header-tabs):not(.header-total) {
+    width: 100px;
+    min-width: 80px;
+    background: white;
+    position: relative;
+    /* ✅ 고정되지 않는 열에만 relative 적용 */
+}
+
+
+/* ✅ 고정되지 않는 일반 데이터 셀에만 relative 적용 */
+.net-profit-table-wrapper tbody td:not(.row-header):not(.total-cell) {
+    position: relative;
+}
+
+/* 일반 데이터 셀의 점선 스타일 */
+.net-profit-table-wrapper td::after {
+    background: linear-gradient(to bottom, #cccccc 50%, transparent 50%);
+    background-size: 1px 8px;
+    background-repeat: repeat-y;
+    width: 1px;
+}
+
+/* 행 헤더 (매출, 순수익) */
+.row-header {
+    font-weight: 400;
+    text-align: center;
+    font-size: 14px;
+}
+
+.row-header::after {
+    width: 2px;
+}
+
+/* 합계 셀의 선 스타일 (점선 스타일 덮어쓰기) */
+.total-cell::after {
+    width: 2px;
+    background-color: #e9ecef;
+    background-image: none;
+    background-size: auto;
+    background-repeat: no-repeat;
+}
+
+/* 셀 내용 */
+.cell-content {
+    padding: 12px 8px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cell-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+.positive-profit,
+.negative-profit {
+    font-weight: bold;
+    font-size: 1.0em;
+}
+
+.positive-profit {
+    color: blue;
+}
+
+.negative-profit {
+    color: red;
+}
+
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .net-profit-table-wrapper th:not(.header-tabs):not(.header-total) {
+        width: 80px;
+        min-width: 60px;
+    }
+
+    .header-content,
+    .cell-value {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .header-tabs,
+    .row-header {
+        width: 120px;
+    }
+
+    .header-total,
+    .total-cell {
+        width: 80px;
+        left: 120px;
+    }
+
+    .net-profit-table-wrapper th:not(.header-tabs):not(.header-total) {
+        width: 60px;
+        min-width: 50px;
+    }
+
+    .tab-button {
+        padding: 8px 16px;
+        font-size: 12px;
+        margin: 4px;
+    }
+
+    .header-content,
+    .cell-value {
+        font-size: 11px;
+    }
+
+    .cell-content {
+        padding: 8px 4px;
+    }
+}
+
+/* 스크롤바 스타일 */
+.net-profit-table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.net-profit-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.net-profit-table-wrapper::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.2s ease-in-out;
+}
+
+.net-profit-table-wrapper:hover::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+}
+
+/* 애니메이션 */
+@keyframes tableSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.net-profit-table-wrapper {
+    animation: tableSlideIn 0.3s ease-out;
+}
+
+/* 로딩 상태 */
+.net-profit-table-wrapper.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.net-profit-table-wrapper.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4285f4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,88 @@
+.card-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1%;
+}
+
+/* 토글 스위치 스타일 */
+.chart-toggle-switch {
+    display: flex;
+    background-color: #3B6FE2;
+    border-radius: 30px;
+    padding: 4px;
+}
+
+.chart-toggle-button {
+    width: 30px;
+    height: 20px;
+    border: none;
+    background-color: transparent;
+    border-radius: 30%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.chart-toggle-button.active {
+    background-color: #ffffff;
+    color: #3B6FE2;
+}
+
+/* 차트 영역 */
+.chart-container {
+    margin-top: 10px;
+}
+
+/* 테이블 래퍼 - 반응형 처리 */
+.sales-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.sales-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    table-layout: auto;
+}
+
+.sales-table th {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e6ed;
+    color: #6e6e6e;
+    font-weight: 700;
+    padding: 12px 8px;
+    text-align: left;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    white-space: nowrap;
+}
+
+.sales-table td {
+    color: #000000;
+    font-weight: 600;
+    padding: 12px 8px;
+    text-align: left;
+    border: none;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+/* 작은 화면에서의 추가 반응형 처리 */
+@media (max-width: 768px) {
+    .sales-table {
+        font-size: 12px;
+    }
+
+    .sales-table th,
+    .sales-table td {
+        padding: 8px 6px;
+    }
+}

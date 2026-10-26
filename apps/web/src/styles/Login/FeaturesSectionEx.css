@@ -1,0 +1,137 @@
+.min-h-custom {
+    min-height: 140vh;
+    /* 기본 높이 설정 */
+}
+
+.sales-card {
+    border-radius: 0.5rem;
+    /* 카드의 모서리를 둥글게 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* 그림자 효과 */
+    animation: float 3s ease-in-out infinite;
+    /* 둥둥 떠다니는 애니메이션 */
+    max-width: 800px;
+    /* 최대 너비 설정 */
+    width: 100%;
+    /* 너비를 100%로 설정하여 최대 너비에 맞춤 */
+    height: auto;
+    /* 높이는 자동으로 설정 */
+}
+
+.margins-card {
+    border-radius: 0.5rem;
+    /* 카드의 모서리를 둥글게 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* 그림자 효과 */
+    animation: float 3s ease-in-out infinite;
+    /* 둥둥 떠다니는 애니메이션 */
+    max-width: 800px;
+    /* 최대 너비 설정 */
+    width: 100%;
+    /* 너비를 100%로 설정하여 최대 너비에 맞춤 */
+    height: auto;
+    /* 높이는 자동으로 설정 */
+}
+
+.data-question {
+    color: white;
+    /* 텍스트 색상을 흰색으로 설정 */
+    font-weight: bold;
+    /* 글자 두껍게 */
+    font-size: 4rem;
+    /* 글자 크기 조정 */
+}
+
+.highlight {
+    background-color: rgb(0, 0, 0);
+    /* 배경색을 검정색으로 설정 */
+    padding: 0.5rem;
+    /* 패딩 추가 */
+    border-radius: 0.25rem;
+    /* 모서리 둥글게 */
+}
+
+.red-text {
+    color: red;
+    /* 텍스트 색상을 빨간색으로 설정 */
+}
+
+.yellow-text {
+    color: yellow;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+
+
+    .min-h-custom {
+        min-height: 100vh;
+        /* 모바일에서는 높이를 100vh로 줄이기 */
+    }
+
+    .sales-card,
+    .margins-card {
+        max-width: 100%;
+        /* 최대 너비를 90%로 설정하여 크기 줄이기 */
+        height: auto;
+        /* 높이는 자동으로 설정 */
+    }
+
+    .data-question {
+        font-size: 3rem;
+        text-align: center;
+        /* 텍스트 가운데 정렬 */
+        margin-bottom: 2rem;
+        margin-top: 2rem;
+        line-height: 2.0;
+    }
+
+    .relative {
+        margin-top: 0;
+        /* 위쪽 여백 제거 */
+    }
+}
+
+/* 애니메이션 정의 */
+@media (max-width: 480px) {
+    .min-h-custom {
+        min-height: 85vh;
+    }
+
+    .sales-card,
+    .margins-card {
+        max-width: 100%;
+        /* 최대 너비를 80%로 설정하여 크기 줄이기 */
+        height: auto;
+        /* 높이는 자동으로 설정 */
+    }
+
+    .data-question {
+        font-size: 2rem;
+        text-align: center;
+        padding: 0.2rem 0.5rem;
+        /* 서브 제목 크기 줄이기 */
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        line-height: 1.8;
+    }
+
+}
+
+/* 애니메이션 정의 */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+        /* 기본 위치 */
+    }
+
+    50% {
+        transform: translateY(-10px);
+        /* 중간 위치에서 위로 이동 */
+    }
+
+    100% {
+        transform: translateY(0);
+        /* 다시 기본 위치로 */
+    }
+}

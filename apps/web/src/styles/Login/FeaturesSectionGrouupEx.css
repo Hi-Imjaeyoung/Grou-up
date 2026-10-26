@@ -1,0 +1,227 @@
+.grouup-ex-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+    background-color: #5C62B8;
+    /* 배경색 */
+    min-height: 100vh;
+    /* 화면 높이에 맞춤 */
+    color: white;
+    /* 텍스트 색상 */
+}
+
+.margin-upload-image {
+    width: 80%;
+    /* 이미지 크기 조절 */
+    max-width: 55%;
+    /* 최대 너비 설정 */
+    margin-bottom: 3%;
+    /* 이미지와 텍스트 사이의 간격 */
+    margin-top: 10%;
+    /* 위쪽 간격 */
+}
+
+
+
+.dashboard-image {
+    width: 80%;
+    /* 대시보드 이미지 크기 조절 */
+    max-width: 80%;
+    /* 최대 너비 설정 */
+    margin-top: 15%;
+    /* 텍스트와 대시보드 이미지 사이의 간격 */
+}
+
+.keyword-image {
+    width: 80%;
+    /* 키워드 이미지 크기 조절 */
+    max-width: 80%;
+    /* 최대 너비 설정 */
+    margin-top: 15%;
+    /* 이미지 간격 */
+}
+
+.keyword-image+.keyword-image {
+    margin-top: 3%;
+    /* 두 키워드 이미지 사이의 간격 */
+}
+
+.margin-image+.margin-image {
+    margin-top: 3%;
+    /* 두 키워드 이미지 사이의 간격 */
+}
+
+.margin-image {
+    width: 80%;
+    /* 마진 이미지 크기 조절 */
+    max-width: 80%;
+    /* 최대 너비 설정 */
+    margin-top: 15%;
+    /* 위쪽 간격 (키워드 이미지와의 간격) */
+}
+
+.ex-upload-text {
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+}
+
+.ex-highlight {
+    background-color: #1B206B;
+    /* 강조 배경색 */
+    color: #8BC8B0;
+    /* 강조 텍스트 색상 */
+    padding: 0.5rem 1rem;
+    /* 패딩 */
+}
+
+.ex-white {
+    color: white;
+    /* "만" 텍스트 색상 흰색으로 설정 */
+}
+
+.ex-sub-text {
+    font-size: 5rem;
+    /* 서브 텍스트 크기 */
+    margin-top: 10px;
+    /* 위쪽 간격 */
+}
+
+.ex-dashboard-text {
+    margin-top: 5%;
+    /* 위쪽 간격 */
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+}
+
+.ex-dash-highlight {
+    margin-top: 5%;
+    /* 위쪽 간격 */
+}
+
+.ex-dashsub-highligt {
+    color: black;
+    background-color: #1B206B;
+    /* 강조 배경색 */
+    color: #8BC8B0;
+    /* 강조 텍스트 색상 */
+    padding: 0.5rem 1rem;
+    /* 서브 텍스트 색상 */
+}
+
+
+.ex-keyword-text {
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+    margin-top: 5%;
+    /* 위쪽 간격 */
+}
+
+.ex-keyword-highlight {
+    background-color: #1B206B;
+    /* 강조 배경색 */
+    color: #8BC8B0;
+    /* 강조 텍스트 색상 */
+    padding: 0.5rem 1rem;
+    /* 패딩 */
+}
+
+.ex-margin-text {
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+    font-size: 5rem;
+    /* 기본 폰트 크기 */
+    font-weight: bold;
+    /* 두껍게 */
+    margin-top: 5%;
+    /* 위쪽 간격 */
+    margin-bottom: 20%;
+
+}
+
+.ex-margin-subtext-highlight {
+    background-color: #1B206B;
+    /* 강조 배경색 */
+    color: #8BC8B0;
+    /* 강조 텍스트 색상 */
+    padding: 0.5rem 1rem;
+}
+
+.ex-margin-subtext {
+    color: black;
+}
+
+
+/* 반응형 */
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+
+    .ex-upload-text,
+    .ex-dashboard-text,
+    .ex-keyword-text,
+    .ex-margin-text {
+        font-size: 4rem;
+        /* 폰트 크기 줄이기 */
+    }
+
+    .ex-sub-text {
+        font-size: 4rem;
+        /* 서브 텍스트 크기 줄이기 */
+    }
+
+    .margin-upload-image,
+    .dashboard-image,
+    .keyword-image,
+    .margin-image {
+        width: 90%;
+        /* 이미지 크기 조정 */
+        max-width: 90%;
+        /* 최대 너비 설정 */
+        margin-top: 30%;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .ex-upload-text,
+    .ex-dashboard-text,
+    .ex-keyword-text,
+    .ex-margin-text {
+        font-size: 3rem;
+        /* 폰트 크기 더 줄이기 */
+    }
+
+    .ex-sub-text {
+        font-size: 3rem;
+        /* 서브 텍스트 크기 더 줄이기 */
+    }
+
+    .margin-upload-image,
+    .dashboard-image,
+    .keyword-image,
+    .margin-image {
+        width: 95%;
+        /* 이미지 크기 조정 */
+        max-width: 95%;
+        /* 최대 너비 설정 */
+    }
+
+    .margin-image {
+        margin-top: 30%;
+    }
+}

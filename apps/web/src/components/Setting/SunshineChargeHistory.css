@@ -1,0 +1,132 @@
+/* src/components/SunshineChargeHistory.css */
+.sunshine-charge-history {
+    background-color: #FFFFFF;
+    padding: 20px;
+    /* height: 100%; */
+    /* tbody에 max-height를 사용하므로, 이 부분은 주석 처리하거나 필요에 따라 조절합니다. */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 10px 30px rgba(192, 199, 239, 0.8);
+    border-radius: 30px;
+}
+
+.sunshine-charge-history h2 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: left;
+}
+
+/* 1. 테이블 전체 설정 */
+.sunshine-charge-history table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    table-layout: fixed;
+    /* 컬럼 너비 고정을 위해 매우 중요! */
+}
+
+/* 2. 테이블 헤더(thead) 설정 */
+.sunshine-charge-history thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    background-color: #FFFFFF;
+    /* 스크롤바 너비만큼 padding-right 또는 width: calc() 사용 고려 (옵션) */
+}
+
+.sunshine-charge-history thead tr {
+    display: table-row;
+}
+
+.sunshine-charge-history th {
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 3. 테이블 바디(tbody) 설정 - 이 부분이 스크롤됩니다! */
+.sunshine-charge-history tbody {
+    display: block;
+    max-height: 300px;
+    /* 잘 변경하셨네요! */
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+
+    /* 또는 auto */
+    scrollbar-color: #ffcc80 #f0f0f0;
+    /* 핸들색상 트랙색상 */
+}
+
+.sunshine-charge-history tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.sunshine-charge-history td {
+    border-bottom: 1px solid #eee;
+    padding: 10px 8px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+/* 4. 중요: thead의 th와 tbody의 td 컬럼 너비 일치시키기! */
+/* 컬럼 순서: 충전 갯수, 충전 금액, 충전 날짜, 결제 내역 */
+.sunshine-charge-history th:nth-child(1),
+.sunshine-charge-history td:nth-child(1) {
+    width: 30%;
+    text-align: left;
+}
+
+.sunshine-charge-history th:nth-child(2),
+.sunshine-charge-history td:nth-child(2) {
+    width: 25%;
+}
+
+.sunshine-charge-history th:nth-child(3),
+.sunshine-charge-history td:nth-child(3) {
+    width: 20%;
+}
+
+.sunshine-charge-history th:nth-child(4),
+.sunshine-charge-history td:nth-child(4) {
+    width: 25%;
+}
+
+
+/* 스크롤바 트랙 (스크롤바가 움직이는 배경) */
+.sunshine-charge-history tbody::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    /* 트랙의 배경색 (연한 회색) */
+}
+
+/* 스크롤바 핸들 (사용자가 드래그하는 부분) */
+.sunshine-charge-history tbody::-webkit-scrollbar-thumb {
+    background: #ffcc80;
+    /* 핸들의 배경색 (기존 버튼과 유사한 주황색 계열) */
+}
+
+/* 스크롤바 핸들에 마우스를 올렸을 때 */
+.sunshine-charge-history tbody::-webkit-scrollbar-thumb:hover {
+    background: #ffa726;
+    /* 호버 시 핸들 배경색 (조금 더 진한 주황색) */
+}
+
+/* 기존 버튼 스타일 유지 */
+.sunshine-charge-history .action-button {
+    background-color: #ffcc80;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.sunshine-charge-history .action-button:hover {
+    background-color: #ffa726;
+}

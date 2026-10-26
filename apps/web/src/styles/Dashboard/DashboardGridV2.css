@@ -1,0 +1,167 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css');
+
+/* DashboardGridV2.css */
+.dashboard-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.dashboard-grid {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 700px;
+}
+
+/* 기본 카드 스타일 */
+.dashboard-card {
+    position: absolute;
+    background: #FFFFFF;
+    box-shadow: 0px 10px 30px rgba(192, 199, 239, 0.8);
+    border-radius: 20px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.card-label {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 800;
+    /* ExtraBold */
+    font-size: 18px;
+    color: #6E6E6E;
+}
+
+.card-value {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 8%;
+    text-align: left;
+
+}
+
+.dashboard-margin .card-value,
+.dashboard-ad-cost .card-value,
+.dashboard-roas .card-value {
+    margin-top: 15%;
+}
+
+.dashboard-sun .card-value {
+    text-align: left;
+    margin-top: 18%;
+    font-size: 40px;
+}
+
+.dashboard-actual-sales .card-value,
+.dashboard-return-count .card-value {
+    margin-top: 22%;
+}
+
+.text-red {
+    color: #D32F2F;
+}
+
+/* 개별 카드 위치 및 크기 - 퍼센트로 변환 */
+.dashboard-sales {
+    width: 26.7%;
+    height: 19.2%;
+    left: 3%;
+    top: 4%;
+}
+
+.dashboard-actual-sales {
+    width: 11.7%;
+    height: 19.2%;
+    left: 30.4%;
+    top: 4%;
+}
+
+.dashboard-return-count {
+    width: 11.7%;
+    height: 19.2%;
+    left: 42.7%;
+    top: 4%;
+}
+
+.dashboard-calendar {
+    width: 11.7%;
+    height: 19.2%;
+    left: 55%;
+    top: 4%;
+    padding: 0;
+}
+
+
+.dashboard-margin {
+    width: 16.7%;
+    height: 19%;
+    left: 3%;
+    top: 24.5%;
+}
+
+.dashboard-ad-cost {
+    width: 16.7%;
+    height: 19.2%;
+    left: 20.4%;
+    top: 24.5%;
+}
+
+.dashboard-roas {
+    width: 16.7%;
+    height: 19.2%;
+    left: 37.7%;
+    top: 24.5%;
+}
+
+.dashboard-sun {
+    width: 11.7%;
+    height: 18.9%;
+    left: 55%;
+    top: 24.5%;
+    /* background: radial-gradient(50% 50% at 50% 50%, #FFCC3F 0%, #FFF5DF 100%); */
+}
+
+.dashboard-campaign {
+    width: 29.2%;
+    height: 39.5%;
+    left: 67.5%;
+    top: 4%;
+    overflow: auto;
+}
+
+.view-button {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.dashboard-sales-report {
+    width: 46.25%;
+    height: 50%;
+    left: 3%;
+    top: 45%;
+}
+
+.dashboard-margin-report {
+    width: 46.8%;
+    height: 50%;
+    left: 49.9%;
+    top: 45%;
+}
+
+.chart-container {
+    width: 100%;
+    height: 80%;
+    margin-top: 15px;
+}
+
+.highlight-row {
+    font-weight: bold;
+}

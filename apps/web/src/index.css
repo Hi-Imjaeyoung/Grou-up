@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* react-datepicker의 팝업(popper) z-index를 최상위로 올리기 */
+.high-z-index-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+/* Tailwind CSS 지시어 추가 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (max-width: 768px) {
+  body.login-page {
+    /* 로그인 페이지에만 적용할 스타일 */
+    width: auto;
+    /* 또는 다른 스타일 */
+  }
+
+  body {
+    width: 300%;
+    /* 기본 스타일 */
+  }
+
+  .add-button {
+    width: 20%;
+  }
+
+}

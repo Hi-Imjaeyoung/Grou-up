@@ -79,13 +79,6 @@ public class LazySegmentTreeService {
         return hitCount.sum();
     }
 
-    private SegmentNodeData getSegmentNodeDataSafe(String email, int year) {
-        return lazyCacheTree
-                .get(email, k -> new UserSegmentTree()) // 유저 없으면 생성
-                .treeMap
-                .computeIfAbsent(year, k -> new SegmentNodeData()); // 연도 없으면 생성
-    }
-
     public int makeKey(int start, int end) {
         return (start << 9) | end;
     }
@@ -100,12 +93,14 @@ public class LazySegmentTreeService {
     }
 
     public boolean isTreeBuild(String email, int year){
-        boolean isExist = lazyCacheTree.asMap().containsKey(email);
-        if(isExist){
-            UserSegmentTree value = lazyCacheTree.get(email,k-> new UserSegmentTree());
-            return value.containsKey(year);
-        }
-        return false;
+        UserSegmentTree userSegmentTree = lazyCacheTree.getIfPresent(email);
+        return userSegmentTree != null && userSegmentTree.containsKey(year);
+    }
+
+    public boolean isTreeBuild(String email, LocalDate start, LocalDate end){
+        // 구간 조회는 시작 연도와 끝 연도 트리만 합산하므로, 2년을 넘는 구간은 캐시로 처리하지 않는다
+        if(end.getYear() - start.getYear() > 1) return false;
+        return isTreeBuild(email, start.getYear()) && isTreeBuild(email, end.getYear());
     }
 
     public AllCampaignTypeData getCachedOrSelectAllCampaignTypeDataByPeriod(String email,
@@ -139,8 +134,8 @@ public class LazySegmentTreeService {
     private AllCampaignTypeData getOrLoadNode(String email, int year, int start, int end) {
         requestCount.increment();
         int key = makeKey(start, end);
-        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
-        if (segmentNodeData.containsKey(key)) {
+        SegmentNodeData segmentNodeData = getSegmentNodeData(email,year);
+        if (segmentNodeData != null && segmentNodeData.containsKey(key)) {
             hitCount.increment();
             log.debug("캐싱 hit! key : " + key);
             return segmentNodeData.getCampaignAnalysisDto(key);
@@ -159,11 +154,13 @@ public class LazySegmentTreeService {
         return !buildingInProgress.add(key);
     }
     public void buildTree(String email, int year, List<Tuple> dbResult){
-        SegmentNodeData segmentNodeData = getSegmentNodeDataSafe(email,year);
+        // 빌드 중인 트리가 조회되지 않도록 별도 객체에 다 만든 뒤 마지막에 등록한다
+        SegmentNodeData segmentNodeData = new SegmentNodeData();
         Map<Integer, AllCampaignTypeData> dailyDataMap = mapDbResultToDailyData(dbResult);
         int nodeEnd = LocalDate.of(year,1,1).isLeapYear() ? 366 : 365;
         fillLeafNodes(segmentNodeData, dailyDataMap, 1, nodeEnd);
         buildTree(segmentNodeData, 1, nodeEnd);
+        lazyCacheTree.get(email, k -> new UserSegmentTree()).put(year, segmentNodeData);
     }
 
     private void fillLeafNodes(SegmentNodeData segmentNodeData, Map<Integer, AllCampaignTypeData> dailyDataMap, int start, int end) {

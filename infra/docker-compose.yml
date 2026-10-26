@@ -1,0 +1,17 @@
+# 로컬 부하 테스트용 DB
+# 사용: cp .env.example .env && docker compose up -d
+# 모니터링(Prometheus/Grafana)은 docker-compose.monitoring.yml 을 함께 띄운다.
+services:
+  mysql:
+    image: "mysql:8.0.29"
+    container_name: "grouup-mysql"
+    ports:
+      - "${MYSQL_HOST_PORT:-3306}:3306"
+    volumes:
+      - "grouup-mysql-data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "grouup"
+
+volumes:
+  grouup-mysql-data:

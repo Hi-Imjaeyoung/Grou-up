@@ -49,7 +49,16 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 
 | 스크립트 | 엔드포인트 | 비고 |
 |---|---|---|
-| [excel-download.js](01-excel/scripts/excel-download.js) | `GET /api/marginforcam/downloadExcel` | 다운로드 부하. 업로드 시나리오는 [poc 쪽 excel-upload.js](../poc/global-cache-msa/k6Test/excel-upload.js) |
+| [excel-download.js](01-excel/scripts/excel-download.js) | `GET /api/marginforcam/downloadExcel` | 다운로드 부하 |
+| [excel-upload.js](01-excel/scripts/excel-upload.js) | `POST /api/marginforcam/upload` | 2026-10-27 재측정용. 예열 5명 10초 → 50명 30초, 사용자마다 자기 캠페인 500행 파일(`01-excel/data/generate.py`로 생성) |
+
+원래 업로드 스크립트는 [poc 쪽 excel-upload.js](../poc/global-cache-msa/k6Test/excel-upload.js)입니다. 이 스크립트가 쓰는 `test_excel.xlsx`에는 캠페인 ID 열이 없어 S3 수정 후에는 업로드되지 않습니다.
+
+재측정은 [`01-excel/rerun/run.sh`](01-excel/rerun/run.sh)로 돌립니다.
+- 회차마다 `margin_for_campaign`을 비우고 서버를 새로 띄웁니다.
+- 단계별 구성 jar는 `build-variant-jars.py`로 만들고, 표는 `aggregate.py`로 만듭니다.
+- 결과는 [results/2026-10-rerun](01-excel/results/2026-10-rerun)에 있습니다.
+- `deadlock-before-s7`은 S7 수정 전 데드락 재현 결과입니다. 예열 구간을 넣기 전의 스크립트로 쟀습니다.
 
 ## ② 6개월 대시보드 조회 / 세그먼트 트리 캐시 — `02-segment-tree-cache/`
 

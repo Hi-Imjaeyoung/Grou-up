@@ -15,6 +15,7 @@
 | C6 | `campaign/facade/CampaignTotalDataFacade.java` | 연도를 넘는 조회에서 `end.getYear()` 대신 `start.getYear()`로 빌드 이벤트를 두 번 발행한다. | 코드 확인 |
 | C7 ✅ 해결 (`762e2ce`) | `LazySegmentTreeService.isTreeBuild` / `buildTree` | 빌드 시작 시 연도 엔트리를 먼저 만들어, 빌드 도중에도 "빌드됨"으로 보인다. 그 사이 요청은 빈 노드를 0으로 합산한다. 시작 연도만 확인하는 문제도 있다. | 코드 확인 → 트리를 별도 객체에 다 만든 뒤 등록하고, 조회 시 빈 연도 엔트리를 만들지 않으며, 시작·끝 연도를 모두 확인하도록 수정. 2년을 넘는 구간은 중간 연도가 합산되지 않으므로 캐시를 쓰지 않는다. C6이 고쳐지기 전까지 연도를 넘는 조회는 끝 연도 트리가 만들어지지 않아 DB로 조회한다. 재현 테스트 `LazySegmentTreeServiceBuildStateTest`, `CampaignTotalDataFacadeTest`. |
 | C8 | `campaign/dto/CampaignDeleteDto.checkThreshold` | 300일 **이상**일 때 부분 업데이트를 고른다. 부분 업데이트 비용이 O(T log N)이라면 큰 범위일수록 전체 재빌드가 유리하므로 조건이 반대일 가능성이 있다. | `TreeCpuBenchmarkTest` 결과와 대조 필요 |
+| C9 ✅ 해결 (C9_COMMIT) | `global/cache/LazySegmentTreeService` 캐시 무효화 | 광고 데이터(`Keyword`)는 Django excel-parser가 DB에 직접 `bulk_create`로 넣는다(`apps/excel-parser/.../views.py`). Spring 캐시는 업로드를 알 수 없고, `expireAfterAccess 1h`라서 계속 조회하는 사용자의 트리는 만료되지 않는다. 업로드한 새 데이터가 캐시 조회 결과에 반영되지 않는다. | 코드 확인 (2026-10-26 추가). → Spring에 `POST /api/campaign/cache/invalidate`(인증된 사용자 트리 삭제)를 추가하고, Django `upload_excel`이 저장을 마친 뒤 요청자의 JWT로 이 경로를 호출한다(`SPRING_API_URL` 설정 필요, 실패해도 업로드는 성공). 테스트 `CampaignTotalDataFacadeTest`, `lottoTest/tests.py`. **남은 한계:** 업로드 직전에 시작된 빌드가 무효화 뒤에 등록되면 이전 데이터 트리가 남는다(빌드 세대 번호로 막을 수 있음). |
 
 ## 안정성
 

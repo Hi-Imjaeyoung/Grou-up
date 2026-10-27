@@ -60,6 +60,11 @@ public class CampaignTotalDataFacade {
                 .build();
     }
 
+    // 광고 데이터는 Django가 DB에 직접 넣으므로, 업로드가 끝나면 Django가 이 경로로 사용자 트리를 지운다
+    public void invalidateCache(String email){
+        lazySegmentTreeService.removeAllTreeDataByEmail(email);
+    }
+
     public Map<String,Long> getCacheHitRate(){
         return lazySegmentTreeService.getCacheStats();
     }

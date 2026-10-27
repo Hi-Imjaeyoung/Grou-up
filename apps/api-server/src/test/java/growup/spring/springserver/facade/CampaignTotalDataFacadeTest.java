@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,5 +38,19 @@ class CampaignTotalDataFacadeTest {
         facade.getCampaignTotalDataByLazyLoadingTree(EMAIL, start, end);
 
         verify(keywordService).getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(EMAIL, start, end);
+    }
+
+    @Test
+    @DisplayName("업로드 후 캐시를 무효화하면 사용자의 모든 연도 트리가 지워진다")
+    void invalidateCacheRemovesAllYearsOfUser() {
+        LazySegmentTreeService lazySegmentTreeService = new LazySegmentTreeService();
+        lazySegmentTreeService.buildTree(EMAIL, 2025, List.of());
+        lazySegmentTreeService.buildTree(EMAIL, 2026, List.of());
+        CampaignTotalDataFacade facade = new CampaignTotalDataFacade(keywordService, lazySegmentTreeService, eventPublisher);
+
+        facade.invalidateCache(EMAIL);
+
+        assertThat(lazySegmentTreeService.isTreeBuild(EMAIL, 2025)).isFalse();
+        assertThat(lazySegmentTreeService.isTreeBuild(EMAIL, 2026)).isFalse();
     }
 }

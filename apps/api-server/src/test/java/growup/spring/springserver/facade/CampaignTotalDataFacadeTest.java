@@ -71,4 +71,18 @@ class CampaignTotalDataFacadeTest {
         verify(eventPublisher, atLeastOnce()).publishEvent(captor.capture());
         return captor.getAllValues().stream().map(TreeBuildEvent::getYear).toList();
     }
+
+    @Test
+    @DisplayName("업로드 후 캐시를 무효화하면 사용자의 모든 연도 트리가 지워진다")
+    void invalidateCacheRemovesAllYearsOfUser() {
+        LazySegmentTreeService lazySegmentTreeService = new LazySegmentTreeService();
+        lazySegmentTreeService.buildTree(EMAIL, 2025, List.of());
+        lazySegmentTreeService.buildTree(EMAIL, 2026, List.of());
+        CampaignTotalDataFacade facade = new CampaignTotalDataFacade(keywordService, lazySegmentTreeService, eventPublisher);
+
+        facade.invalidateCache(EMAIL);
+
+        assertThat(lazySegmentTreeService.isTreeBuild(EMAIL, 2025)).isFalse();
+        assertThat(lazySegmentTreeService.isTreeBuild(EMAIL, 2026)).isFalse();
+    }
 }

@@ -136,6 +136,12 @@ public class CampaignController {
     }
 
 
+    @PostMapping("/cache/invalidate")
+    public ResponseEntity<CommonResponse<Void>> invalidateCache(@AuthenticationPrincipal UserDetails userDetails){
+        campaignTotalDataFacade.invalidateCache(userDetails.getUsername());
+        return new ResponseEntity<>(CommonResponse.<Void>builder("success invalidate").build(),HttpStatus.OK);
+    }
+
     @GetMapping("/cacheRate")
     public Map<String, Object> getStats() {
         Map<String, Long> stats = campaignTotalDataFacade.getCacheHitRate();

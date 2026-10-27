@@ -1,0 +1,164 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/load-test/04-timed-waiting/scripts/scanner-burst.js
+        output: -
+
+     scenarios: (100.00%) 2 scenarios, 300 max VUs, 51s max duration (incl. graceful stop):
+              * warm_up: 5 looping VUs for 5s (gracefulStop: 1s)
+              * burst: 300 looping VUs for 15s (startTime: 6s, gracefulStop: 30s)
+
+
+running (01.0s), 005/300 VUs, 155 complete and 0 interrupted iterations
+warm_up   [  19% ] 5 VUs    1.0s/5s
+burst   • [   0% ] waiting  5.0s
+
+running (01.9s), 005/300 VUs, 854 complete and 0 interrupted iterations
+warm_up   [  39% ] 5 VUs    1.9s/5s
+burst   • [   0% ] waiting  4.1s
+
+running (03.0s), 005/300 VUs, 1703 complete and 0 interrupted iterations
+warm_up   [  59% ] 5 VUs    3.0s/5s
+burst   • [   0% ] waiting  3.0s
+
+running (04.0s), 005/300 VUs, 2218 complete and 0 interrupted iterations
+warm_up   [  79% ] 5 VUs    3.9s/5s
+burst   • [   0% ] waiting  2.0s
+
+running (05.0s), 005/300 VUs, 2880 complete and 0 interrupted iterations
+warm_up   [  99% ] 5 VUs    5.0s/5s
+burst   • [   0% ] waiting  1.0s
+
+running (06.0s), 000/300 VUs, 2926 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst   • [   0% ] waiting  0.0s
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+
+running (07.4s), 300/300 VUs, 3837 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [   9% ] 300 VUs  01.4s/15s
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+time="2026-10-27T17:04:44+09:00" level=warning msg="Request Failed" error="Get \"http://localhost:8080/frontend/.env\": dial tcp 127.0.0.1:8080: connectex: No connection could be made because the target machine actively refused it."
+
+running (08.0s), 300/300 VUs, 4382 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  13% ] 300 VUs  02.0s/15s
+
+running (09.0s), 300/300 VUs, 5810 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  20% ] 300 VUs  03.0s/15s
+
+running (10.0s), 300/300 VUs, 7373 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  26% ] 300 VUs  04.0s/15s
+
+running (11.0s), 300/300 VUs, 9280 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  33% ] 300 VUs  05.0s/15s
+
+running (12.0s), 300/300 VUs, 14282 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  40% ] 300 VUs  06.0s/15s
+
+running (13.0s), 300/300 VUs, 18473 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  46% ] 300 VUs  07.0s/15s
+
+running (14.0s), 300/300 VUs, 23248 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  53% ] 300 VUs  08.0s/15s
+
+running (15.0s), 300/300 VUs, 29067 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  60% ] 300 VUs  08.9s/15s
+
+running (16.0s), 300/300 VUs, 34295 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  66% ] 300 VUs  10.0s/15s
+
+running (17.0s), 300/300 VUs, 39900 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  73% ] 300 VUs  10.9s/15s
+
+running (18.0s), 300/300 VUs, 45568 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  80% ] 300 VUs  12.0s/15s
+
+running (19.0s), 300/300 VUs, 50715 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  86% ] 300 VUs  13.0s/15s
+
+running (20.0s), 300/300 VUs, 56014 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  93% ] 300 VUs  14.0s/15s
+
+running (20.9s), 300/300 VUs, 61654 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [ 100% ] 300 VUs  14.9s/15s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{phase:burst}
+    ✓ 'p(95)<60000' p(95)=175.78ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 62229  2961.414213/s
+    checks_succeeded...: 99.95% 62204 out of 62229
+    checks_failed......: 0.04%  25 out of 62229
+
+    ✗ rejected (401/403/404)
+      ↳  99% — ✓ 62204 / ✗ 25
+
+    HTTP
+    http_req_duration..............: avg=63.92ms min=0s med=45.84ms max=1.53s p(90)=113.33ms p(95)=172.4ms 
+      { expected_response:true }...: avg=63.94ms min=0s med=45.84ms max=1.53s p(90)=113.37ms p(95)=172.43ms
+      { phase:burst }..............: avg=66.67ms min=0s med=46.66ms max=1.53s p(90)=117.19ms p(95)=175.78ms
+    http_req_failed................: 0.04%  25 out of 62229
+    http_reqs......................: 62229  2961.414213/s
+
+    EXECUTION
+    iteration_duration.............: avg=71.56ms min=0s med=48.34ms max=1.78s p(90)=134ms    p(95)=189.3ms 
+    iterations.....................: 62229  2961.414213/s
+    vus............................: 300    min=0           max=300
+    vus_max........................: 300    min=300         max=300
+
+    NETWORK
+    data_received..................: 31 MB  1.5 MB/s
+    data_sent......................: 5.1 MB 244 kB/s
+
+
+
+
+running (21.0s), 000/300 VUs, 62229 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst   ✓ [ 100% ] 300 VUs  15s

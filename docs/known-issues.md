@@ -41,7 +41,7 @@
 | O1 | `apps/api-server/Dockerfile` | JMX를 인증·SSL 없이 9010 포트로 노출한다. |
 | O2 | `hibernate/controller/HibernateStatController`, `global/error/DummyControllers`, `/api/campaign/cacheReset` | 테스트용 엔드포인트가 운영 코드에 남아 있다. |
 | O3 | `application.yml` | 기본 프로필이 `bottleNeckTest`이고, 모든 프로필이 `ddl-auto: update`이다. |
-| O4 | 엔티티 | 포트폴리오의 커버링 인덱스가 코드나 마이그레이션 파일에 없다. 재현이 불가능하다. |
+| O4 ✅ 해결 (`3801462`) | 엔티티 | 포트폴리오의 커버링 인덱스가 코드나 마이그레이션 파일에 없다. 재현이 불가능하다. → 원래 정의가 남아 있지 않아 `KeywordRepositoryImpl` 집계 쿼리 기준으로 **다시 설계**했다: `Keyword`에 `idx_keyword_campaign_date_cost_sales (campaign_id, date, ad_cost, ad_sales)`. Before/After 전환용 SQL은 `load-test/02-segment-tree-cache/sql/covering-index.sql`. 테스트 `KeywordCoveringIndexTest`. |
 
 ## PoC (`poc/global-cache-msa`)
 

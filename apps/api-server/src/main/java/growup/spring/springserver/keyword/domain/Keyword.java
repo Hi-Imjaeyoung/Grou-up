@@ -14,6 +14,11 @@ import java.util.Map;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+// 대시보드 집계(캠페인·기간 조건, 광고비·매출 합계)를 테이블 조회 없이 인덱스만으로 처리한다.
+// 원래 인덱스 DDL이 남아 있지 않아 KeywordRepositoryImpl 쿼리를 기준으로 다시 설계했다(known-issues O4).
+@Table(indexes = {
+        @Index(name = "idx_keyword_campaign_date_cost_sales", columnList = "campaignId, date, adCost, adSales"),
+})
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

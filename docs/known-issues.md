@@ -27,6 +27,7 @@
 | S4 ✅ 해결 (`6fb30a1`) | 같은 파일, `ExcelUploadContext` | IOException이 나면 null을 반환한다. 빈 행이 있으면 NPE로 업로드 전체가 실패한다. `Map.get`은 예외를 던지지 않으므로 `CAMPAIGN_NOT_FOUND`가 발생하지 않는다. 같은 상품명이 중복되면 중복 INSERT가 된다. → 읽을 수 없는 파일은 `FILE_READ_ERROR`, 빈 행은 건너뛰고(`total`은 빈 행 제외), 없는 캠페인은 null 검사로 `CAMPAIGN_NOT_FOUND`, 같은 업로드 안의 중복 옵션은 한 번만 저장하고 마지막 값을 쓴다(`duplicate` 집계). 재현 테스트 `ExcelParsingServiceTest`. |
 | S5 ✅ 해결 (`6fb30a1`) | `marginforcampaign/controller/ExcelDownUpLoadController.java` | 업로드에 실패해도 HTTP 200을 반환한다. → `GrouException`은 오류 코드의 상태(형식 오류 400, 없는 캠페인 404)를, 그 밖의 예외는 500을 반환한다. 재현 테스트 `ExcelUploadStatusTest`. |
 | S6 | `apps/batch-server` | `beanMapped()`는 record와 호환되지 않고, `ad_sales`와 `ad_sale` 이름이 다르다. 행 단위 upsert가 누적 덧셈이라 다시 실행하면 이중 집계된다. `monthly_summary` DDL도 없다. |
+| S7 ✅ 해결 (S7_COMMIT) | `marginforcampaign/service/ExcelService.deleteOldMfcNotExistExcel` | (2026-10-27 추가) 엑셀에 없는 옵션을 지우는 JPQL `DELETE ... NOT IN`(캠페인 조건)이 FK 인덱스 범위에 gap lock 을 잡아, 다른 사용자의 동시 업로드 INSERT 와 데드락이 난다. S3에서 삭제 로직을 되살린 뒤 50명 동시 업로드에서 요청의 51%가 `Deadlock found`로 실패했다. → 파싱 때 읽은 기존 옵션에서 지울 PK 를 골라 `deleteAllByIdInBatch`로 지운다(지울 것이 없으면 DELETE 를 보내지 않음). 테스트 `ExcelServiceDeleteTest`. |
 
 ## 테스트
 

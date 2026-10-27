@@ -84,8 +84,21 @@ dependencies {
 
     testImplementation 'org.openjdk.jmh:jmh-core:1.37'
     testAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+    testImplementation 'org.openjdk.jol:jol-core:0.17'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// JMH 벤치마크 실행: ./gradlew jmh -Pbench=<벤치마크 클래스 정규식>
+// 결과는 build/jmh/<bench>.json 에 저장된다
+tasks.register('jmh', JavaExec) {
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.openjdk.jmh.Main'
+    def bench = project.findProperty('bench') ?: '.*Benchmark.*'
+    def resultFile = layout.buildDirectory.file("jmh/${bench.replaceAll('[^A-Za-z0-9]', '')}.json").get().asFile
+    doFirst { resultFile.parentFile.mkdirs() }
+    args = [bench, '-rf', 'json', '-rff', resultFile.absolutePath]
 }

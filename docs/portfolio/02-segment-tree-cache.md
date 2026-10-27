@@ -69,16 +69,18 @@
 
 ## 병목 3: 트리 생성 비용
 
-1. **빌드 비동기화.** 기존 흐름은 DB 조회 → 트리 빌드 → 응답이었고, 이를 DB 조회 → 응답 + 비동기 빌드로 바꿨습니다.
-   - `@TransactionalEventListener(AFTER_COMMIT)`로 이벤트를 받아 `CompletableFuture`로 실행합니다.
-   - 요청 스레드는 4ms 만에 반환됩니다.
+1. **빌드 비동기화 (Phase 1).** 트리 생성이 끝날 때까지 Tomcat 스레드가 기다려 응답이 늦었습니다. 흐름을 DB 조회 → 트리 빌드 → 응답에서 DB 조회 → 응답 + 비동기 빌드로 바꿨습니다.
+   - `CompletableFuture`로 트리 생성을 백그라운드에서 실행하고, 요청 스레드는 4ms 만에 반환됩니다.
    - Kafka/MQ는 단일 서버에서 과하다고 판단했습니다.
-2. **Lazy Fetch에서 Whole Build로.** 트리 하나에 최대 12회 나눠 조회하던 방식을, 1년치를 한 번에 조회해 전체 트리를 만드는 방식으로 바꿨습니다.
-3. **실행 시점 지연과 자원 분리.**
-   - 비동기 빌드가 Tomcat 요청 스레드와 HikariCP 커넥션을 두고 경쟁했습니다.
-   - 단순 비동기만 적용했을 때 Connection Usage가 최대 약 4s까지 올라갔습니다. 요청 스레드와 빌드 스레드가 같은 풀의 커넥션을 동시에 잡은 결과입니다(캡처 없음, 3단계에서 재현 예정).
-   - 빌드 시작을 500ms 늦춰(`delayedExecutor`) 사용자 요청의 DB 작업과 겹치지 않게 했습니다.
-   - DB 조회는 `ioExecutor`(30), 트리 빌드는 `cpuExecutor`(코어 수 + 1)로 나눴습니다.
+2. **On-Demand에서 Eager Loading으로 (Phase 2).** 요청 구간만 나눠 조회하던 방식(트리 하나에 최대 12회)을, 1년치를 한 번에 조회해 전체 트리를 만드는 방식으로 바꿨습니다. 초기 연산 비용이 커지지만 비동기라 사용자가 기다리지 않고, 이후 요청의 캐시 적중률이 올라갑니다.
+   - 재빌드 범위가 요청 구간(최대 약 190일)에서 1년(365일)으로 넓어져, 부분 업데이트와 재빌드의 임계값을 다시 정했습니다([무효화와 정합성](#무효화와-정합성)).
+3. **실행 시점 지연 (Phase 3).** 비동기로 바꿨는데도 Cold Start P95가 3.96s → 3.92s로 거의 그대로였습니다.
+   - 모니터링에서 HikariCP Pending이 20까지 쌓이고 Acquire가 1s를 넘었습니다. 요청 스레드가 일하는 동안 비동기 빌드가 같은 커넥션 풀을 먼저 가져갔기 때문입니다.
+   - 단순 비동기만 적용했을 때 Connection Usage는 최대 약 4s까지 올라갔습니다(캡처 없음, 3단계에서 재현 예정).
+   - 이벤트를 `@TransactionalEventListener(AFTER_COMMIT)`로 받아 요청 트랜잭션이 끝난 뒤 시작하고, `delayedExecutor`로 500ms 더 늦춰 두 작업의 실행 시간을 떼어 놓았습니다. Cold Start P95가 2.50s로 줄었습니다.
+4. **격벽(Bulkhead)과 스레드 풀 분리 (Phase 4).** `CompletableFuture` 기본 풀(`ForkJoinPool.commonPool`)은 스레드가 적어, I/O가 길어지면 다른 작업까지 밀릴 수 있었습니다.
+   - DB 조회는 `ioExecutor`(30, HikariCP pool 30에 맞춤), 트리 빌드는 `cpuExecutor`(코어 수 + 1)로 나눴습니다.
+   - Cold Start P95가 1.96s, Acquire가 약 85ms가 됐습니다.
 
 ### 측정 기록
 
@@ -93,22 +95,23 @@
 | + IO/CPU 스레드 분리 | 3.60s | 2.70s | [k6](../../load-test/02-segment-tree-cache/results/drilldown/2026-02-02-lazycache-split-thread.jpg) |
 | + DB pool 조정 | 3.19s | 2.65s | [k6](../../load-test/02-segment-tree-cache/results/drilldown/2026-02-02-lazycache-split-thread-db-pool.jpg) |
 
-**2026-02-07: 비동기 빌드 적용 후 단계별 측정** (`1efc184` 이후)
+**2026-02-07: Phase별 측정** (`1efc184`에 들어간 변경을 하나씩 켜며 측정)
 
-| Phase | HikariCP | Base P95 | 전체 P95 | Acquire (최고 → 안정) | Usage (최고 → 안정) | Pending 최대 | 캡처 |
-|---|---|---|---|---|---|---|---|
-| 0 | 10 | 3.96s | 3.76s | ~960ms → ~830ms | ~450ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-0/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-0/db-connection-panel.jpg) |
-| 2 | 10 | 3.92s | 2.46s | ~1.1s → ~520ms | ~420ms → ~210ms | 20 | [k6](../../load-test/02-segment-tree-cache/results/phase-2/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-2/db-pool-panel.jpg) |
-| 3 | 10 | 2.50s | 2.06s | ~580ms → ~300ms | ~330ms → ~180ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-3/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-3/db-pool-panel.jpg) |
-| 4 | 30 | 1.96s | 1.90s | ~160ms → ~85ms | ~850ms → ~430ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-4/k6-pool-30.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-4/db-pool-panel-pool-30.jpg) |
+| Phase | 변경 | HikariCP | Base P95 | 전체 P95 | Acquire (최고 → 안정) | Usage (최고 → 안정) | Pending 최대 | 캡처 |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 기준(비동기 전) | 10 | 3.96s | 3.76s | ~960ms → ~830ms | ~450ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-0/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-0/db-connection-panel.jpg) |
+| 1 | 비동기 빌드 | 10 | — | — | — | 최대 약 4s | — | 캡처 없음 |
+| 2 | + Eager Loading | 10 | 3.92s | 2.46s | ~1.1s → ~520ms | ~420ms → ~210ms | 20 | [k6](../../load-test/02-segment-tree-cache/results/phase-2/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-2/db-pool-panel.jpg) |
+| 3 | + AFTER_COMMIT·500ms 지연 | 10 | 2.50s | 2.06s | ~580ms → ~300ms | ~330ms → ~180ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-3/k6.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-3/db-pool-panel.jpg) |
+| 4 | + IO/CPU 풀 분리, pool 30 | 30 | 1.96s | 1.90s | ~160ms → ~85ms | ~850ms → ~430ms | 0 | [k6](../../load-test/02-segment-tree-cache/results/phase-4/k6-pool-30.jpg), [pool](../../load-test/02-segment-tree-cache/results/phase-4/db-pool-panel-pool-30.jpg) |
 
 Acquire·Usage는 Grafana 패널에서 읽은 근삿값입니다. Phase 4는 pool 20/40 결과도 있습니다([phase-4](../../load-test/02-segment-tree-cache/results/phase-4)).
 
-**요약:** 비동기 빌드 이후 Phase 0 → 4에서 Cold Start P95는 3.96s → 1.96s(50.5% 감소, 이전 README의 "Cold Start 50.5% 단축"의 출처), Connection Acquire는 ~830ms → ~85ms로 줄었고, Pending은 20 → 0이 됐습니다. 다만 Phase 4는 HikariCP를 10 → 30으로 늘린 효과가 섞여 있습니다.
+**요약:** Phase 0 → 4에서 Cold Start P95는 3.96s → 1.96s(50.5% 감소, 이전 README의 "Cold Start 50.5% 단축"의 출처), Connection Acquire는 ~830ms → ~85ms로 줄었습니다. Phase 2에서 20까지 쌓였던 Pending은 Phase 3부터 0입니다. 다만 Phase 4는 HikariCP를 10 → 30으로 늘린 효과가 섞여 있습니다.
 
-> **확인 필요**
-> - Phase 0~3에서 각각 무엇을 바꿨는지는 커밋으로 남아 있지 않습니다(모두 `1efc184` 직후 14:51~15:32 측정). 500ms 지연(`delayedExecutor`)과 IO/CPU 풀 분리가 어느 Phase에 들어갔는지 기억으로 보완해야 합니다.
-> - 이전 판의 "Connection Usage 4s"는 단순 비동기만 적용한 상태(지연·풀 분리 전)에서 Tomcat 스레드와 트리 빌드 스레드가 커넥션을 두고 경쟁할 때 관측한 최대 Usage입니다. 위 Phase 표보다 앞선 측정이고 캡처가 남아 있지 않습니다.
+> **참고**
+> - Phase 1은 캡처가 없습니다. 이전 판의 "Connection Usage 4s"는 이 단계에서 Tomcat 스레드와 트리 빌드 스레드가 커넥션을 두고 경쟁할 때 관측한 최대값입니다.
+> - Phase 0을 "비동기 전"으로 본 것은 Phase 3 서술(비동기 전환 후에도 3.96s → 3.92s)에서 추정했습니다.
 
 ## 캐시 운영 정책
 
@@ -131,14 +134,16 @@ Acquire·Usage는 Grafana 패널에서 읽은 근삿값입니다. Phase 4는 poo
 ### 무효화와 정합성
 
 - 캠페인 삭제: 사용자 트리 전체를 버립니다(`removeAllTreeDataByEmail`).
-- 기간 삭제: 삭제된 값을 트리에서 빼거나(부분 업데이트) 해당 연도를 다시 빌드합니다. 트리 CPU 비용만 보면 60일과 90일 사이에서 역전되므로, 같은 연도이면서 60일 이하일 때만 부분 업데이트합니다([`TreeCpuBenchmarkTest`](../../apps/api-server/src/test/java/growup/spring/springserver/global/cache/TreeCpuBenchmarkTest.java), 2026-10-26).
+- 기간 삭제: 삭제된 값을 트리에서 빼거나(부분 업데이트) 해당 연도를 다시 빌드합니다. 같은 연도이면서 60일 이하일 때만 부분 업데이트합니다.
+  - **설계 의도 (Phase 2):** Eager Loading으로 재빌드 범위가 1년(365일)이 되면서 계산상 교차점은 약 42일이었습니다. 하지만 재빌드는 바뀌지 않은 나머지 날짜까지 DB에서 다시 읽고, 백그라운드에서 커넥션과 CPU를 잡아 다른 API와 경합합니다. 그래서 교차점보다 보수적으로 60일 초과일 때만 재빌드하도록 정했습니다.
+  - **실측 (2026-10-26):** 트리 CPU 비용만 보면 60일과 90일 사이에서 역전됩니다([`TreeCpuBenchmarkTest`](../../apps/api-server/src/test/java/growup/spring/springserver/global/cache/TreeCpuBenchmarkTest.java)). DB I/O를 빼고도 60일 기준이 맞습니다.
 
   | 삭제 일수 | 10 | 30 | 60 | 90 | 180 | 300 |
   |---|---|---|---|---|---|---|
   | 부분 업데이트 | 12µs | 39µs | 73µs | 123µs | 270µs | 385µs |
   | 전체 재빌드 | 81µs | 95µs | 84µs | 86µs | 83µs | 83µs |
 
-  원래 코드는 300일 이상일 때 부분 업데이트를 골라 조건이 반대였습니다([C8](../known-issues.md)). 다만 두 방식 모두 1ms 미만이고, 실제 비용은 DB 조회(부분 업데이트는 삭제 기간, 재빌드는 1년치)가 좌우합니다. DB를 포함한 비교는 재측정 때 확인합니다.
+  원래 코드는 이 의도와 달리 300일 이상일 때 부분 업데이트를 골라 조건이 반대였습니다([C8](../known-issues.md)). 다만 두 방식 모두 1ms 미만이고, 실제 비용은 DB 조회(부분 업데이트는 삭제 기간, 재빌드는 1년치)가 좌우합니다. DB를 포함한 비교는 재측정 때 확인합니다.
 - **새 데이터 업로드:** 광고 데이터는 Django excel-parser가 DB에 직접 넣기 때문에 Spring 캐시는 이를 알 수 없습니다. `expireAfterAccess`라서 계속 조회하는 사용자의 트리는 만료되지도 않습니다([C9](../known-issues.md)).
 
 ### 캐시 스탬피드

@@ -1,0 +1,510 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/load-test/02-segment-tree-cache/scripts/07-fixed-range-lazycache.js
+        output: -
+
+     scenarios: (100.00%) 3 scenarios, 51 max VUs, 10m50s max duration (incl. graceful stop):
+              * warm_up: 5 looping VUs for 10s (exec: warmUpLogic, gracefulStop: 5s)
+              * reset_stats: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: resetStatsLogic, startTime: 20s, gracefulStop: 30s)
+              * scenario_refactored: 50 looping VUs for 1m0s (exec: refactoringGetCampaignTotalData, startTime: 30s, gracefulStop: 30s)
+
+
+running (00m01.0s), 05/51 VUs, 0 complete and 0 interrupted iterations
+warm_up               [  10% ] 5 VUs    01.0s/10s
+reset_stats         • [   0% ] waiting  19.0s
+scenario_refactored • [   0% ] waiting  29.0s
+
+running (00m02.0s), 05/51 VUs, 5 complete and 0 interrupted iterations
+warm_up               [  20% ] 5 VUs    02.0s/10s
+reset_stats         • [   0% ] waiting  18.0s
+scenario_refactored • [   0% ] waiting  28.0s
+
+running (00m03.0s), 05/51 VUs, 10 complete and 0 interrupted iterations
+warm_up               [  30% ] 5 VUs    03.0s/10s
+reset_stats         • [   0% ] waiting  17.0s
+scenario_refactored • [   0% ] waiting  27.0s
+
+running (00m04.0s), 05/51 VUs, 15 complete and 0 interrupted iterations
+warm_up               [  40% ] 5 VUs    04.0s/10s
+reset_stats         • [   0% ] waiting  16.0s
+scenario_refactored • [   0% ] waiting  26.0s
+
+running (00m05.0s), 05/51 VUs, 20 complete and 0 interrupted iterations
+warm_up               [  50% ] 5 VUs    05.0s/10s
+reset_stats         • [   0% ] waiting  15.0s
+scenario_refactored • [   0% ] waiting  25.0s
+
+running (00m06.0s), 05/51 VUs, 25 complete and 0 interrupted iterations
+warm_up               [  60% ] 5 VUs    06.0s/10s
+reset_stats         • [   0% ] waiting  14.0s
+scenario_refactored • [   0% ] waiting  24.0s
+
+running (00m07.0s), 05/51 VUs, 30 complete and 0 interrupted iterations
+warm_up               [  70% ] 5 VUs    07.0s/10s
+reset_stats         • [   0% ] waiting  13.0s
+scenario_refactored • [   0% ] waiting  23.0s
+
+running (00m08.0s), 05/51 VUs, 35 complete and 0 interrupted iterations
+warm_up               [  80% ] 5 VUs    08.0s/10s
+reset_stats         • [   0% ] waiting  12.0s
+scenario_refactored • [   0% ] waiting  22.0s
+
+running (00m09.0s), 05/51 VUs, 40 complete and 0 interrupted iterations
+warm_up               [  90% ] 5 VUs    09.0s/10s
+reset_stats         • [   0% ] waiting  11.0s
+scenario_refactored • [   0% ] waiting  21.0s
+
+running (00m10.0s), 05/51 VUs, 45 complete and 0 interrupted iterations
+warm_up               [ 100% ] 5 VUs    10.0s/10s
+reset_stats         • [   0% ] waiting  10.0s
+scenario_refactored • [   0% ] waiting  20.0s
+
+running (00m11.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  09.0s
+scenario_refactored • [   0% ] waiting  19.0s
+
+running (00m12.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  08.0s
+scenario_refactored • [   0% ] waiting  18.0s
+
+running (00m13.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  07.0s
+scenario_refactored • [   0% ] waiting  17.0s
+
+running (00m14.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  06.0s
+scenario_refactored • [   0% ] waiting  16.0s
+
+running (00m15.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  05.0s
+scenario_refactored • [   0% ] waiting  15.0s
+
+running (00m16.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  04.0s
+scenario_refactored • [   0% ] waiting  14.0s
+
+running (00m17.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  03.0s
+scenario_refactored • [   0% ] waiting  13.0s
+
+running (00m18.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  02.0s
+scenario_refactored • [   0% ] waiting  12.0s
+
+running (00m19.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  01.0s
+scenario_refactored • [   0% ] waiting  11.0s
+
+running (00m20.0s), 00/51 VUs, 50 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s
+reset_stats         • [   0% ] waiting  00.0s
+scenario_refactored • [   0% ] waiting  10.0s
+time="2026-10-27T15:05:08+09:00" level=info msg="✅ [Reset Scenario] Hibernate Statistics Reset Successful!" source=console
+
+running (00m21.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  09.0s          
+
+running (00m22.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  08.0s          
+
+running (00m23.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  07.0s          
+
+running (00m24.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  06.0s          
+
+running (00m25.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  05.0s          
+
+running (00m26.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  04.0s          
+
+running (00m27.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  03.0s          
+
+running (00m28.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  02.0s          
+
+running (00m29.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  01.0s          
+
+running (00m30.0s), 00/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs    10s            
+reset_stats         ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored • [   0% ] waiting  00.0s          
+
+running (00m31.0s), 50/51 VUs, 51 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [   2% ] 50 VUs  0m01.0s/1m0s   
+
+running (00m32.0s), 50/51 VUs, 71 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [   3% ] 50 VUs  0m02.0s/1m0s   
+
+running (00m33.0s), 50/51 VUs, 101 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [   5% ] 50 VUs  0m03.0s/1m0s   
+
+running (00m34.0s), 50/51 VUs, 151 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [   7% ] 50 VUs  0m04.0s/1m0s   
+
+running (00m35.0s), 50/51 VUs, 201 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [   8% ] 50 VUs  0m05.0s/1m0s   
+
+running (00m36.0s), 50/51 VUs, 249 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  10% ] 50 VUs  0m06.0s/1m0s   
+
+running (00m37.0s), 50/51 VUs, 290 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  12% ] 50 VUs  0m07.0s/1m0s   
+
+running (00m38.0s), 50/51 VUs, 338 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  13% ] 50 VUs  0m08.0s/1m0s   
+
+running (00m39.0s), 50/51 VUs, 388 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  15% ] 50 VUs  0m09.0s/1m0s   
+
+running (00m40.0s), 50/51 VUs, 438 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  17% ] 50 VUs  0m10.0s/1m0s   
+
+running (00m41.0s), 50/51 VUs, 488 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  18% ] 50 VUs  0m11.0s/1m0s   
+
+running (00m42.0s), 50/51 VUs, 537 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  20% ] 50 VUs  0m12.0s/1m0s   
+
+running (00m43.0s), 50/51 VUs, 570 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  22% ] 50 VUs  0m13.0s/1m0s   
+
+running (00m44.0s), 50/51 VUs, 620 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  23% ] 50 VUs  0m14.0s/1m0s   
+
+running (00m45.0s), 50/51 VUs, 670 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  25% ] 50 VUs  0m15.0s/1m0s   
+
+running (00m46.0s), 50/51 VUs, 720 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  27% ] 50 VUs  0m16.0s/1m0s   
+
+running (00m47.0s), 50/51 VUs, 770 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  28% ] 50 VUs  0m17.0s/1m0s   
+
+running (00m48.0s), 50/51 VUs, 820 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  30% ] 50 VUs  0m18.0s/1m0s   
+
+running (00m49.0s), 50/51 VUs, 870 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  32% ] 50 VUs  0m19.0s/1m0s   
+
+running (00m50.0s), 50/51 VUs, 920 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  33% ] 50 VUs  0m20.0s/1m0s   
+
+running (00m51.0s), 50/51 VUs, 970 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  35% ] 50 VUs  0m21.0s/1m0s   
+
+running (00m52.0s), 50/51 VUs, 1020 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  37% ] 50 VUs  0m22.0s/1m0s   
+
+running (00m53.0s), 50/51 VUs, 1070 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  38% ] 50 VUs  0m23.0s/1m0s   
+
+running (00m54.0s), 50/51 VUs, 1120 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  40% ] 50 VUs  0m24.0s/1m0s   
+
+running (00m55.0s), 50/51 VUs, 1170 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  42% ] 50 VUs  0m25.0s/1m0s   
+
+running (00m56.0s), 50/51 VUs, 1218 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  43% ] 50 VUs  0m26.0s/1m0s   
+
+running (00m57.0s), 50/51 VUs, 1261 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  45% ] 50 VUs  0m27.0s/1m0s   
+
+running (00m58.0s), 50/51 VUs, 1310 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  47% ] 50 VUs  0m28.0s/1m0s   
+
+running (00m59.0s), 50/51 VUs, 1360 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  48% ] 50 VUs  0m29.0s/1m0s   
+
+running (01m00.0s), 50/51 VUs, 1409 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  50% ] 50 VUs  0m30.0s/1m0s   
+
+running (01m01.0s), 50/51 VUs, 1458 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  52% ] 50 VUs  0m31.0s/1m0s   
+
+running (01m02.0s), 50/51 VUs, 1504 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  53% ] 50 VUs  0m32.0s/1m0s   
+
+running (01m03.0s), 50/51 VUs, 1553 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  55% ] 50 VUs  0m33.0s/1m0s   
+
+running (01m04.0s), 50/51 VUs, 1600 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  57% ] 50 VUs  0m34.0s/1m0s   
+
+running (01m05.0s), 50/51 VUs, 1649 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  58% ] 50 VUs  0m35.0s/1m0s   
+
+running (01m06.0s), 50/51 VUs, 1699 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  60% ] 50 VUs  0m36.0s/1m0s   
+
+running (01m07.0s), 50/51 VUs, 1748 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  62% ] 50 VUs  0m37.0s/1m0s   
+
+running (01m08.0s), 50/51 VUs, 1798 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  63% ] 50 VUs  0m38.0s/1m0s   
+
+running (01m09.0s), 50/51 VUs, 1848 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  65% ] 50 VUs  0m39.0s/1m0s   
+
+running (01m10.0s), 50/51 VUs, 1892 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  67% ] 50 VUs  0m40.0s/1m0s   
+
+running (01m11.0s), 50/51 VUs, 1938 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  68% ] 50 VUs  0m41.0s/1m0s   
+
+running (01m12.0s), 50/51 VUs, 1988 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  70% ] 50 VUs  0m42.0s/1m0s   
+
+running (01m13.0s), 50/51 VUs, 2036 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  72% ] 50 VUs  0m43.0s/1m0s   
+
+running (01m14.0s), 50/51 VUs, 2086 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  73% ] 50 VUs  0m44.0s/1m0s   
+
+running (01m15.0s), 50/51 VUs, 2136 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  75% ] 50 VUs  0m45.0s/1m0s   
+
+running (01m16.0s), 50/51 VUs, 2186 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  77% ] 50 VUs  0m46.0s/1m0s   
+
+running (01m17.0s), 50/51 VUs, 2236 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  78% ] 50 VUs  0m47.0s/1m0s   
+
+running (01m18.0s), 50/51 VUs, 2285 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  80% ] 50 VUs  0m48.0s/1m0s   
+
+running (01m19.0s), 50/51 VUs, 2335 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  82% ] 50 VUs  0m49.0s/1m0s   
+
+running (01m20.0s), 50/51 VUs, 2379 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  83% ] 50 VUs  0m50.0s/1m0s   
+
+running (01m21.0s), 50/51 VUs, 2428 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  85% ] 50 VUs  0m51.0s/1m0s   
+
+running (01m22.0s), 50/51 VUs, 2478 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  87% ] 50 VUs  0m52.0s/1m0s   
+
+running (01m23.0s), 50/51 VUs, 2528 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  88% ] 50 VUs  0m53.0s/1m0s   
+
+running (01m24.0s), 50/51 VUs, 2578 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  90% ] 50 VUs  0m54.0s/1m0s   
+
+running (01m25.0s), 50/51 VUs, 2628 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  92% ] 50 VUs  0m55.0s/1m0s   
+
+running (01m26.0s), 50/51 VUs, 2678 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  93% ] 50 VUs  0m56.0s/1m0s   
+
+running (01m27.0s), 50/51 VUs, 2728 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  95% ] 50 VUs  0m57.0s/1m0s   
+
+running (01m28.0s), 50/51 VUs, 2778 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  97% ] 50 VUs  0m58.0s/1m0s   
+
+running (01m29.0s), 50/51 VUs, 2828 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [  98% ] 50 VUs  0m59.0s/1m0s   
+
+running (01m30.0s), 50/51 VUs, 2878 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored   [ 100% ] 50 VUs  1m00.0s/1m0s   
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{api_version:v2_dsl}
+    ✓ 'p(95)<1000' p(95)=133.29ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 2877    31.64676/s
+    checks_succeeded...: 100.00% 2877 out of 2877
+    checks_failed......: 0.00%   0 out of 2877
+
+    ✓ V2 status is 200
+
+    HTTP
+    http_req_duration..............: avg=48.25ms min=3.26ms  med=15.14ms max=1.44s p(90)=54.44ms p(95)=138.41ms
+      { api_version:v2_dsl }.......: avg=47.7ms  min=3.26ms  med=14.94ms max=1.44s p(90)=53.41ms p(95)=133.29ms
+      { expected_response:true }...: avg=48.25ms min=3.26ms  med=15.14ms max=1.44s p(90)=54.44ms p(95)=138.41ms
+    http_req_failed................: 0.00%  0 out of 2928
+    http_reqs......................: 2928   32.207756/s
+
+    EXECUTION
+    iteration_duration.............: avg=1.04s   min=33.05ms med=1.01s   max=2.49s p(90)=1.05s   p(95)=1.13s   
+    iterations.....................: 2928   32.207756/s
+    vus............................: 50     min=0         max=50
+    vus_max........................: 51     min=51        max=51
+
+    NETWORK
+    data_received..................: 4.0 MB 44 kB/s
+    data_sent......................: 605 kB 6.7 kB/s
+
+
+
+
+running (01m30.9s), 00/51 VUs, 2928 complete and 0 interrupted iterations
+warm_up             ✓ [ 100% ] 5 VUs   10s            
+reset_stats         ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+scenario_refactored ✓ [ 100% ] 50 VUs  1m0s           

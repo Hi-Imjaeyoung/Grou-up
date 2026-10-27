@@ -23,9 +23,9 @@
 |---|---|---|
 | S1 ✅ 해결 (`30fc08f`) | `global/listener/CacheBuildEventListener.java` | DB 조회가 try/finally 밖에 있다. 조회가 실패하면 빌드 중 표시 키가 남아 해당 사용자·연도 트리가 다시는 빌드되지 않는다. → DB 조회와 빌드 작업 제출(`cpuExecutor` 거부 포함)을 try로 감싸 실패 시 키를 지우도록 수정. 재현 테스트 `CacheBuildEventListenerTest`. |
 | S2 | `global/cache/AllCampaignTypeData.java` | 내부가 `HashMap`인데 업데이트 스레드와 조회 스레드가 동시에 접근한다. |
-| S3 ✅ 해결 (S35_COMMIT) | `marginforcampaign/service/ExcelParsingService.java` | 실제 캠페인 ID 대신 테스트용 `getRandomCampaign()`을 쓴다. 엑셀에 없는 옵션을 삭제하는 로직도 주석 처리되어 있다. → 개선 전 코드(`52ed226^`)처럼 첫 열의 캠페인 ID로 캠페인을 찾고, 엑셀에 없는 옵션 정리도 되살렸다(두 동작 모두 원래 설계였고 `52ed226`에서 부하 테스트용으로 바뀐 것). 재현 테스트 `ExcelParsingServiceTest`. |
-| S4 ✅ 해결 (S35_COMMIT) | 같은 파일, `ExcelUploadContext` | IOException이 나면 null을 반환한다. 빈 행이 있으면 NPE로 업로드 전체가 실패한다. `Map.get`은 예외를 던지지 않으므로 `CAMPAIGN_NOT_FOUND`가 발생하지 않는다. 같은 상품명이 중복되면 중복 INSERT가 된다. → 읽을 수 없는 파일은 `FILE_READ_ERROR`, 빈 행은 건너뛰고(`total`은 빈 행 제외), 없는 캠페인은 null 검사로 `CAMPAIGN_NOT_FOUND`, 같은 업로드 안의 중복 옵션은 한 번만 저장하고 마지막 값을 쓴다(`duplicate` 집계). 재현 테스트 `ExcelParsingServiceTest`. |
-| S5 ✅ 해결 (S35_COMMIT) | `marginforcampaign/controller/ExcelDownUpLoadController.java` | 업로드에 실패해도 HTTP 200을 반환한다. → `GrouException`은 오류 코드의 상태(형식 오류 400, 없는 캠페인 404)를, 그 밖의 예외는 500을 반환한다. 재현 테스트 `ExcelUploadStatusTest`. |
+| S3 ✅ 해결 (`6fb30a1`) | `marginforcampaign/service/ExcelParsingService.java` | 실제 캠페인 ID 대신 테스트용 `getRandomCampaign()`을 쓴다. 엑셀에 없는 옵션을 삭제하는 로직도 주석 처리되어 있다. → 개선 전 코드(`52ed226^`)처럼 첫 열의 캠페인 ID로 캠페인을 찾고, 엑셀에 없는 옵션 정리도 되살렸다(두 동작 모두 원래 설계였고 `52ed226`에서 부하 테스트용으로 바뀐 것). 재현 테스트 `ExcelParsingServiceTest`. |
+| S4 ✅ 해결 (`6fb30a1`) | 같은 파일, `ExcelUploadContext` | IOException이 나면 null을 반환한다. 빈 행이 있으면 NPE로 업로드 전체가 실패한다. `Map.get`은 예외를 던지지 않으므로 `CAMPAIGN_NOT_FOUND`가 발생하지 않는다. 같은 상품명이 중복되면 중복 INSERT가 된다. → 읽을 수 없는 파일은 `FILE_READ_ERROR`, 빈 행은 건너뛰고(`total`은 빈 행 제외), 없는 캠페인은 null 검사로 `CAMPAIGN_NOT_FOUND`, 같은 업로드 안의 중복 옵션은 한 번만 저장하고 마지막 값을 쓴다(`duplicate` 집계). 재현 테스트 `ExcelParsingServiceTest`. |
+| S5 ✅ 해결 (`6fb30a1`) | `marginforcampaign/controller/ExcelDownUpLoadController.java` | 업로드에 실패해도 HTTP 200을 반환한다. → `GrouException`은 오류 코드의 상태(형식 오류 400, 없는 캠페인 404)를, 그 밖의 예외는 500을 반환한다. 재현 테스트 `ExcelUploadStatusTest`. |
 | S6 | `apps/batch-server` | `beanMapped()`는 record와 호환되지 않고, `ad_sales`와 `ad_sale` 이름이 다르다. 행 단위 upsert가 누적 덧셈이라 다시 실행하면 이중 집계된다. `monthly_summary` DDL도 없다. |
 
 ## 테스트

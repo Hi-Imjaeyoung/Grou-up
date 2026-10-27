@@ -11,6 +11,7 @@ import growup.spring.springserver.marginforcampaign.repository.MarginForCampaign
 import growup.spring.springserver.marginforcampaign.support.MarginType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.UnsupportedFileFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,14 +30,21 @@ public class ExcelParsingService {
 
     public ExcelUploadContext parsingExcelData(MultipartFile file, String email) {
 
-        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+        try (Workbook workbook = openWorkbook(file)) {
             Sheet sheet = workbook.getSheetAt(0);
-            ExcelUploadContext excelUploadContext = new ExcelUploadContext(sheet.getLastRowNum(),email,loadMyCampaignCache(email),loadMyMFCCache(email));
+            ExcelUploadContext excelUploadContext = new ExcelUploadContext(email,loadMyCampaignCache(email),loadMyMFCCache(email));
             readAllExcelRows(sheet, excelUploadContext);
             return excelUploadContext;
         } catch (IOException e){
-
-            return null;
+            throw new GrouException(ErrorCode.FILE_READ_ERROR);
+        }
+    }
+    private Workbook openWorkbook(MultipartFile file) throws IOException {
+        try {
+            return WorkbookFactory.create(file.getInputStream());
+        } catch (UnsupportedFileFormatException e) {
+            // 엑셀이 아닌 파일
+            throw new GrouException(ErrorCode.FILE_READ_ERROR);
         }
     }
     private Map<Long, Campaign> loadMyCampaignCache(String email){
@@ -65,6 +73,9 @@ public class ExcelParsingService {
         DataFormatter formatter = new DataFormatter();
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
+            // 중간에 비어 있는 행은 건너뛴다(행 자체가 없으면 getRow 가 null)
+            if (isBlankRow(row, formatter)) continue;
+            excelUploadContext.increment("total");
             try {
                 processSingleRow(row, excelUploadContext,formatter);
             } catch (GrouException e) {
@@ -72,13 +83,18 @@ public class ExcelParsingService {
             }
         }
     }
+    private boolean isBlankRow(Row row, DataFormatter formatter) {
+        if (row == null) return true;
+        for (Cell cell : row) {
+            if (cell.getCellType() != CellType.BLANK && !formatter.formatCellValue(cell).isBlank()) return false;
+        }
+        return true;
+    }
     private void processSingleRow(Row row, ExcelUploadContext excelUploadContext,DataFormatter formatter) {
         MfcDto mfcDto = readExcelRowToMarginForCampaignData(row,formatter);
-//        Long campaignID = Long.valueOf(getCellStringValue(row.getCell(0),formatter));
-//        Campaign campaign = excelUploadContext.getCampaignToCampaignIdInCampaignCache(campaignID);
-//        excelUploadContext.addOptionNameFromExcel(campaign.getCampaignId(),mfcDto.getMfcProductName());
-
-        Campaign campaign = excelUploadContext.getRandomCampaign();
+        Long campaignID = convertStringToLong(getCellStringValue(row.getCell(0),formatter));
+        Campaign campaign = excelUploadContext.getCampaignToCampaignIdInCampaignCache(campaignID);
+        excelUploadContext.addOptionNameFromExcel(campaign.getCampaignId(),mfcDto.getMfcProductName());
         MarginForCampaign oldMFc =
                 excelUploadContext.getMfcToCampaignIdAndProductNameOrNull(campaign.getCampaignId(),mfcDto.getMfcProductName());
         excelUploadContext.upsertMfcDtoToEntitiesToSave(oldMFc,mfcDto,campaign);

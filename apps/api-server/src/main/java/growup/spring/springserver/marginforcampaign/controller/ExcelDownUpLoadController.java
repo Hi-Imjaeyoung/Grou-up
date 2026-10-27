@@ -3,7 +3,6 @@ package growup.spring.springserver.marginforcampaign.controller;
 import growup.spring.springserver.campaign.service.CampaignService;
 import growup.spring.springserver.exception.campaign.CampaignNotFoundException;
 import growup.spring.springserver.global.common.CommonResponse;
-import growup.spring.springserver.global.exception.ErrorCode;
 import growup.spring.springserver.global.exception.GrouException;
 import growup.spring.springserver.marginforcampaign.dto.ExcelUploadContext;
 import growup.spring.springserver.marginforcampaign.service.ExcelDownloadService;
@@ -81,19 +80,15 @@ public class ExcelDownUpLoadController {
                     .data(result.toString())
                     .build(), HttpStatus.OK);
         } catch (GrouException e){
-            if(e.getErrorCode().equals(ErrorCode.FILE_INVALID_DATA_FORM)){
-                return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
-                        .data(e.getErrorCode().getMessage())
-                        .build(), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(CommonResponse.<String>builder("another error occur")
+            // 파일 형식 오류는 400, 내 캠페인이 아닌 ID 는 404 등 오류 코드에 정의된 상태를 그대로 쓴다
+            return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data(e.getErrorCode().getMessage())
-                    .build(), HttpStatus.OK);
+                    .build(), e.getErrorCode().getHttpStatus());
         } catch (Exception e) {
-            System.out.println(e.toString());
+            log.error("엑셀 업로드 중 알 수 없는 오류 발생", e);
             return new ResponseEntity<>(CommonResponse.<String>builder("post fail")
                     .data("액셀 등록 실패")
-                    .build(), HttpStatus.BAD_REQUEST);
+                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

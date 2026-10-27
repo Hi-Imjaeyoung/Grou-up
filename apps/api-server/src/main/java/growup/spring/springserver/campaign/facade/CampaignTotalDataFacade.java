@@ -37,14 +37,18 @@ public class CampaignTotalDataFacade {
                     .sumOfAdSalesAndAdCostByCampaignType(new HashMap<>(allCampaignTypeData.getCampaignAnalysisDtoMap()))
                     .build();
         }
-        eventPublisher.publishEvent(new TreeBuildEvent(email,start.getYear()));
-        if(end.getYear() != start.getYear()) eventPublisher.publishEvent(new TreeBuildEvent(email,start.getYear()));
+        publishBuildEventIfAbsent(email,start.getYear());
+        if(end.getYear() != start.getYear()) publishBuildEventIfAbsent(email,end.getYear());
         Map<String, CampaignAnalysisDto> campaignAnalysisDataKeyCampaignType =
                 keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmail(email,start,end);
         return TotalCampaignsData.builder()
                 .adSalesAndAdCostByCampaignName(campaignAnalysisDataKeyCampaignName)
                 .sumOfAdSalesAndAdCostByCampaignType(campaignAnalysisDataKeyCampaignType)
                 .build();
+    }
+
+    private void publishBuildEventIfAbsent(String email, int year){
+        if(!lazySegmentTreeService.isTreeBuild(email,year)) eventPublisher.publishEvent(new TreeBuildEvent(email,year));
     }
 
     public TotalCampaignsData getCampaignTotalData(String email, LocalDate start, LocalDate end){

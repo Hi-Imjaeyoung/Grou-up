@@ -29,7 +29,7 @@ public class TreeCpuBenchmarkTest {
     private LazySegmentTreeService lazySegmentTreeService;
     private List<Tuple> dummyFullYearData;
 
-    @Param({"10", "30", "60", "90", "180"})
+    @Param({"10", "30", "60", "90", "180", "300", "365"})
     private int updateDays;
 
     private List<Tuple> dummyUpdateData;

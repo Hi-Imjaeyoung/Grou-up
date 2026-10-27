@@ -80,7 +80,7 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 | [results/phase-0](02-segment-tree-cache/results/phase-0) ~ [phase-4](02-segment-tree-cache/results/phase-4) | 비동기 빌드·자원 분리 단계별 k6 결과와 DB pool 패널. phase-4는 pool 20/30/40 비교. phase-1 캡처는 없음 |
 | [results/thread-pool](02-segment-tree-cache/results/thread-pool) | Tomcat 스레드와 IO 스레드의 커넥션 경합 증거, 분리 전/후, 분리 후 pool 축소 |
 
-> Phase 0~3의 단계별 정의(어떤 변경을 적용했는지)는 [docs/portfolio/02-segment-tree-cache.md](../docs/portfolio/02-segment-tree-cache.md)에서 채워야 합니다.
+> 캡처별 수치(P95, Acquire, Usage, Pending)는 [② 측정 기록](../docs/portfolio/02-segment-tree-cache.md#측정-기록)에 정리했습니다.
 
 ## 삭제 API — `03-delete-api/`
 

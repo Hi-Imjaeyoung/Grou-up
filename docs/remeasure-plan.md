@@ -7,7 +7,9 @@
 
 - [x] C1 세그먼트 트리 객체 공유: #9
 - [x] C7 빌드 중·조회만 된 연도가 "빌드됨"으로 보임: #10
-- [ ] C2/C3 부분 업데이트 미반영·가산: #11 (리뷰 대기, `MERGEABLE`)
+- [x] C2/C3 부분 업데이트 미반영·가산: #11
+- [x] C8 부분 업데이트·재빌드 선택 조건 반대: #13
+- [x] 2단계 결함 수정 C4·C5 #14, S1 #15, C6 #16, C9 #17, O4 #18 / 측정 환경 #19
 
 ## 원칙
 
@@ -20,25 +22,28 @@
 - [x] **측정 DB:** MariaDB로 결정(2026-10-27). `infra/docker-compose.yml`을 `mariadb:10.11`로 바꿨다.
 - [x] **커버링 인덱스 정의:** 쿼리 기준으로 재설계 `(campaign_id, date, ad_cost, ad_sales)` (O4, #18).
 - [ ] **① 목표치 근거:** 셀러 수, 피크 시간대 (코드로 알 수 없음).
+- [x] **Usage 4s 출처:** 단순 비동기만 적용했을 때(500ms 지연·IO/CPU 풀 분리 전) Tomcat 스레드와 트리 빌드 스레드가 커넥션을 경쟁하며 관측한 최대 Usage. 캡처는 없어 3단계에서 재현한다.
+- [x] **Phase 0~3 변경 내용:** 1 비동기 빌드, 2 Eager Loading(+임계값 60일), 3 AFTER_COMMIT·500ms 지연, 4 IO/CPU 풀 분리·pool 30. ② 측정 기록 표에 반영. Phase 0은 "비동기 전"으로 추정.
 - [ ] **PDF "44%" 수치:** 원본 PDF 캐시 섹션에 있지만 ② 문서에는 없다. 무엇의 44%인지 확인.
 
 ## 1단계: DB 없이 채울 수 있는 것
 
-- [ ] ② 단순 대안 비교: 일별 365개 선형 합산 vs 세그먼트 트리 구간 조회를 JMH로 측정한다. ("단순 대안과의 실측 비교" 메모)
-- [ ] ② 1년 트리 메모리 실측: 노드 수와 retained size(JOL 또는 힙 덤프). ("빠진 내용" 메모)
-- [ ] C8 임계값: `TreeCpuBenchmarkTest`(updateDays 10~180)를 실행하고 부분 업데이트와 전체 재빌드가 역전되는 지점으로 `CampaignDeleteDto.checkThreshold`를 고친다. 결과를 ② 근거 맵의 "임계값" 행에 넣는다.
-- [ ] ② "수치 정리 필요" 메모 처리
-  - [ ] 877ms(랜덤 6개월 범위)와 3.34s(50명 동시 Drill-down Cold Start)의 시나리오를 표에 표기
-  - [ ] 핵심 성과를 P95(4.5%)가 아니라 커넥션 지표로 서술
-  - [ ] Phase 0~4에서 무엇을 바꿨는지 캡처(`load-test/02-segment-tree-cache/results/phase-*`)와 git 히스토리로 채우기
-  - [ ] README의 "P95 82% / Cold Start 50.5%" 문구는 이미 제거됨 → 출처 연결 메모 삭제
-- [ ] ② "빠진 내용" 중 코드로 쓸 수 있는 것: Eviction 정책, 스탬피드 방지(`buildingInProgress`), C7 반영 내용
+- [x] ② 단순 대안 비교 (`RangeQueryBenchmarkTest`, 180일 선형 11.6µs vs 트리 2.3µs): 일별 365개 선형 합산 vs 세그먼트 트리 구간 조회를 JMH로 측정한다. ("단순 대안과의 실측 비교" 메모)
+- [x] ② 1년 트리 메모리 실측 (`SegmentTreeMemoryTest`, 유형 3개 375KB): 노드 수와 retained size(JOL 또는 힙 덤프). ("빠진 내용" 메모)
+- [x] C8 임계값 (60~90일 사이 역전, 60일 이하 부분 업데이트로 수정): `TreeCpuBenchmarkTest`(updateDays 10~180)를 실행하고 부분 업데이트와 전체 재빌드가 역전되는 지점으로 `CampaignDeleteDto.checkThreshold`를 고친다. 결과를 ② 근거 맵의 "임계값" 행에 넣는다.
+- [x] ② "수치 정리 필요" 메모 처리 → "측정 기록" 절로 대체
+  - [x] 877ms(랜덤 6개월 범위)와 3.34s(50명 동시 Drill-down Cold Start)의 시나리오를 표에 표기
+  - [x] 핵심 성과를 P95(4.5%)가 아니라 커넥션 지표로 서술
+  - [x] Phase 0~4의 캡처 수치와 각 Phase 변경 내용을 표로 정리(사용자 메모 기준)
+  - [x] README의 "P95 82% / Cold Start 50.5%" 문구는 이미 제거됨 → 출처 연결 메모 삭제 (50.5%는 Phase 0 → 4의 Base P95 3.96s → 1.96s로 확인)
+- [x] ② "빠진 내용" → "캐시 운영 정책" 절로 작성. 코드로 쓸 수 있는 것: Eviction 정책, 스탬피드 방지(`buildingInProgress`), C7 반영 내용
 
 ## 2단계: 측정 환경 준비
 
 - [x] C5: `getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds` GROUP BY에 `date`를 추가한다(트리 입력 데이터의 정합성). #14
 - [x] C4: `7e97703`에서 코드가 바뀌어 결함이 C3로 옮겨 갔음을 확인, 해결로 표시. #14
 - [x] S1: `CacheBuildEventListener`의 DB 조회를 try/finally 안으로 옮긴다(실패하면 빌드 키가 남아 다시 빌드되지 않음). #15
+- [x] C9: 업로드(Django)로 들어온 새 데이터가 캐시를 무효화하지 못한다. Django가 업로드 후 Spring 무효화 API를 호출하도록 수정. #17
 - [x] C6: 연도를 넘는 조회에서 끝 연도 이벤트를 발행하도록 고친다. #16
 - [x] O4: 커버링 인덱스 DDL을 저장소에 추가한다(엔티티 `@Index` + 전환 SQL). #18
 - [x] 측정 DB를 띄우고 6개월 300만 행을 적재한다. 원래 분포가 없어 `load-test/02-segment-tree-cache/sql/seed-data.sql`로 재설계(keyword 3,000,000행).
@@ -52,6 +57,7 @@
 - [ ] 06/07 고정 범위 nocache vs lazycache
 - [ ] 08 `drilldown-nocache` vs 09 `drilldown-lazycache`: 첫 요청 지연, Cache Hit율, DB 접근 횟수
 - [ ] 09에서 HikariCP pool 20/30/40, Connection Acquire/Usage/Pending 캡처
+- [ ] 단순 비동기(지연·풀 분리 없음) 구성으로 09를 돌려 Connection Usage 최대값을 캡처한다(이전 판 "Usage 4s" 재현)
 - [ ] ② 결과 표를 새 수치로 바꾸고 "재측정 예정" 주의 메모를 갱신한다. 루트 README 요약 문구도 맞춘다.
 
 ## 4단계: ① 엑셀 업로드 수정 후 측정

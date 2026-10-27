@@ -11,7 +11,7 @@
 | # | 주제 | 한 줄 성과 | 문서 |
 |---|---|---|---|
 | ① | 크롤링 → 엑셀 업로드 전환 | 요구사항을 다시 정의해 피벗을 제안했고, Bulk Insert와 트랜잭션 분리로 50 PCU·500행 P95 1.02s 달성 | [01-excel-upload](docs/portfolio/01-excel-upload.md) |
-| ② | 6개월 조회와 세그먼트 트리 캐시 | QueryDSL·커버링 인덱스로 P95 2.97s → 877ms. 비동기 빌드와 IO/CPU 풀 분리로 Connection Acquire 600ms → 80ms | [02-segment-tree-cache](docs/portfolio/02-segment-tree-cache.md) |
+| ② | 6개월 조회와 세그먼트 트리 캐시 | QueryDSL·커버링 인덱스로 P95 2.97s → 877ms. 비동기 빌드·자원 분리로 Cold Start P95 3.96s → 1.96s, Connection Acquire ~830ms → ~85ms(정합성 수정 전 측정) | [02-segment-tree-cache](docs/portfolio/02-segment-tree-cache.md) |
 | ③ | TIMED_WAITING 스레드 200개 | 가설 두 가지를 부하 테스트로 검증했고, WAF·Rate Limiter로 월 약 2만 건 차단 (Tomcat 풀 관점 재검증 예정) | [03-timed-waiting-threads](docs/portfolio/03-timed-waiting-threads.md) |
 | ④ | MSA/CQRS 글로벌 캐시 PoC | L1 트리 + L2 Redis + 이벤트 동기화로 Query 서버 3대가 DB 재조회 0회로 같은 값 유지 | [04-global-cache-msa](docs/portfolio/04-global-cache-msa.md) |
 

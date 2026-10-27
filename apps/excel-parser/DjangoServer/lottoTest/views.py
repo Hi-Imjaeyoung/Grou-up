@@ -14,6 +14,7 @@ from django.db import transaction
 from .models import Member, Campaign, Execution, CampaignOptionDetails, Keyword, Category, ExcelFile, KeywordDetail, \
     Margin, NetSales, MarginType, File, FileType
 from .forms import ExcelFileForm
+from .cacheInvalidation import invalidate_spring_cache
 from django.http import JsonResponse
 import jwt
 import logging
@@ -147,6 +148,9 @@ def handle_excel_upload(request):
             mar_date__range=(start_date, end_date),
             campaign__email=member
         ).update(mar_updated=True)
+
+        # 새 광고 데이터가 Spring 캐시(세그먼트 트리)에 반영되도록 해당 사용자 트리를 지운다
+        invalidate_spring_cache(request.headers.get('Authorization'))
 
         print(f"Processing completed in {time_taken} ms")
         print(f"{email} 회원이 총 {total_count} 중 {insert_count} 개의 데이터가 들어 갔습니다")

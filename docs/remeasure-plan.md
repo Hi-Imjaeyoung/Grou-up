@@ -17,8 +17,8 @@
 
 ## 사용자 결정 필요
 
-- [ ] **측정 DB:** 문서는 MariaDB인데 `infra/docker-compose.yml`은 `mysql:8.0.29`다. MySQL 8 기본 `ONLY_FULL_GROUP_BY`에서는 C5 쿼리가 에러가 난다. 운영 당시 DB에 맞춘다.
-- [ ] **커버링 인덱스 정의:** 기억이 없으면 쿼리를 보고 다시 설계하고 문서에 "재설계"라고 밝힌다(O4).
+- [x] **측정 DB:** MariaDB로 결정(2026-10-27). `infra/docker-compose.yml`을 `mariadb:10.11`로 바꿨다.
+- [x] **커버링 인덱스 정의:** 쿼리 기준으로 재설계 `(campaign_id, date, ad_cost, ad_sales)` (O4, #18).
 - [ ] **① 목표치 근거:** 셀러 수, 피크 시간대 (코드로 알 수 없음).
 - [ ] **PDF "44%" 수치:** 원본 PDF 캐시 섹션에 있지만 ② 문서에는 없다. 무엇의 44%인지 확인.
 
@@ -36,14 +36,14 @@
 
 ## 2단계: 측정 환경 준비
 
-- [ ] C5: `getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds` GROUP BY에 `date`를 추가한다(트리 입력 데이터의 정합성).
-- [ ] C4: 설명이 현재 코드와 맞지 않는다(`extractDeleteCampaignDataByPeriod`는 쿼리 결과를 그대로 반환하고, 설명 내용은 C3와 같다). 다시 확인하고 문서를 정리한다.
-- [ ] S1: `CacheBuildEventListener`의 DB 조회를 try/finally 안으로 옮긴다(실패하면 빌드 키가 남아 다시 빌드되지 않음).
-- [ ] C6: 연도를 넘는 조회에서 끝 연도 이벤트를 발행하도록 고친다. 재측정 시나리오(2025-06~12)에는 영향이 없으므로 순서는 자유.
-- [ ] O4: 커버링 인덱스 DDL을 저장소에 추가한다(`infra/` 초기화 SQL 또는 엔티티 `@Index`).
-- [ ] 측정 DB를 띄우고 `testdatagenerator`로 6개월 약 300만 행을 적재한다. 행 수를 기록한다.
-- [ ] `load-test/README.md` 테스트 환경 표를 채운다(CPU, RAM, OS, DB 버전, 데이터량, HikariCP, ioExecutor/cpuExecutor).
-- [ ] 모니터링(`infra/docker-compose.monitoring.yml`, Prometheus·Grafana)이 커넥션 지표를 수집하는지 확인한다.
+- [x] C5: `getAllTypeOfCampaignAdCostSumAndAdSalesSumByPeriodAndCampaignIds` GROUP BY에 `date`를 추가한다(트리 입력 데이터의 정합성). #14
+- [x] C4: `7e97703`에서 코드가 바뀌어 결함이 C3로 옮겨 갔음을 확인, 해결로 표시. #14
+- [x] S1: `CacheBuildEventListener`의 DB 조회를 try/finally 안으로 옮긴다(실패하면 빌드 키가 남아 다시 빌드되지 않음). #15
+- [x] C6: 연도를 넘는 조회에서 끝 연도 이벤트를 발행하도록 고친다. #16
+- [x] O4: 커버링 인덱스 DDL을 저장소에 추가한다(엔티티 `@Index` + 전환 SQL). #18
+- [x] 측정 DB를 띄우고 6개월 300만 행을 적재한다. 원래 분포가 없어 `load-test/02-segment-tree-cache/sql/seed-data.sql`로 재설계(keyword 3,000,000행).
+- [x] `load-test/README.md` 테스트 환경 표를 채운다(CPU, RAM, OS, DB 버전, 데이터량, HikariCP, ioExecutor/cpuExecutor).
+- [x] 모니터링(`infra/docker-compose.monitoring.yml`, Prometheus·Grafana)이 커넥션 지표를 수집하는지 확인한다. Grafana 데이터 소스는 자동 등록, HikariCP 대시보드는 3단계 전에 새로 만든다.
 
 ## 3단계: ② 재측정
 

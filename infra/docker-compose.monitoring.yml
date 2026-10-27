@@ -1,8 +1,9 @@
-version: '3.7'
+# Prometheus :9090, Grafana :${GRAFANA_HOST_PORT:-3001}
+# 컨테이너 이름은 다른 프로젝트의 prometheus/grafana 와 겹치지 않도록 grouup- 접두어를 붙인다.
 services:
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: grouup-prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
@@ -10,10 +11,11 @@ services:
     restart: always
   grafana:
     image: grafana/grafana
-    container_name: grafana
+    container_name: grouup-grafana
     ports:
-      - "3001:3000"
+      - "${GRAFANA_HOST_PORT:-3001}:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
     restart: always
     depends_on:
       - prometheus
-    privileged: true

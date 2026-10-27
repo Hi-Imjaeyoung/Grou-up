@@ -6,22 +6,44 @@ MSA/글로벌 캐시 PoC의 부하 테스트는 [`poc/global-cache-msa/k6Test`](
 ## 실행
 
 ```bash
-cd infra && cp .env.example .env && docker compose up -d                       # MySQL
-docker compose -f docker-compose.monitoring.yml up -d                           # Prometheus :9090, Grafana :3001
-cd ../apps/api-server && ./gradlew bootRun --args='--spring.profiles.active=bottleNeckTest'
+cd infra && cp .env.example .env && docker compose up -d                       # MariaDB 10.11 (호스트 포트 DB_HOST_PORT, 기본 3306)
+docker compose -f docker-compose.monitoring.yml up -d                           # Prometheus :9090, Grafana :3001 (GRAFANA_HOST_PORT)
+
+# 1) 테이블 생성: bottleNeckTest 프로필로 한 번 기동 (ddl-auto: update)
+cd ../apps/api-server
+export DATASOURCE_URL=jdbc:mariadb://localhost:3306/grouup DATASOURCE_USERNAME=root DATASOURCE_PASSWORD=<.env 값>
+# OAuth·JWT 관련 환경변수(KAKAO_*, GOOGLE_*, JWT_*, RE_DIRECT_URL_*)도 아무 값으로 채워야 기동된다
+./gradlew bootRun --args='--spring.profiles.active=bottleNeckTest'
+
+# 2) 데이터 적재 (300만 행, 로컬에서 약 45초)
+docker exec -i grouup-mariadb mariadb -uroot -p<.env 값> grouup < load-test/02-segment-tree-cache/sql/seed-data.sql
+
+# 3) 측정
 k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 ```
 
-스크립트는 `JwtTokenProviderStubImpl`의 테스트 토큰(`TestToken : GUTokenuser{n}`)을 씁니다. 테스트 데이터는 `apps/api-server/src/test/.../databaseutils/testdatagenerator`로 생성합니다.
+스크립트는 `JwtTokenProviderStubImpl`의 테스트 토큰(`TestToken : GUTokenuser{n}`)을 씁니다. `JwtAuthFilterStub`이 이를 `user{n}@test.com`으로 바꿉니다.
 
-> 테스트 환경(서버 사양, DB 데이터량, 커넥션 풀 크기)은 아직 기록되지 않았습니다. 재측정 때 아래 표에 채웁니다.
+- 호스트에 MySQL 등이 이미 3306을 쓰고 있으면 `.env`의 `DB_HOST_PORT`를 바꾸고 `DATASOURCE_URL`도 맞춥니다.
+- Grafana에는 Prometheus 데이터 소스만 자동으로 등록됩니다(`infra/grafana/provisioning`). 예전 캡처의 HikariCP 패널 대시보드는 저장소에 없습니다.
+
+### 테스트 환경 (2026-10-27 재측정 환경)
+
+예전 측정 환경(서버 사양, 데이터 분포)은 기록이 없습니다. 아래는 재측정에 쓰는 로컬 환경이며, 예전 수치와 직접 비교하지 않습니다.
 
 | 항목 | 값 |
 |---|---|
-| 서버 | (기입 필요) |
-| DB / 데이터량 | MariaDB, 6개월 약 300만 행 (포트폴리오 기준) |
+| 호스트 | Intel Core i3-1115G4 (2코어 4스레드), RAM 7.7GB, Windows 11 Home |
+| 실행 위치 | api-server·k6는 호스트, MariaDB·Prometheus·Grafana는 Docker Desktop(VM 4 CPU, 3.8GB) |
+| JDK | 17 |
+| DB | MariaDB 10.11.19, 기본 설정(`innodb_buffer_pool_size` 128MB, `sql_mode`에 `ONLY_FULL_GROUP_BY` 없음) |
+| 데이터 | [`seed-data.sql`](02-segment-tree-cache/sql/seed-data.sql): 회원 500명 × 캠페인 10개, keyword 3,000,000행(2025-06-01 ~ 12-31, 테이블 약 480MB). Light(1~400) 캠페인당 300행, Heavy(401~475) 1,200행, Outlier(476~500) 3,600행 |
+| 인덱스 | 기본은 FK 인덱스 `(campaign_id)`만. 커버링 인덱스는 [`covering-index.sql`](02-segment-tree-cache/sql/covering-index.sql)로 켜고 끈다 |
 | HikariCP pool | `bottleNeckTest` 프로필 30 |
-| ioExecutor / cpuExecutor | 30 / 코어 수+1 |
+| ioExecutor / cpuExecutor | 30 / 코어 수+1 (이 PC에서 5) |
+| 모니터링 | Prometheus 5초 간격 수집, `hikaricp_connections_{active,pending,acquire_seconds,usage_seconds}` 수집 확인 |
+
+> 데이터 분포는 원래 값이 남아 있지 않아 k6 스크립트의 사용자 구성(Light/Heavy/Outlier)에 맞춰 다시 정했습니다. 포트폴리오의 "6개월 약 300만 행"과 총량만 맞춥니다.
 
 ## ① 엑셀 — `01-excel/`
 

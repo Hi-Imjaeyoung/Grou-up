@@ -1,17 +1,21 @@
-# 로컬 부하 테스트용 DB
+# 로컬 부하 테스트용 DB (운영 당시와 같은 MariaDB, 정확한 버전은 기록이 없어 10.11 LTS 사용)
 # 사용: cp .env.example .env && docker compose up -d
 # 모니터링(Prometheus/Grafana)은 docker-compose.monitoring.yml 을 함께 띄운다.
 services:
-  mysql:
-    image: "mysql:8.0.29"
-    container_name: "grouup-mysql"
+  mariadb:
+    image: "mariadb:10.11"
+    container_name: "grouup-mariadb"
     ports:
-      - "${MYSQL_HOST_PORT:-3306}:3306"
+      - "${DB_HOST_PORT:-3306}:3306"
     volumes:
-      - "grouup-mysql-data:/var/lib/mysql"
+      - "grouup-mariadb-data:/var/lib/mysql"
     environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_DATABASE: "grouup"
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: "grouup"
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_general_ci"
+      # innodb_buffer_pool_size 등은 운영 당시 값이 기록되지 않아 기본값(128MB)을 쓴다
 
 volumes:
-  grouup-mysql-data:
+  grouup-mariadb-data:

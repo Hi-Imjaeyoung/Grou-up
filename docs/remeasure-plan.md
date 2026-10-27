@@ -21,7 +21,7 @@
 - [ ] **측정 DB:** 문서는 MariaDB인데 `infra/docker-compose.yml`은 `mysql:8.0.29`다. MySQL 8 기본 `ONLY_FULL_GROUP_BY`에서는 C5 쿼리가 에러가 난다. 운영 당시 DB에 맞춘다.
 - [ ] **커버링 인덱스 정의:** 기억이 없으면 쿼리를 보고 다시 설계하고 문서에 "재설계"라고 밝힌다(O4).
 - [ ] **① 목표치 근거:** 셀러 수, 피크 시간대 (코드로 알 수 없음).
-- [ ] **Usage 4s 출처:** 이전 판 ②의 "Connection Usage 4s"를 보여 주는 캡처가 없다.
+- [x] **Usage 4s 출처:** 단순 비동기만 적용했을 때(500ms 지연·IO/CPU 풀 분리 전) Tomcat 스레드와 트리 빌드 스레드가 커넥션을 경쟁하며 관측한 최대 Usage. 캡처는 없어 3단계에서 재현한다.
 - [ ] **Phase 0~3 변경 내용:** 2026-02-07 측정은 커밋 없이 설정을 바꿔 가며 진행되어 각 Phase의 변경점을 알 수 없다.
 - [ ] **PDF "44%" 수치:** 원본 PDF 캐시 섹션에 있지만 ② 문서에는 없다. 무엇의 44%인지 확인.
 
@@ -56,6 +56,7 @@
 - [ ] 06/07 고정 범위 nocache vs lazycache
 - [ ] 08 `drilldown-nocache` vs 09 `drilldown-lazycache`: 첫 요청 지연, Cache Hit율, DB 접근 횟수
 - [ ] 09에서 HikariCP pool 20/30/40, Connection Acquire/Usage/Pending 캡처
+- [ ] 단순 비동기(지연·풀 분리 없음) 구성으로 09를 돌려 Connection Usage 최대값을 캡처한다(이전 판 "Usage 4s" 재현)
 - [ ] ② 결과 표를 새 수치로 바꾸고 "재측정 예정" 주의 메모를 갱신한다. 루트 README 요약 문구도 맞춘다.
 
 ## 4단계: ① 엑셀 업로드 수정 후 측정

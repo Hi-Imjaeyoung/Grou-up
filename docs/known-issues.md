@@ -20,7 +20,7 @@
 
 | # | 위치 | 문제 |
 |---|---|---|
-| S1 | `global/listener/CacheBuildEventListener.java` | DB 조회가 try/finally 밖에 있다. 조회가 실패하면 빌드 중 표시 키가 남아 해당 사용자·연도 트리가 다시는 빌드되지 않는다. |
+| S1 ✅ 해결 (S1_COMMIT) | `global/listener/CacheBuildEventListener.java` | DB 조회가 try/finally 밖에 있다. 조회가 실패하면 빌드 중 표시 키가 남아 해당 사용자·연도 트리가 다시는 빌드되지 않는다. → DB 조회와 빌드 작업 제출(`cpuExecutor` 거부 포함)을 try로 감싸 실패 시 키를 지우도록 수정. 재현 테스트 `CacheBuildEventListenerTest`. |
 | S2 | `global/cache/AllCampaignTypeData.java` | 내부가 `HashMap`인데 업데이트 스레드와 조회 스레드가 동시에 접근한다. |
 | S3 | `marginforcampaign/service/ExcelParsingService.java` | 실제 캠페인 ID 대신 테스트용 `getRandomCampaign()`을 쓴다. 엑셀에 없는 옵션을 삭제하는 로직도 주석 처리되어 있다. |
 | S4 | 같은 파일, `ExcelUploadContext` | IOException이 나면 null을 반환한다. 빈 행이 있으면 NPE로 업로드 전체가 실패한다. `Map.get`은 예외를 던지지 않으므로 `CAMPAIGN_NOT_FOUND`가 발생하지 않는다. 같은 상품명이 중복되면 중복 INSERT가 된다. |

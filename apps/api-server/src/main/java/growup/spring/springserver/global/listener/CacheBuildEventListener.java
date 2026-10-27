@@ -39,17 +39,23 @@ public class CacheBuildEventListener {
             }
             LocalDate startDate = LocalDate.of(year, 1, 1);
             LocalDate endDate = LocalDate.of(year, 12, 31);
-            List<Tuple> dbResult = keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(email, startDate, endDate);
-            CompletableFuture.runAsync(() -> {
-                try {
-                  lazySegmentTreeService.buildTree(email,year,dbResult);
-                } catch (Exception e) {
-                    log.error("트리 빌드 중 에러 발생", e);
-                    throw new GrouException(ErrorCode.UN_KNOWN_ERROR);
-                } finally {
-                    lazySegmentTreeService.removeTreeBuildingKey(email,year); // 키 제거 확실히!
-                }
-            }, cpuExecutor);
+            try {
+                List<Tuple> dbResult = keywordService.getAllTypeOfCampaignAdCostSumAndAdSaleSumByPeriodAndEmailByList(email, startDate, endDate);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                      lazySegmentTreeService.buildTree(email,year,dbResult);
+                    } catch (Exception e) {
+                        log.error("트리 빌드 중 에러 발생", e);
+                        throw new GrouException(ErrorCode.UN_KNOWN_ERROR);
+                    } finally {
+                        lazySegmentTreeService.removeTreeBuildingKey(email,year); // 키 제거 확실히!
+                    }
+                }, cpuExecutor);
+            } catch (Exception e) {
+                // DB 조회나 빌드 작업 제출이 실패하면 빌드 키가 남아 이 연도 트리가 다시 빌드되지 않으므로 여기서 지운다
+                log.error("트리 빌드 준비 중 에러 발생 email: {}, year: {}", email, year, e);
+                lazySegmentTreeService.removeTreeBuildingKey(email,year);
+            }
         }, CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS, ioExecutor));
     }
 }

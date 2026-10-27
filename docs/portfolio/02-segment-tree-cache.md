@@ -144,7 +144,7 @@ Acquire·Usage는 Grafana 패널에서 읽은 근삿값입니다. Phase 4는 poo
   | 전체 재빌드 | 81µs | 95µs | 84µs | 86µs | 83µs | 83µs |
 
   원래 코드는 이 의도와 달리 300일 이상일 때 부분 업데이트를 골라 조건이 반대였습니다([C8](../known-issues.md)). 다만 두 방식 모두 1ms 미만이고, 실제 비용은 DB 조회(부분 업데이트는 삭제 기간, 재빌드는 1년치)가 좌우합니다. DB를 포함한 비교는 재측정 때 확인합니다.
-- **새 데이터 업로드:** 광고 데이터는 Django excel-parser가 DB에 직접 넣기 때문에 Spring 캐시는 이를 알 수 없습니다. `expireAfterAccess`라서 계속 조회하는 사용자의 트리는 만료되지도 않습니다([C9](../known-issues.md)).
+- **새 데이터 업로드:** 광고 데이터는 Django excel-parser가 DB에 직접 넣기 때문에 Spring 캐시는 이를 알 수 없었고, `expireAfterAccess`라서 계속 조회하는 사용자의 트리는 만료되지도 않았습니다([C9](../known-issues.md)). 지금은 Django가 업로드를 마친 뒤 요청자 JWT로 `POST /api/campaign/cache/invalidate`를 호출해 해당 사용자의 트리를 지웁니다. 업로드 직전에 시작된 비동기 빌드가 무효화 뒤에 등록되는 경우는 아직 막지 못합니다.
 
 ### 캐시 스탬피드
 

@@ -75,7 +75,7 @@ public class KeywordRepositoryImpl implements KeywordRepositoryCustom{
                 .from(keyword)
                 .join(keyword.campaign,campaign)
                 .where(dateBetween,campaign.campaignId.in(campaignIds))
-                .groupBy(campaign.camAdType)
+                .groupBy(keyword.date, campaign.camAdType)
                 .fetch();
     }
 }

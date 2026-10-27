@@ -1,0 +1,13 @@
+diff --git a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
+index b713f69..a45cef4 100644
+--- a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
++++ b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
+@@ -134,7 +134,7 @@ public class ExcelParsingService {
+         return switch (cell.getCellType()) {
+             case STRING, FORMULA -> cell.getStringCellValue();
+             case NUMERIC -> {
+-                yield formatter.formatCellValue(cell);
++                yield new DataFormatter().formatCellValue(cell);
+             }
+             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+             default -> "";

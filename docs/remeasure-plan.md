@@ -69,7 +69,7 @@
 - [x] 단계별 커밋 찾기: 세 개선이 한 커밋(`52ed226`)에 있어, 현재 코드에서 되돌린 구성(v0/v1/v2a)으로 재현
 - [x] 각 단계에서 50 PCU·500행 업로드를 측정 → "(기입 필요)" 채우기: 7.76s → 4.45s → 2.84s (새 스크립트 `load-test/01-excel/scripts/excel-upload.js`)
 - [x] JDBC `rewriteBatchedStatements=true`(MySQL) / `useBulkStmts`(MariaDB)를 추가하고 한 단계 더 측정한다: Connector/J 3.3.3은 `useBulkStmts`가 기본으로 켜져 있음. 끈 경우와 비교했지만 범위가 겹쳐 결론 없음
-- [x] 확인 메모 처리: 0.27ms는 측정 방법 기록이 없어 확인 불가로 표기, "PK 직접 생성"은 코드와 다르다고 표기
+- [x] 확인 메모 처리: "DB IO 0.27ms → 0.06ms"를 당시 StopWatch 기록대로 삽입 280ms → 10.5ms로 정정, "PK 직접 생성"은 코드와 다르다고 표기
 - [x] GC 오버헤드 주장 근거: `DataFormatter` 재사용 전/후 요청당 힙 할당 34.2MB → 18.4MB, GC 52 → 40회(Micrometer 지표)
 
 ## 5단계: ③ TIMED_WAITING 재검증

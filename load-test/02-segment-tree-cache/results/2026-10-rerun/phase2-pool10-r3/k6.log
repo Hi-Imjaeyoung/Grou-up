@@ -1,0 +1,1207 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/load-test/02-segment-tree-cache/scripts/09-drilldown-lazycache.js
+        output: -
+
+     scenarios: (100.00%) 10 scenarios, 205 max VUs, 12m0s max duration (incl. graceful stop):
+              * warm_up: 5 looping VUs for 5s (exec: warmUpLogic)
+              * init_reset: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: resetStatsLogic, startTime: 6s, gracefulStop: 30s)
+              * step_1_base: 1 iterations for each of 50 VUs (maxDuration: 10m0s, exec: runStep1, startTime: 20s, gracefulStop: 30s)
+              * check_1: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: checkAndResetStep1, startTime: 30s, gracefulStop: 30s)
+              * step_2_subset: 1 iterations for each of 50 VUs (maxDuration: 10m0s, exec: runStep2, startTime: 40s, gracefulStop: 30s)
+              * check_2: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: checkAndResetStep2, startTime: 50s, gracefulStop: 30s)
+              * step_3_deep: 1 iterations for each of 50 VUs (maxDuration: 10m0s, exec: runStep3, startTime: 1m0s, gracefulStop: 30s)
+              * check_3: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: checkAndResetStep3, startTime: 1m10s, gracefulStop: 30s)
+              * step_4_overlap: 1 iterations for each of 50 VUs (maxDuration: 10m0s, exec: runStep4, startTime: 1m20s, gracefulStop: 30s)
+              * check_4: 1 iterations for each of 1 VUs (maxDuration: 10m0s, exec: checkAndResetStep4, startTime: 1m30s, gracefulStop: 30s)
+
+
+running (00m00.6s), 005/205 VUs, 0 complete and 0 interrupted iterations
+warm_up          [  13% ] 5 VUs    0.6s/5s
+init_reset     • [   0% ] waiting  5.4s
+step_1_base    • [   0% ] waiting  19.4s
+check_1        • [   0% ] waiting  29.4s
+step_2_subset  • [   0% ] waiting  39.4s
+check_2        • [   0% ] waiting  49.4s
+step_3_deep    • [   0% ] waiting  0m59.4s
+check_3        • [   0% ] waiting  1m09.4s
+step_4_overlap • [   0% ] waiting  1m19.4s
+check_4        • [   0% ] waiting  1m29.4s
+
+running (00m01.6s), 005/205 VUs, 0 complete and 0 interrupted iterations
+warm_up          [  33% ] 5 VUs    1.6s/5s
+init_reset     • [   0% ] waiting  4.4s
+step_1_base    • [   0% ] waiting  18.4s
+check_1        • [   0% ] waiting  28.4s
+step_2_subset  • [   0% ] waiting  38.4s
+check_2        • [   0% ] waiting  48.4s
+step_3_deep    • [   0% ] waiting  0m58.4s
+check_3        • [   0% ] waiting  1m08.4s
+step_4_overlap • [   0% ] waiting  1m18.4s
+check_4        • [   0% ] waiting  1m28.4s
+
+running (00m02.6s), 005/205 VUs, 5 complete and 0 interrupted iterations
+warm_up          [  53% ] 5 VUs    2.6s/5s
+init_reset     • [   0% ] waiting  3.4s
+step_1_base    • [   0% ] waiting  17.4s
+check_1        • [   0% ] waiting  27.4s
+step_2_subset  • [   0% ] waiting  37.4s
+check_2        • [   0% ] waiting  47.4s
+step_3_deep    • [   0% ] waiting  0m57.4s
+check_3        • [   0% ] waiting  1m07.4s
+step_4_overlap • [   0% ] waiting  1m17.4s
+check_4        • [   0% ] waiting  1m27.4s
+
+running (00m03.6s), 005/205 VUs, 10 complete and 0 interrupted iterations
+warm_up          [  73% ] 5 VUs    3.6s/5s
+init_reset     • [   0% ] waiting  2.4s
+step_1_base    • [   0% ] waiting  16.4s
+check_1        • [   0% ] waiting  26.4s
+step_2_subset  • [   0% ] waiting  36.4s
+check_2        • [   0% ] waiting  46.4s
+step_3_deep    • [   0% ] waiting  0m56.4s
+check_3        • [   0% ] waiting  1m06.4s
+step_4_overlap • [   0% ] waiting  1m16.4s
+check_4        • [   0% ] waiting  1m26.4s
+
+running (00m04.6s), 005/205 VUs, 15 complete and 0 interrupted iterations
+warm_up          [  93% ] 5 VUs    4.6s/5s
+init_reset     • [   0% ] waiting  1.4s
+step_1_base    • [   0% ] waiting  15.4s
+check_1        • [   0% ] waiting  25.4s
+step_2_subset  • [   0% ] waiting  35.4s
+check_2        • [   0% ] waiting  45.4s
+step_3_deep    • [   0% ] waiting  0m55.4s
+check_3        • [   0% ] waiting  1m05.4s
+step_4_overlap • [   0% ] waiting  1m15.4s
+check_4        • [   0% ] waiting  1m25.4s
+
+running (00m05.6s), 000/205 VUs, 15 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s
+init_reset     • [   0% ] waiting  0.4s
+step_1_base    • [   0% ] waiting  14.4s
+check_1        • [   0% ] waiting  24.4s
+step_2_subset  • [   0% ] waiting  34.4s
+check_2        • [   0% ] waiting  44.4s
+step_3_deep    • [   0% ] waiting  0m54.4s
+check_3        • [   0% ] waiting  1m04.4s
+step_4_overlap • [   0% ] waiting  1m14.4s
+check_4        • [   0% ] waiting  1m24.4s
+time="2026-10-27T15:43:45+09:00" level=info msg="🔄 초기 리셋 완료" source=console
+
+running (00m06.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  13.4s          
+check_1        • [   0% ] waiting  23.4s          
+step_2_subset  • [   0% ] waiting  33.4s          
+check_2        • [   0% ] waiting  43.4s          
+step_3_deep    • [   0% ] waiting  0m53.4s        
+check_3        • [   0% ] waiting  1m03.4s        
+step_4_overlap • [   0% ] waiting  1m13.4s        
+check_4        • [   0% ] waiting  1m23.4s        
+
+running (00m07.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  12.4s          
+check_1        • [   0% ] waiting  22.4s          
+step_2_subset  • [   0% ] waiting  32.4s          
+check_2        • [   0% ] waiting  42.4s          
+step_3_deep    • [   0% ] waiting  0m52.4s        
+check_3        • [   0% ] waiting  1m02.4s        
+step_4_overlap • [   0% ] waiting  1m12.4s        
+check_4        • [   0% ] waiting  1m22.4s        
+
+running (00m08.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  11.4s          
+check_1        • [   0% ] waiting  21.4s          
+step_2_subset  • [   0% ] waiting  31.4s          
+check_2        • [   0% ] waiting  41.4s          
+step_3_deep    • [   0% ] waiting  0m51.4s        
+check_3        • [   0% ] waiting  1m01.4s        
+step_4_overlap • [   0% ] waiting  1m11.4s        
+check_4        • [   0% ] waiting  1m21.4s        
+
+running (00m09.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  10.4s          
+check_1        • [   0% ] waiting  20.4s          
+step_2_subset  • [   0% ] waiting  30.4s          
+check_2        • [   0% ] waiting  40.4s          
+step_3_deep    • [   0% ] waiting  0m50.4s        
+check_3        • [   0% ] waiting  1m00.4s        
+step_4_overlap • [   0% ] waiting  1m10.4s        
+check_4        • [   0% ] waiting  1m20.4s        
+
+running (00m10.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  09.4s          
+check_1        • [   0% ] waiting  19.4s          
+step_2_subset  • [   0% ] waiting  29.4s          
+check_2        • [   0% ] waiting  39.4s          
+step_3_deep    • [   0% ] waiting  0m49.4s        
+check_3        • [   0% ] waiting  0m59.4s        
+step_4_overlap • [   0% ] waiting  1m09.4s        
+check_4        • [   0% ] waiting  1m19.4s        
+
+running (00m11.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  08.4s          
+check_1        • [   0% ] waiting  18.4s          
+step_2_subset  • [   0% ] waiting  28.4s          
+check_2        • [   0% ] waiting  38.4s          
+step_3_deep    • [   0% ] waiting  0m48.4s        
+check_3        • [   0% ] waiting  0m58.4s        
+step_4_overlap • [   0% ] waiting  1m08.4s        
+check_4        • [   0% ] waiting  1m18.4s        
+
+running (00m12.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  07.4s          
+check_1        • [   0% ] waiting  17.4s          
+step_2_subset  • [   0% ] waiting  27.4s          
+check_2        • [   0% ] waiting  37.4s          
+step_3_deep    • [   0% ] waiting  0m47.4s        
+check_3        • [   0% ] waiting  0m57.4s        
+step_4_overlap • [   0% ] waiting  1m07.4s        
+check_4        • [   0% ] waiting  1m17.4s        
+
+running (00m13.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  06.4s          
+check_1        • [   0% ] waiting  16.4s          
+step_2_subset  • [   0% ] waiting  26.4s          
+check_2        • [   0% ] waiting  36.4s          
+step_3_deep    • [   0% ] waiting  0m46.4s        
+check_3        • [   0% ] waiting  0m56.4s        
+step_4_overlap • [   0% ] waiting  1m06.4s        
+check_4        • [   0% ] waiting  1m16.4s        
+
+running (00m14.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  05.4s          
+check_1        • [   0% ] waiting  15.4s          
+step_2_subset  • [   0% ] waiting  25.4s          
+check_2        • [   0% ] waiting  35.4s          
+step_3_deep    • [   0% ] waiting  0m45.4s        
+check_3        • [   0% ] waiting  0m55.4s        
+step_4_overlap • [   0% ] waiting  1m05.4s        
+check_4        • [   0% ] waiting  1m15.4s        
+
+running (00m15.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  04.4s          
+check_1        • [   0% ] waiting  14.4s          
+step_2_subset  • [   0% ] waiting  24.4s          
+check_2        • [   0% ] waiting  34.4s          
+step_3_deep    • [   0% ] waiting  0m44.4s        
+check_3        • [   0% ] waiting  0m54.4s        
+step_4_overlap • [   0% ] waiting  1m04.4s        
+check_4        • [   0% ] waiting  1m14.4s        
+
+running (00m16.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  03.4s          
+check_1        • [   0% ] waiting  13.4s          
+step_2_subset  • [   0% ] waiting  23.4s          
+check_2        • [   0% ] waiting  33.4s          
+step_3_deep    • [   0% ] waiting  0m43.4s        
+check_3        • [   0% ] waiting  0m53.4s        
+step_4_overlap • [   0% ] waiting  1m03.4s        
+check_4        • [   0% ] waiting  1m13.4s        
+
+running (00m17.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  02.4s          
+check_1        • [   0% ] waiting  12.4s          
+step_2_subset  • [   0% ] waiting  22.4s          
+check_2        • [   0% ] waiting  32.4s          
+step_3_deep    • [   0% ] waiting  0m42.4s        
+check_3        • [   0% ] waiting  0m52.4s        
+step_4_overlap • [   0% ] waiting  1m02.4s        
+check_4        • [   0% ] waiting  1m12.4s        
+
+running (00m18.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  01.4s          
+check_1        • [   0% ] waiting  11.4s          
+step_2_subset  • [   0% ] waiting  21.4s          
+check_2        • [   0% ] waiting  31.4s          
+step_3_deep    • [   0% ] waiting  0m41.4s        
+check_3        • [   0% ] waiting  0m51.4s        
+step_4_overlap • [   0% ] waiting  1m01.4s        
+check_4        • [   0% ] waiting  1m11.4s        
+
+running (00m19.6s), 000/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    • [   0% ] waiting  00.4s          
+check_1        • [   0% ] waiting  10.4s          
+step_2_subset  • [   0% ] waiting  20.4s          
+check_2        • [   0% ] waiting  30.4s          
+step_3_deep    • [   0% ] waiting  0m40.4s        
+check_3        • [   0% ] waiting  0m50.4s        
+step_4_overlap • [   0% ] waiting  1m00.4s        
+check_4        • [   0% ] waiting  1m10.4s        
+
+running (00m20.7s), 050/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base      [   0% ] 50 VUs   00m00.7s/10m0s  00/50 iters, 1 per VU
+check_1        • [   0% ] waiting  09.3s          
+step_2_subset  • [   0% ] waiting  19.3s          
+check_2        • [   0% ] waiting  29.3s          
+step_3_deep    • [   0% ] waiting  0m39.3s        
+check_3        • [   0% ] waiting  0m49.3s        
+step_4_overlap • [   0% ] waiting  0m59.3s        
+check_4        • [   0% ] waiting  1m09.3s        
+
+running (00m21.7s), 050/205 VUs, 16 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base      [   0% ] 50 VUs   00m01.7s/10m0s  00/50 iters, 1 per VU
+check_1        • [   0% ] waiting  08.3s          
+step_2_subset  • [   0% ] waiting  18.3s          
+check_2        • [   0% ] waiting  28.3s          
+step_3_deep    • [   0% ] waiting  0m38.3s        
+check_3        • [   0% ] waiting  0m48.3s        
+step_4_overlap • [   0% ] waiting  0m58.3s        
+check_4        • [   0% ] waiting  1m08.3s        
+
+running (00m22.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  07.4s          
+step_2_subset  • [   0% ] waiting  17.4s          
+check_2        • [   0% ] waiting  27.4s          
+step_3_deep    • [   0% ] waiting  0m37.4s        
+check_3        • [   0% ] waiting  0m47.4s        
+step_4_overlap • [   0% ] waiting  0m57.4s        
+check_4        • [   0% ] waiting  1m07.4s        
+
+running (00m23.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  06.4s          
+step_2_subset  • [   0% ] waiting  16.4s          
+check_2        • [   0% ] waiting  26.4s          
+step_3_deep    • [   0% ] waiting  0m36.4s        
+check_3        • [   0% ] waiting  0m46.4s        
+step_4_overlap • [   0% ] waiting  0m56.4s        
+check_4        • [   0% ] waiting  1m06.4s        
+
+running (00m24.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  05.4s          
+step_2_subset  • [   0% ] waiting  15.4s          
+check_2        • [   0% ] waiting  25.4s          
+step_3_deep    • [   0% ] waiting  0m35.4s        
+check_3        • [   0% ] waiting  0m45.4s        
+step_4_overlap • [   0% ] waiting  0m55.4s        
+check_4        • [   0% ] waiting  1m05.4s        
+
+running (00m25.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  04.4s          
+step_2_subset  • [   0% ] waiting  14.4s          
+check_2        • [   0% ] waiting  24.4s          
+step_3_deep    • [   0% ] waiting  0m34.4s        
+check_3        • [   0% ] waiting  0m44.4s        
+step_4_overlap • [   0% ] waiting  0m54.4s        
+check_4        • [   0% ] waiting  1m04.4s        
+
+running (00m26.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  03.4s          
+step_2_subset  • [   0% ] waiting  13.4s          
+check_2        • [   0% ] waiting  23.4s          
+step_3_deep    • [   0% ] waiting  0m33.4s        
+check_3        • [   0% ] waiting  0m43.4s        
+step_4_overlap • [   0% ] waiting  0m53.4s        
+check_4        • [   0% ] waiting  1m03.4s        
+
+running (00m27.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  02.4s          
+step_2_subset  • [   0% ] waiting  12.4s          
+check_2        • [   0% ] waiting  22.4s          
+step_3_deep    • [   0% ] waiting  0m32.4s        
+check_3        • [   0% ] waiting  0m42.4s        
+step_4_overlap • [   0% ] waiting  0m52.4s        
+check_4        • [   0% ] waiting  1m02.4s        
+
+running (00m28.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  01.4s          
+step_2_subset  • [   0% ] waiting  11.4s          
+check_2        • [   0% ] waiting  21.4s          
+step_3_deep    • [   0% ] waiting  0m31.4s        
+check_3        • [   0% ] waiting  0m41.4s        
+step_4_overlap • [   0% ] waiting  0m51.4s        
+check_4        • [   0% ] waiting  1m01.4s        
+
+running (00m29.6s), 000/205 VUs, 66 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        • [   0% ] waiting  00.4s          
+step_2_subset  • [   0% ] waiting  10.4s          
+check_2        • [   0% ] waiting  20.4s          
+step_3_deep    • [   0% ] waiting  0m30.4s        
+check_3        • [   0% ] waiting  0m40.4s        
+step_4_overlap • [   0% ] waiting  0m50.4s        
+check_4        • [   0% ] waiting  1m00.4s        
+time="2026-10-27T15:44:09+09:00" level=info msg="\n==================================================" source=console
+time="2026-10-27T15:44:09+09:00" level=info msg="📢 [결과 검증] Step 1. 하반기 통조회" source=console
+time="2026-10-27T15:44:09+09:00" level=info msg="   - Total Requests : 0" source=console
+time="2026-10-27T15:44:09+09:00" level=info msg="   - Cache Hits     : 0" source=console
+time="2026-10-27T15:44:09+09:00" level=info msg="   - Hit miss       : 0 (예상: Low Hit (초기 적재))" source=console
+time="2026-10-27T15:44:09+09:00" level=info msg="==================================================\n" source=console
+
+running (00m30.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  09.4s          
+check_2        • [   0% ] waiting  19.4s          
+step_3_deep    • [   0% ] waiting  0m29.4s        
+check_3        • [   0% ] waiting  0m39.4s        
+step_4_overlap • [   0% ] waiting  0m49.4s        
+check_4        • [   0% ] waiting  0m59.4s        
+
+running (00m31.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  08.4s          
+check_2        • [   0% ] waiting  18.4s          
+step_3_deep    • [   0% ] waiting  0m28.4s        
+check_3        • [   0% ] waiting  0m38.4s        
+step_4_overlap • [   0% ] waiting  0m48.4s        
+check_4        • [   0% ] waiting  0m58.4s        
+
+running (00m32.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  07.4s          
+check_2        • [   0% ] waiting  17.4s          
+step_3_deep    • [   0% ] waiting  0m27.4s        
+check_3        • [   0% ] waiting  0m37.4s        
+step_4_overlap • [   0% ] waiting  0m47.4s        
+check_4        • [   0% ] waiting  0m57.4s        
+
+running (00m33.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  06.4s          
+check_2        • [   0% ] waiting  16.4s          
+step_3_deep    • [   0% ] waiting  0m26.4s        
+check_3        • [   0% ] waiting  0m36.4s        
+step_4_overlap • [   0% ] waiting  0m46.4s        
+check_4        • [   0% ] waiting  0m56.4s        
+
+running (00m34.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  05.4s          
+check_2        • [   0% ] waiting  15.4s          
+step_3_deep    • [   0% ] waiting  0m25.4s        
+check_3        • [   0% ] waiting  0m35.4s        
+step_4_overlap • [   0% ] waiting  0m45.4s        
+check_4        • [   0% ] waiting  0m55.4s        
+
+running (00m35.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  04.4s          
+check_2        • [   0% ] waiting  14.4s          
+step_3_deep    • [   0% ] waiting  0m24.4s        
+check_3        • [   0% ] waiting  0m34.4s        
+step_4_overlap • [   0% ] waiting  0m44.4s        
+check_4        • [   0% ] waiting  0m54.4s        
+
+running (00m36.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  03.4s          
+check_2        • [   0% ] waiting  13.4s          
+step_3_deep    • [   0% ] waiting  0m23.4s        
+check_3        • [   0% ] waiting  0m33.4s        
+step_4_overlap • [   0% ] waiting  0m43.4s        
+check_4        • [   0% ] waiting  0m53.4s        
+
+running (00m37.7s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  02.3s          
+check_2        • [   0% ] waiting  12.3s          
+step_3_deep    • [   0% ] waiting  0m22.3s        
+check_3        • [   0% ] waiting  0m32.3s        
+step_4_overlap • [   0% ] waiting  0m42.3s        
+check_4        • [   0% ] waiting  0m52.3s        
+
+running (00m38.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  01.4s          
+check_2        • [   0% ] waiting  11.4s          
+step_3_deep    • [   0% ] waiting  0m21.4s        
+check_3        • [   0% ] waiting  0m31.4s        
+step_4_overlap • [   0% ] waiting  0m41.4s        
+check_4        • [   0% ] waiting  0m51.4s        
+
+running (00m39.6s), 000/205 VUs, 67 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  • [   0% ] waiting  00.4s          
+check_2        • [   0% ] waiting  10.4s          
+step_3_deep    • [   0% ] waiting  0m20.4s        
+check_3        • [   0% ] waiting  0m30.4s        
+step_4_overlap • [   0% ] waiting  0m40.4s        
+check_4        • [   0% ] waiting  0m50.4s        
+
+running (00m40.7s), 009/205 VUs, 108 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset    [  82% ] 50 VUs   00m00.7s/10m0s  41/50 iters, 1 per VU
+check_2        • [   0% ] waiting  09.3s          
+step_3_deep    • [   0% ] waiting  0m19.3s        
+check_3        • [   0% ] waiting  0m29.3s        
+step_4_overlap • [   0% ] waiting  0m39.3s        
+check_4        • [   0% ] waiting  0m49.3s        
+
+running (00m41.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  08.4s          
+step_3_deep    • [   0% ] waiting  0m18.4s        
+check_3        • [   0% ] waiting  0m28.4s        
+step_4_overlap • [   0% ] waiting  0m38.4s        
+check_4        • [   0% ] waiting  0m48.4s        
+
+running (00m42.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  07.4s          
+step_3_deep    • [   0% ] waiting  0m17.4s        
+check_3        • [   0% ] waiting  0m27.4s        
+step_4_overlap • [   0% ] waiting  0m37.4s        
+check_4        • [   0% ] waiting  0m47.4s        
+
+running (00m43.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  06.4s          
+step_3_deep    • [   0% ] waiting  0m16.4s        
+check_3        • [   0% ] waiting  0m26.4s        
+step_4_overlap • [   0% ] waiting  0m36.4s        
+check_4        • [   0% ] waiting  0m46.4s        
+
+running (00m44.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  05.4s          
+step_3_deep    • [   0% ] waiting  0m15.4s        
+check_3        • [   0% ] waiting  0m25.4s        
+step_4_overlap • [   0% ] waiting  0m35.4s        
+check_4        • [   0% ] waiting  0m45.4s        
+
+running (00m45.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  04.4s          
+step_3_deep    • [   0% ] waiting  0m14.4s        
+check_3        • [   0% ] waiting  0m24.4s        
+step_4_overlap • [   0% ] waiting  0m34.4s        
+check_4        • [   0% ] waiting  0m44.4s        
+
+running (00m46.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  03.4s          
+step_3_deep    • [   0% ] waiting  0m13.4s        
+check_3        • [   0% ] waiting  0m23.4s        
+step_4_overlap • [   0% ] waiting  0m33.4s        
+check_4        • [   0% ] waiting  0m43.4s        
+
+running (00m47.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  02.4s          
+step_3_deep    • [   0% ] waiting  0m12.4s        
+check_3        • [   0% ] waiting  0m22.4s        
+step_4_overlap • [   0% ] waiting  0m32.4s        
+check_4        • [   0% ] waiting  0m42.4s        
+
+running (00m48.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  01.4s          
+step_3_deep    • [   0% ] waiting  0m11.4s        
+check_3        • [   0% ] waiting  0m21.4s        
+step_4_overlap • [   0% ] waiting  0m31.4s        
+check_4        • [   0% ] waiting  0m41.4s        
+
+running (00m49.6s), 000/205 VUs, 117 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        • [   0% ] waiting  00.4s          
+step_3_deep    • [   0% ] waiting  0m10.4s        
+check_3        • [   0% ] waiting  0m20.4s        
+step_4_overlap • [   0% ] waiting  0m30.4s        
+check_4        • [   0% ] waiting  0m40.4s        
+time="2026-10-27T15:44:29+09:00" level=info msg="\n==================================================" source=console
+time="2026-10-27T15:44:29+09:00" level=info msg="📢 [결과 검증] Step 2. 3분기 (Subset)" source=console
+time="2026-10-27T15:44:29+09:00" level=info msg="   - Total Requests : 350" source=console
+time="2026-10-27T15:44:29+09:00" level=info msg="   - Cache Hits     : 350" source=console
+time="2026-10-27T15:44:29+09:00" level=info msg="   - Hit miss       : 0 (예상: 100% Hit)" source=console
+time="2026-10-27T15:44:29+09:00" level=info msg="==================================================\n" source=console
+
+running (00m50.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m09.4s        
+check_3        • [   0% ] waiting  0m19.4s        
+step_4_overlap • [   0% ] waiting  0m29.4s        
+check_4        • [   0% ] waiting  0m39.4s        
+
+running (00m51.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m08.4s        
+check_3        • [   0% ] waiting  0m18.4s        
+step_4_overlap • [   0% ] waiting  0m28.4s        
+check_4        • [   0% ] waiting  0m38.4s        
+
+running (00m52.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m07.4s        
+check_3        • [   0% ] waiting  0m17.4s        
+step_4_overlap • [   0% ] waiting  0m27.4s        
+check_4        • [   0% ] waiting  0m37.4s        
+
+running (00m53.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m06.4s        
+check_3        • [   0% ] waiting  0m16.4s        
+step_4_overlap • [   0% ] waiting  0m26.4s        
+check_4        • [   0% ] waiting  0m36.4s        
+
+running (00m54.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m05.4s        
+check_3        • [   0% ] waiting  0m15.4s        
+step_4_overlap • [   0% ] waiting  0m25.4s        
+check_4        • [   0% ] waiting  0m35.4s        
+
+running (00m55.7s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m04.3s        
+check_3        • [   0% ] waiting  0m14.3s        
+step_4_overlap • [   0% ] waiting  0m24.3s        
+check_4        • [   0% ] waiting  0m34.3s        
+
+running (00m56.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m03.4s        
+check_3        • [   0% ] waiting  0m13.4s        
+step_4_overlap • [   0% ] waiting  0m23.4s        
+check_4        • [   0% ] waiting  0m33.4s        
+
+running (00m57.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m02.4s        
+check_3        • [   0% ] waiting  0m12.4s        
+step_4_overlap • [   0% ] waiting  0m22.4s        
+check_4        • [   0% ] waiting  0m32.4s        
+
+running (00m58.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m01.4s        
+check_3        • [   0% ] waiting  0m11.4s        
+step_4_overlap • [   0% ] waiting  0m21.4s        
+check_4        • [   0% ] waiting  0m31.4s        
+
+running (00m59.6s), 000/205 VUs, 118 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    • [   0% ] waiting  0m00.4s        
+check_3        • [   0% ] waiting  0m10.4s        
+step_4_overlap • [   0% ] waiting  0m20.4s        
+check_4        • [   0% ] waiting  0m30.4s        
+
+running (01m00.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m09.4s        
+step_4_overlap • [   0% ] waiting  0m19.4s        
+check_4        • [   0% ] waiting  0m29.4s        
+
+running (01m01.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m08.4s        
+step_4_overlap • [   0% ] waiting  0m18.4s        
+check_4        • [   0% ] waiting  0m28.4s        
+
+running (01m02.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m07.4s        
+step_4_overlap • [   0% ] waiting  0m17.4s        
+check_4        • [   0% ] waiting  0m27.4s        
+
+running (01m03.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m06.4s        
+step_4_overlap • [   0% ] waiting  0m16.4s        
+check_4        • [   0% ] waiting  0m26.4s        
+
+running (01m04.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m05.4s        
+step_4_overlap • [   0% ] waiting  0m15.4s        
+check_4        • [   0% ] waiting  0m25.4s        
+
+running (01m05.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m04.4s        
+step_4_overlap • [   0% ] waiting  0m14.4s        
+check_4        • [   0% ] waiting  0m24.4s        
+
+running (01m06.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m03.4s        
+step_4_overlap • [   0% ] waiting  0m13.4s        
+check_4        • [   0% ] waiting  0m23.4s        
+
+running (01m07.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m02.4s        
+step_4_overlap • [   0% ] waiting  0m12.4s        
+check_4        • [   0% ] waiting  0m22.4s        
+
+running (01m08.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m01.4s        
+step_4_overlap • [   0% ] waiting  0m11.4s        
+check_4        • [   0% ] waiting  0m21.4s        
+
+running (01m09.6s), 000/205 VUs, 168 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        • [   0% ] waiting  0m00.4s        
+step_4_overlap • [   0% ] waiting  0m10.4s        
+check_4        • [   0% ] waiting  0m20.4s        
+time="2026-10-27T15:44:49+09:00" level=info msg="\n==================================================" source=console
+time="2026-10-27T15:44:49+09:00" level=info msg="📢 [결과 검증] Step 3. 8월 (Deep Dive)" source=console
+time="2026-10-27T15:44:49+09:00" level=info msg="   - Total Requests : 200" source=console
+time="2026-10-27T15:44:49+09:00" level=info msg="   - Cache Hits     : 200" source=console
+time="2026-10-27T15:44:49+09:00" level=info msg="   - Hit miss       : 0 (예상: 100% Hit)" source=console
+time="2026-10-27T15:44:49+09:00" level=info msg="==================================================\n" source=console
+
+running (01m10.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m09.4s        
+check_4        • [   0% ] waiting  0m19.4s        
+
+running (01m11.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m08.4s        
+check_4        • [   0% ] waiting  0m18.4s        
+
+running (01m12.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m07.4s        
+check_4        • [   0% ] waiting  0m17.4s        
+
+running (01m13.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m06.4s        
+check_4        • [   0% ] waiting  0m16.4s        
+
+running (01m14.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m05.4s        
+check_4        • [   0% ] waiting  0m15.4s        
+
+running (01m15.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m04.4s        
+check_4        • [   0% ] waiting  0m14.4s        
+
+running (01m16.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m03.4s        
+check_4        • [   0% ] waiting  0m13.4s        
+
+running (01m17.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m02.4s        
+check_4        • [   0% ] waiting  0m12.4s        
+
+running (01m18.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m01.4s        
+check_4        • [   0% ] waiting  0m11.4s        
+
+running (01m19.6s), 000/205 VUs, 169 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap • [   0% ] waiting  0m00.4s        
+check_4        • [   0% ] waiting  0m10.4s        
+
+running (01m20.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m09.4s        
+
+running (01m21.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m08.4s        
+
+running (01m22.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m07.4s        
+
+running (01m23.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m06.4s        
+
+running (01m24.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m05.4s        
+
+running (01m25.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m04.4s        
+
+running (01m26.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m03.4s        
+
+running (01m27.6s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m02.4s        
+
+running (01m28.7s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m01.3s        
+
+running (01m29.7s), 000/205 VUs, 219 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs    5s             
+init_reset     ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs   00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs   00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs   00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs    00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs   00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        • [   0% ] waiting  0m00.3s        
+time="2026-10-27T15:45:09+09:00" level=info msg="\n==================================================" source=console
+time="2026-10-27T15:45:09+09:00" level=info msg="📢 [결과 검증] Step 4. 6~7월 (Overlap)" source=console
+time="2026-10-27T15:45:09+09:00" level=info msg="   - Total Requests : 350" source=console
+time="2026-10-27T15:45:09+09:00" level=info msg="   - Cache Hits     : 350" source=console
+time="2026-10-27T15:45:09+09:00" level=info msg="   - Hit miss       : 0 (예상: ~50% Hit)" source=console
+time="2026-10-27T15:45:09+09:00" level=info msg="==================================================\n" source=console
+
+running (01m30.1s), 000/205 VUs, 220 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs   5s             
+init_reset     ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs  00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs  00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs  00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs  00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        ✓ [ 100% ] 1 VUs   00m00.1s/10m0s  1/1 iters, 1 per VU
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{step:1.Base_Half_Year}
+    ✗ 'p(95)<1000' p(95)=2.51s
+
+    http_req_duration{step:2.Subset_Q3}
+    ✗ 'p(95)<500' p(95)=738.79ms
+
+    http_req_duration{step:3.Subset_August}
+    ✓ 'p(95)<500' p(95)=325.92ms
+
+    http_req_duration{step:4.Overlap_June_July}
+    ✓ 'p(95)<1000' p(95)=278.32ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+    http_reqs{step:1.Base_Half_Year}
+    ✓ 'count>=50' count=50
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 200     2.220791/s
+    checks_succeeded...: 100.00% 200 out of 200
+    checks_failed......: 0.00%   0 out of 200
+
+    ✓ status is 200
+
+    HTTP
+    http_req_duration................: avg=674.49ms min=3.18ms   med=247.15ms max=2.57s    p(90)=2.23s    p(95)=2.44s   
+      { expected_response:true }.....: avg=674.49ms min=3.18ms   med=247.15ms max=2.57s    p(90)=2.23s    p(95)=2.44s   
+      { step:1.Base_Half_Year }......: avg=2.16s    min=1.65s    med=2.21s    max=2.57s    p(90)=2.51s    p(95)=2.51s   
+      { step:2.Subset_Q3 }...........: avg=363.87ms min=114.39ms med=281.91ms max=765.09ms p(90)=734.19ms p(95)=738.79ms
+      { step:3.Subset_August }.......: avg=222.51ms min=108.32ms med=220.44ms max=355.2ms  p(90)=314.69ms p(95)=325.92ms
+      { step:4.Overlap_June_July }...: avg=208.59ms min=126.61ms med=213.32ms max=278.68ms p(90)=277.14ms p(95)=278.32ms
+    http_req_failed..................: 0.00%  0 out of 229
+    http_reqs........................: 229    2.542806/s
+      { step:1.Base_Half_Year }......: 50     0.555198/s
+
+    EXECUTION
+    iteration_duration...............: avg=794.94ms min=8.68ms   med=302.18ms max=2.58s    p(90)=2.26s    p(95)=2.45s   
+    iterations.......................: 220    2.44287/s
+    vus..............................: 0      min=0        max=50 
+    vus_max..........................: 205    min=205      max=205
+
+    NETWORK
+    data_received....................: 300 kB 3.3 kB/s
+    data_sent........................: 47 kB  516 B/s
+
+
+
+
+running (01m30.1s), 000/205 VUs, 220 complete and 5 interrupted iterations
+warm_up        ✓ [ 100% ] 5 VUs   5s             
+init_reset     ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_1_base    ✓ [ 100% ] 50 VUs  00m02.6s/10m0s  50/50 iters, 1 per VU
+check_1        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_2_subset  ✓ [ 100% ] 50 VUs  00m00.9s/10m0s  50/50 iters, 1 per VU
+check_2        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_3_deep    ✓ [ 100% ] 50 VUs  00m00.5s/10m0s  50/50 iters, 1 per VU
+check_3        ✓ [ 100% ] 1 VUs   00m00.0s/10m0s  1/1 iters, 1 per VU
+step_4_overlap ✓ [ 100% ] 50 VUs  00m00.4s/10m0s  50/50 iters, 1 per VU
+check_4        ✓ [ 100% ] 1 VUs   00m00.1s/10m0s  1/1 iters, 1 per VU
+time="2026-10-27T15:45:10+09:00" level=error msg="thresholds on metrics 'http_req_duration{step:1.Base_Half_Year}, http_req_duration{step:2.Subset_Q3}' have been crossed"

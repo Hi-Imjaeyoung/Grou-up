@@ -75,11 +75,11 @@
 
 ## 5단계: ③ TIMED_WAITING 재검증
 
-- [ ] k6로 순간 동시 연결 200 이상 발생시키는 스크립트 작성 → `load-test/04-timed-waiting/`
-- [ ] `jstack`에서 TIMED_WAITING 스택이 `TaskQueue.poll`인지 확인하고 저장
-- [ ] 유휴 60초 후 스레드 수 감소를 Grafana로 캡처
-- [ ] 401 flood 스크립트와 VisualVM 캡처도 남긴다
-- [ ] 결과에 따라 ③ 결론과 WAF·Rate Limiter 역할 서술을 다시 쓴다
+- [x] k6로 순간 동시 연결 200 이상 발생시키는 스크립트 작성 → `load-test/04-timed-waiting/scripts/scanner-burst.js`(동시 300, 401)
+- [x] `jstack`에서 TIMED_WAITING 스택이 `TaskQueue.poll`인지 확인하고 저장: 워커 200개 모두 `TaskQueue.poll` (`jcmd Thread.print`)
+- [x] 유휴 60초 후 스레드 수 감소를 캡처: 58~64초 뒤 워커 200 → 12 (Prometheus 시계열 + 그래프 PNG)
+- [x] 401 flood 스크립트와 VisualVM 캡처도 남긴다: 스크립트는 남김, VisualVM 대신 스레드 덤프·시계열로 대체
+- [x] 결과에 따라 ③ 결론과 WAF·Rate Limiter 역할 서술을 다시 쓴다(대조군 `max-threads=50`으로 원인 확인)
 
 ## 6단계: ④ MSA PoC (우선순위 낮음)
 

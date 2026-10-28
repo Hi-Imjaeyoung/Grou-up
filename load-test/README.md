@@ -95,6 +95,20 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 
 > 캡처별 수치(P95, Acquire, Usage, Pending)는 [② 부록: 예전 측정 기록](../docs/portfolio/02-segment-tree-cache.md#부록-예전-측정-기록)에 정리했습니다.
 
+## ③ TIMED_WAITING 재검증 — `04-timed-waiting/`
+
+| 스크립트 | 엔드포인트 | 비고 |
+|---|---|---|
+| [scanner-burst.js](04-timed-waiting/scripts/scanner-burst.js) | `GET /frontend/.env`, `/conf.php.swp` (인증 없음, 401) | 예열 5명 5초 → 동시 300명 15초 |
+
+[`04-timed-waiting/rerun/run.sh`](04-timed-waiting/rerun/run.sh)로 돌립니다.
+- 서버 기동 → 버스트 → 유휴 90초 순서로 진행합니다.
+- 부하 직후와 유휴 75초 후에 `jcmd Thread.print` 덤프를 뜹니다.
+- 스레드 상태 지표를 저장합니다.
+- 구성 B는 `--server.tomcat.threads.max=50`, C는 `--logging.level.root=WARN`을 인자로 줍니다.
+- 표와 그래프는 `summarize.py`(matplotlib 필요)로 만듭니다.
+- 결과는 [results/2026-10-rerun](04-timed-waiting/results/2026-10-rerun)에 있습니다.
+
 ## 삭제 API — `03-delete-api/`
 
 | 스크립트 | 엔드포인트 | 결과 |

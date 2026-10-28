@@ -1,0 +1,138 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/load-test/04-timed-waiting/scripts/scanner-burst.js
+        output: -
+
+     scenarios: (100.00%) 2 scenarios, 300 max VUs, 51s max duration (incl. graceful stop):
+              * warm_up: 5 looping VUs for 5s (gracefulStop: 1s)
+              * burst: 300 looping VUs for 15s (startTime: 6s, gracefulStop: 30s)
+
+
+running (00.9s), 005/300 VUs, 53 complete and 0 interrupted iterations
+warm_up   [  19% ] 5 VUs    1.0s/5s
+burst   • [   0% ] waiting  5.0s
+
+running (01.9s), 005/300 VUs, 181 complete and 0 interrupted iterations
+warm_up   [  38% ] 5 VUs    1.9s/5s
+burst   • [   0% ] waiting  4.1s
+
+running (02.9s), 005/300 VUs, 594 complete and 0 interrupted iterations
+warm_up   [  58% ] 5 VUs    2.9s/5s
+burst   • [   0% ] waiting  3.1s
+
+running (03.9s), 005/300 VUs, 792 complete and 0 interrupted iterations
+warm_up   [  79% ] 5 VUs    3.9s/5s
+burst   • [   0% ] waiting  2.1s
+
+running (04.9s), 005/300 VUs, 1240 complete and 0 interrupted iterations
+warm_up   [  98% ] 5 VUs    4.9s/5s
+burst   • [   0% ] waiting  1.1s
+
+running (05.9s), 000/300 VUs, 1286 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst   • [   0% ] waiting  0.1s
+
+running (06.9s), 300/300 VUs, 1723 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [   6% ] 300 VUs  00.9s/15s
+
+running (08.0s), 300/300 VUs, 2589 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  13% ] 300 VUs  02.0s/15s
+
+running (08.9s), 300/300 VUs, 3456 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  20% ] 300 VUs  02.9s/15s
+
+running (09.9s), 300/300 VUs, 4120 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  26% ] 300 VUs  03.9s/15s
+
+running (10.9s), 300/300 VUs, 5335 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  33% ] 300 VUs  04.9s/15s
+
+running (11.9s), 300/300 VUs, 5941 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  40% ] 300 VUs  05.9s/15s
+
+running (12.9s), 300/300 VUs, 7085 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  46% ] 300 VUs  06.9s/15s
+
+running (14.0s), 300/300 VUs, 8868 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  53% ] 300 VUs  08.0s/15s
+
+running (14.9s), 300/300 VUs, 11594 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  59% ] 300 VUs  08.9s/15s
+
+running (15.9s), 300/300 VUs, 14566 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  66% ] 300 VUs  09.9s/15s
+
+running (16.9s), 300/300 VUs, 17772 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  73% ] 300 VUs  10.9s/15s
+
+running (17.9s), 300/300 VUs, 21306 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  79% ] 300 VUs  11.9s/15s
+
+running (18.9s), 300/300 VUs, 24480 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  86% ] 300 VUs  12.9s/15s
+
+running (19.9s), 300/300 VUs, 27465 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [  93% ] 300 VUs  13.9s/15s
+
+running (20.9s), 300/300 VUs, 30490 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst     [ 100% ] 300 VUs  14.9s/15s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{phase:burst}
+    ✓ 'p(95)<60000' p(95)=367.34ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 31070   1477.795232/s
+    checks_succeeded...: 100.00% 31070 out of 31070
+    checks_failed......: 0.00%   0 out of 31070
+
+    ✓ rejected (401/403/404)
+
+    HTTP
+    http_req_duration..............: avg=131.73ms min=0s med=84.96ms max=1.34s p(90)=302.01ms p(95)=363.95ms
+      { expected_response:true }...: avg=131.73ms min=0s med=84.96ms max=1.34s p(90)=302.01ms p(95)=363.95ms
+      { phase:burst }..............: avg=136.59ms min=0s med=87.49ms max=1.34s p(90)=306.77ms p(95)=367.34ms
+    http_req_failed................: 0.00%  0 out of 31070
+    http_reqs......................: 31070  1477.795232/s
+
+    EXECUTION
+    iteration_duration.............: avg=141.57ms min=0s med=90.93ms max=1.46s p(90)=318ms    p(95)=376.15ms
+    iterations.....................: 31070  1477.795232/s
+    vus............................: 300    min=0          max=300
+    vus_max........................: 300    min=300        max=300
+
+    NETWORK
+    data_received..................: 16 MB  739 kB/s
+    data_sent......................: 2.6 MB 122 kB/s
+
+
+
+
+running (21.0s), 000/300 VUs, 31070 complete and 0 interrupted iterations
+warm_up ✓ [ 100% ] 5 VUs    5s
+burst   ✓ [ 100% ] 300 VUs  15s

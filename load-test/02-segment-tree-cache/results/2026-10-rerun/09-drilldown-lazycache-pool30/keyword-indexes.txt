@@ -1,0 +1,8 @@
+Table	Non_unique	Key_name	Seq_in_index	Column_name	Collation	Cardinality	Sub_part	Packed	Null	Index_type	Comment	Index_comment	Ignored
+keyword	0	PRIMARY	1	id	A	2896772	NULL	NULL		BTREE			NO
+keyword	1	FKh8p6b3xdivd0ty62ykfbcvvjv	1	campaign_id	A	9852	NULL	NULL	YES	BTREE			NO
+keyword	1	idx_keyword_campaign	1	campaign_id	A	9591	NULL	NULL	YES	BTREE			NO
+keyword	1	idx_keyword_campaign_date_cost_sales	1	campaign_id	A	16940	NULL	NULL	YES	BTREE			NO
+keyword	1	idx_keyword_campaign_date_cost_sales	2	date	A	2896772	NULL	NULL	YES	BTREE			NO
+keyword	1	idx_keyword_campaign_date_cost_sales	3	ad_cost	A	2896772	NULL	NULL	YES	BTREE			NO
+keyword	1	idx_keyword_campaign_date_cost_sales	4	ad_sales	A	2896772	NULL	NULL	YES	BTREE			NO

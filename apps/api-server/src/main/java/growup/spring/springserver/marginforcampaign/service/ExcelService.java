@@ -29,18 +29,19 @@ public class ExcelService {
         return excelUploadContext.getResult();
         }
 
-    public void checkNotExistOptionsAndDelete(List<String> optionNamesInExcels, String email,Long campaignId){
-        marginForCampaignRepository.deleteNotIncludeOptionName(optionNamesInExcels,email,campaignId);
-    }
+    // 엑셀에 없는 기존 옵션을 지운다. 범위 DELETE(campaign_id 조건 + NOT IN)는 FK 인덱스에 gap lock 을 잡아
+    // 다른 사용자의 동시 업로드 INSERT 와 데드락이 나므로, 파싱 때 읽어 둔 기존 옵션에서 지울 PK 를 골라 PK 로만 지운다.
     private void deleteOldMfcNotExistExcel(ExcelUploadContext excelUploadContext){
-        String email = excelUploadContext.getEmail();
-        if (excelUploadContext.getOptionNamesFromExcel().isEmpty()) {
-            return;
-        }
+        List<Long> idsToDelete = new ArrayList<>();
         for(Long campaignId : excelUploadContext.getOptionNamesFromExcel().keySet()){
-            if(excelUploadContext.getOptionNamesFromExcel().get(campaignId).isEmpty()) continue;
-            checkNotExistOptionsAndDelete(excelUploadContext.getOptionNamesFromExcel().get(campaignId), email,campaignId);
+            Map<String,MarginForCampaign> existing = excelUploadContext.getMyMFCCache().get(campaignId);
+            if(existing == null) continue;
+            Set<String> namesInExcel = new HashSet<>(excelUploadContext.getOptionNamesFromExcel().get(campaignId));
+            existing.forEach((name, mfc) -> {
+                if(!namesInExcel.contains(name)) idsToDelete.add(mfc.getId());
+            });
         }
+        if(!idsToDelete.isEmpty()) marginForCampaignRepository.deleteAllByIdInBatch(idsToDelete);
     }
     private void saveMfcInExcel(List<MarginForCampaign> entitiesToInsert){
         // 1. 순수 벌크 인서트 (새로운 데이터)

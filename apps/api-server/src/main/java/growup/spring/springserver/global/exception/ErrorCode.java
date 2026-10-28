@@ -52,6 +52,7 @@ public enum ErrorCode {
     // File
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 파일이 존재하지 않습니다."),
     FILE_INVALID_DATA_FORM(HttpStatus.BAD_REQUEST,"파일 내 누락된 값이 존재합니다."),
+    FILE_READ_ERROR(HttpStatus.BAD_REQUEST,"엑셀 파일을 읽을 수 없습니다."),
 
     // etc
     FK_CONSTRAINT(HttpStatus.BAD_REQUEST,"제약조건 위반으로 인한 삭제 취소"),

@@ -1,5 +1,5 @@
 // ③ TIMED_WAITING 재검증 (2026-10-27): 스캐너 요청 버스트.
-// 2025-09-13 운영 로그에 남은 스캐너 요청(GET /frontend/.env, /conf.php.swp)을 인증 없이 동시 300명이 15초간
+// 2025-08-13 운영 로그에 남은 스캐너 요청(GET /frontend/.env, /conf.php.swp)을 인증 없이 동시 300명이 15초간
 // 쉬지 않고 보낸다(모두 401). 동시 처리 중인 요청이 Tomcat 워커 수 상한(기본 200)을 넘도록 하는 것이 목적이다.
 // 부하가 끝난 뒤의 유휴 구간 관측은 rerun/run.sh 가 맡는다.
 import http from 'k6/http';

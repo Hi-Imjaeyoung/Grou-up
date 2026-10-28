@@ -1,0 +1,19 @@
+diff --git a/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java b/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
+index cd91eb3..f10415a 100644
+--- a/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
++++ b/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
+@@ -50,12 +50,12 @@ public class CacheBuildEventListener {
+                     } finally {
+                         lazySegmentTreeService.removeTreeBuildingKey(email,year); // 키 제거 확실히!
+                     }
+-                }, cpuExecutor);
++                });
+             } catch (Exception e) {
+                 // DB 조회나 빌드 작업 제출이 실패하면 빌드 키가 남아 이 연도 트리가 다시 빌드되지 않으므로 여기서 지운다
+                 log.error("트리 빌드 준비 중 에러 발생 email: {}, year: {}", email, year, e);
+                 lazySegmentTreeService.removeTreeBuildingKey(email,year);
+             }
+-        }, CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS, ioExecutor));
++        }, CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS));
+     }
+ }

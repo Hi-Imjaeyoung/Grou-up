@@ -1,0 +1,44 @@
+diff --git a/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java b/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
+index cd91eb3..aaadc43 100644
+--- a/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
++++ b/apps/api-server/src/main/java/growup/spring/springserver/global/listener/CacheBuildEventListener.java
+@@ -8,6 +8,7 @@ import growup.spring.springserver.keyword.service.KeywordService;
+ import lombok.RequiredArgsConstructor;
+ import lombok.extern.slf4j.Slf4j;
+ import org.springframework.stereotype.Component;
++import org.springframework.context.event.EventListener;
+ import org.springframework.transaction.event.TransactionPhase;
+ import org.springframework.transaction.event.TransactionalEventListener;
+ 
+@@ -15,6 +16,7 @@ import java.time.LocalDate;
+ import java.util.List;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.Executor;
++import java.util.concurrent.ForkJoinPool;
+ import java.util.concurrent.TimeUnit;
+ 
+ @Component
+@@ -27,7 +29,7 @@ public class CacheBuildEventListener {
+     private final Executor ioExecutor;  // ioExecutor 빈도 주입받아야 함!
+     private final Executor cpuExecutor;
+ 
+-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
++    @EventListener
+     public void handleTreeBuildEvent(TreeBuildEvent event) {
+         CompletableFuture.runAsync(() -> {
+             // Event가 Thread Safe 한지 체크!
+@@ -50,12 +52,12 @@ public class CacheBuildEventListener {
+                     } finally {
+                         lazySegmentTreeService.removeTreeBuildingKey(email,year); // 키 제거 확실히!
+                     }
+-                }, cpuExecutor);
++                }, ForkJoinPool.commonPool());
+             } catch (Exception e) {
+                 // DB 조회나 빌드 작업 제출이 실패하면 빌드 키가 남아 이 연도 트리가 다시 빌드되지 않으므로 여기서 지운다
+                 log.error("트리 빌드 준비 중 에러 발생 email: {}, year: {}", email, year, e);
+                 lazySegmentTreeService.removeTreeBuildingKey(email,year);
+             }
+-        }, CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS, ioExecutor));
++        }, ForkJoinPool.commonPool());
+     }
+ }

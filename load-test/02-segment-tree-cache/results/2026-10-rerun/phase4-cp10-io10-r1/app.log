@@ -1,0 +1,369 @@
+16:35:57,443 |-INFO in ch.qos.logback.classic.LoggerContext[default] - This is logback-classic version 1.5.11
+16:35:57,451 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Here is a list of configurators discovered as a service, by rank: 
+16:35:57,451 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 -   org.springframework.boot.logging.logback.RootLogLevelConfigurator
+16:35:57,451 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - They will be invoked in order until ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY is returned.
+16:35:57,451 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Constructed configurator of type class org.springframework.boot.logging.logback.RootLogLevelConfigurator
+16:35:57,460 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - org.springframework.boot.logging.logback.RootLogLevelConfigurator.configure() call lasted 2 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+16:35:57,460 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Trying to configure with ch.qos.logback.classic.joran.SerializedModelConfigurator
+16:35:57,463 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Constructed configurator of type class ch.qos.logback.classic.joran.SerializedModelConfigurator
+16:35:57,463 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.scmo]
+16:35:57,463 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.scmo]
+16:35:57,463 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - ch.qos.logback.classic.joran.SerializedModelConfigurator.configure() call lasted 0 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+16:35:57,463 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+16:35:57,463 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+16:35:57,463 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+16:35:57,470 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.xml]
+16:35:57,470 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 7 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+16:35:57,470 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Trying to configure with ch.qos.logback.classic.BasicConfigurator
+16:35:57,474 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - Constructed configurator of type class ch.qos.logback.classic.BasicConfigurator
+16:35:57,474 |-INFO in ch.qos.logback.classic.BasicConfigurator@319988b0 - Setting up default configuration.
+16:35:57,508 |-INFO in ch.qos.logback.classic.util.ContextInitializer@410ae9a3 - ch.qos.logback.classic.BasicConfigurator.configure() call lasted 34 milliseconds. ExecutionStatus=NEUTRAL
+16:35:58,632 |-INFO in ConfigurationWatchList(mainURL=jar:nested:/C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/apps/api-server/build/libs/SpringServer-0.0.1-SNAPSHOT.jar/!BOOT-INF/classes/!/logback-spring.xml, fileWatchList={}, urlWatchList=[}) - URL [jar:nested:/C:/Users/imjy2/OneDrive/Desktop/Projects/growup/Grou-up/apps/api-server/build/libs/SpringServer-0.0.1-SNAPSHOT.jar/!BOOT-INF/classes/!/logback-spring.xml] is not of type file
+16:35:58,780 |-WARN in ch.qos.logback.core.model.processor.ShutdownHookModelHandler - ch.qos.logback.core.hook.DelayingShutdownHook was renamed as ch.qos.logback.core.hook.DefaultShutdownHook
+16:35:58,780 |-WARN in ch.qos.logback.core.model.processor.ShutdownHookModelHandler - Please use the new class name
+16:35:58,780 |-INFO in ch.qos.logback.core.model.processor.ShutdownHookModelHandler - About to instantiate shutdown hook of type [ch.qos.logback.core.hook.DefaultShutdownHook]
+16:35:58,780 |-INFO in ch.qos.logback.core.util.ContextUtil@7e242b4d - Registering shutdown hook with JVM runtime.
+16:35:58,782 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [CONSOLE]
+16:35:58,782 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+16:35:58,794 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:35:58,814 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+16:35:58,814 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+16:35:58,825 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@305f031 - value "logs/app.log" substituted for "${LOG_DIR}/app.log"
+16:35:58,832 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@305f031 - value "logs/app-%d{yyyy-MM-dd}.log.gz" substituted for "${LOG_DIR}/app-%d{yyyy-MM-dd}.log.gz"
+16:35:58,832 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1496220730 - Will use gz compression
+16:35:58,835 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1496220730 - Will use the pattern logs/app-%d{yyyy-MM-dd}.log for the active file
+16:35:58,864 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/app-%d{yyyy-MM-dd}.log.gz'.
+16:35:58,864 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+16:35:58,873 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2026-10-28T07:35:58.873Z
+16:35:58,877 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:35:58,883 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: logs/app.log
+16:35:58,883 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - File property is set to [logs/app.log]
+16:35:58,900 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+16:35:58,900 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1d1f7216 - Propagating INFO level on Logger[ROOT] onto the JUL framework
+16:35:58,902 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[ROOT]
+16:35:58,902 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+16:35:58,902 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@423e4cbb - End of configuration.
+16:35:58,902 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@6e16b8b5 - Registering current configuration as safe fallback point
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-10-28 16:35:59.051 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-10-28 16:35:59.089 [main] INFO  g.s.s.SpringServerApplication - Starting SpringServerApplication v0.0.1-SNAPSHOT using Java 17.0.12 with PID 19240 (C:\Users\imjy2\OneDrive\Desktop\Projects\growup\Grou-up\apps\api-server\build\libs\SpringServer-0.0.1-SNAPSHOT.jar started by imjy2 in C:\Users\imjy2\OneDrive\Desktop\Projects\growup\Grou-up\load-test\02-segment-tree-cache\rerun)
+2026-10-28 16:35:59.097 [main] INFO  g.s.s.SpringServerApplication - The following 1 profile is active: "bottleNeckTest"
+2026-10-28 16:36:01.321 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28 16:36:01.478 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 134 ms. Found 13 JPA repository interfaces.
+2026-10-28 16:36:03.108 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-28 16:36:03.129 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-28 16:36:03.134 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-28 16:36:03.134 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-10-28 16:36:03.207 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-10-28 16:36:03.207 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4046 ms
+2026-10-28 16:36:03.563 [main] INFO  g.s.s.g.f.JwtFilterConfiguration - JwtFilterConfiguration: [Stub] JwtAuthFilter ºó »ý¼º!
+2026-10-28 16:36:03.849 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-28 16:36:03.933 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-10-28 16:36:03.979 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-10-28 16:36:04.169 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-28 16:36:04.345 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.mariadb.jdbc.Connection@3d01ea33
+2026-10-28 16:36:04.349 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-28 16:36:04.399 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MariaDBDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-28 16:36:04.931 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28 16:36:06.914 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28 16:36:07.321 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28 16:36:07.795 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-28 16:36:11.249 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-28 16:36:13.559 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-28 16:36:13.609 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-28 16:36:13.731 [main] INFO  g.s.s.SpringServerApplication - Started SpringServerApplication in 15.991 seconds (process running for 16.783)
+2026-10-28 16:36:15.215 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-28 16:36:29.190 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:29.190 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:29.190 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:29.191 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:29.202 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.204 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.206 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.208 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.216 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:29.218 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.544 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.545 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.547 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.547 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:29.549 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.658 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:30.658 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:30.661 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:30.661 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:30.661 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:30.662 [http-nio-8080-exec-3] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.662 [http-nio-8080-exec-1] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.662 [http-nio-8080-exec-10] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.662 [http-nio-8080-exec-2] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.662 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.687 [http-nio-8080-exec-10] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.692 [http-nio-8080-exec-2] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.699 [http-nio-8080-exec-1] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.699 [http-nio-8080-exec-3] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:30.705 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.694 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:31.695 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.699 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:31.702 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.727 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:31.730 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:31.730 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:31.749 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.749 [http-nio-8080-exec-9] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.749 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.810 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.824 [http-nio-8080-exec-9] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.824 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.827 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:31.829 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.816 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:32.817 [http-nio-8080-exec-10] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.831 [http-nio-8080-exec-10] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.833 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:32.833 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:32.833 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:32.835 [http-nio-8080-exec-2] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.835 [http-nio-8080-exec-3] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.836 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.837 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:32.841 [http-nio-8080-exec-1] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.855 [http-nio-8080-exec-2] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.855 [http-nio-8080-exec-3] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.861 [http-nio-8080-exec-8] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:32.864 [http-nio-8080-exec-1] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.838 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:33.840 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.857 [http-nio-8080-exec-6] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.861 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:33.861 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:33.862 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.862 [http-nio-8080-exec-9] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.865 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:33.867 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.867 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/getMyCampaigns
+2026-10-28 16:36:33.871 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - Start getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.886 [http-nio-8080-exec-9] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.891 [http-nio-8080-exec-4] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.893 [http-nio-8080-exec-7] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:33.893 [http-nio-8080-exec-5] INFO  g.s.s.c.c.CampaignController - End getMyCampaigns API target is :user01@test.com
+2026-10-28 16:36:35.184 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: POST /api/campaign/cacheReset
+2026-10-28 16:36:49.187 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.187 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.187 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.187 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.191 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.191 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.196 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.200 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.202 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.202 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.216 [http-nio-8080-exec-11] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.220 [http-nio-8080-exec-12] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.220 [http-nio-8080-exec-13] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.222 [http-nio-8080-exec-15] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.222 [http-nio-8080-exec-14] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.226 [http-nio-8080-exec-17] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.228 [http-nio-8080-exec-18] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.230 [http-nio-8080-exec-19] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.234 [http-nio-8080-exec-20] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.234 [http-nio-8080-exec-21] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.236 [http-nio-8080-exec-22] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.238 [http-nio-8080-exec-24] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.226 [http-nio-8080-exec-16] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.240 [http-nio-8080-exec-23] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.242 [http-nio-8080-exec-26] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.242 [http-nio-8080-exec-25] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.244 [http-nio-8080-exec-27] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.246 [http-nio-8080-exec-29] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.246 [http-nio-8080-exec-28] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.248 [http-nio-8080-exec-31] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.248 [http-nio-8080-exec-30] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.249 [http-nio-8080-exec-32] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.262 [http-nio-8080-exec-33] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.262 [http-nio-8080-exec-34] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.262 [http-nio-8080-exec-36] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.262 [http-nio-8080-exec-35] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.266 [http-nio-8080-exec-37] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.266 [http-nio-8080-exec-38] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.266 [http-nio-8080-exec-39] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.272 [http-nio-8080-exec-40] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.272 [http-nio-8080-exec-41] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.274 [http-nio-8080-exec-42] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.274 [http-nio-8080-exec-43] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.277 [http-nio-8080-exec-44] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.277 [http-nio-8080-exec-45] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.277 [http-nio-8080-exec-46] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.279 [http-nio-8080-exec-47] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.279 [http-nio-8080-exec-48] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.286 [http-nio-8080-exec-49] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:49.286 [http-nio-8080-exec-50] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-12-31
+2026-10-28 16:36:59.184 [http-nio-8080-exec-13] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/cacheRate
+2026-10-28 16:36:59.199 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: POST /api/campaign/cacheReset
+2026-10-28 16:37:09.188 [http-nio-8080-exec-39] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.190 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.190 [http-nio-8080-exec-32] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.192 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.194 [http-nio-8080-exec-19] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.199 [http-nio-8080-exec-27] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.199 [http-nio-8080-exec-30] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.201 [http-nio-8080-exec-43] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.205 [http-nio-8080-exec-44] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.217 [http-nio-8080-exec-40] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.217 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.218 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.221 [http-nio-8080-exec-45] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.223 [http-nio-8080-exec-15] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.223 [http-nio-8080-exec-20] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.223 [http-nio-8080-exec-38] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.225 [http-nio-8080-exec-42] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.225 [http-nio-8080-exec-25] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.225 [http-nio-8080-exec-49] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.225 [http-nio-8080-exec-12] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.225 [http-nio-8080-exec-23] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.227 [http-nio-8080-exec-21] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.227 [http-nio-8080-exec-35] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.227 [http-nio-8080-exec-34] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.228 [http-nio-8080-exec-28] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.230 [http-nio-8080-exec-14] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.230 [http-nio-8080-exec-48] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.230 [http-nio-8080-exec-37] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.232 [http-nio-8080-exec-33] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.232 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.232 [http-nio-8080-exec-11] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.232 [http-nio-8080-exec-24] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.234 [http-nio-8080-exec-16] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.234 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.234 [http-nio-8080-exec-50] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.236 [http-nio-8080-exec-47] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.234 [http-nio-8080-exec-46] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.236 [http-nio-8080-exec-22] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.236 [http-nio-8080-exec-31] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.238 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.239 [http-nio-8080-exec-29] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.239 [http-nio-8080-exec-36] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.241 [http-nio-8080-exec-18] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-26] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.266 [http-nio-8080-exec-17] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-13] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-41] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:09.264 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-07-01&end=2025-09-30
+2026-10-28 16:37:19.185 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/cacheRate
+2026-10-28 16:37:19.189 [http-nio-8080-exec-44] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: POST /api/campaign/cacheReset
+2026-10-28 16:37:29.190 [http-nio-8080-exec-19] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.190 [http-nio-8080-exec-39] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.192 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.192 [http-nio-8080-exec-27] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.192 [http-nio-8080-exec-34] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.197 [http-nio-8080-exec-25] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.199 [http-nio-8080-exec-40] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.199 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-49] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-38] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-23] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-45] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-21] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.201 [http-nio-8080-exec-35] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.207 [http-nio-8080-exec-24] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.209 [http-nio-8080-exec-48] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.209 [http-nio-8080-exec-14] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.209 [http-nio-8080-exec-50] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.207 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.207 [http-nio-8080-exec-12] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.209 [http-nio-8080-exec-33] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.209 [http-nio-8080-exec-20] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.211 [http-nio-8080-exec-47] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.212 [http-nio-8080-exec-31] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.212 [http-nio-8080-exec-22] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.212 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.215 [http-nio-8080-exec-29] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.212 [http-nio-8080-exec-16] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.215 [http-nio-8080-exec-18] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.215 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.215 [http-nio-8080-exec-36] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.215 [http-nio-8080-exec-37] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.217 [http-nio-8080-exec-17] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.217 [http-nio-8080-exec-15] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.217 [http-nio-8080-exec-26] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.217 [http-nio-8080-exec-13] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.220 [http-nio-8080-exec-28] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.220 [http-nio-8080-exec-42] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.220 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.223 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.223 [http-nio-8080-exec-46] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.223 [http-nio-8080-exec-11] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.223 [http-nio-8080-exec-41] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.225 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.225 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.225 [http-nio-8080-exec-30] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.228 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.231 [http-nio-8080-exec-44] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.231 [http-nio-8080-exec-32] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:29.231 [http-nio-8080-exec-43] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-08-01&end=2025-08-31
+2026-10-28 16:37:39.186 [http-nio-8080-exec-38] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/cacheRate
+2026-10-28 16:37:39.191 [http-nio-8080-exec-35] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: POST /api/campaign/cacheReset
+2026-10-28 16:37:49.187 [http-nio-8080-exec-48] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.188 [http-nio-8080-exec-25] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.188 [http-nio-8080-exec-23] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.194 [http-nio-8080-exec-47] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.194 [http-nio-8080-exec-14] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.195 [http-nio-8080-exec-12] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.195 [http-nio-8080-exec-50] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.202 [http-nio-8080-exec-20] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.202 [http-nio-8080-exec-33] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.203 [http-nio-8080-exec-24] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.208 [http-nio-8080-exec-22] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.214 [http-nio-8080-exec-16] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.214 [http-nio-8080-exec-29] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.214 [http-nio-8080-exec-31] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.216 [http-nio-8080-exec-13] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.216 [http-nio-8080-exec-26] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.216 [http-nio-8080-exec-36] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.219 [http-nio-8080-exec-1] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.219 [http-nio-8080-exec-37] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.219 [http-nio-8080-exec-10] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.219 [http-nio-8080-exec-15] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.221 [http-nio-8080-exec-18] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.221 [http-nio-8080-exec-46] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.221 [http-nio-8080-exec-41] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.221 [http-nio-8080-exec-11] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.226 [http-nio-8080-exec-17] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.228 [http-nio-8080-exec-5] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.228 [http-nio-8080-exec-28] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.232 [http-nio-8080-exec-42] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.232 [http-nio-8080-exec-30] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.235 [http-nio-8080-exec-9] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.235 [http-nio-8080-exec-8] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.235 [http-nio-8080-exec-3] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.239 [http-nio-8080-exec-32] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.239 [http-nio-8080-exec-6] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.239 [http-nio-8080-exec-44] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.241 [http-nio-8080-exec-2] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.241 [http-nio-8080-exec-43] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.243 [http-nio-8080-exec-34] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.244 [http-nio-8080-exec-19] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.244 [http-nio-8080-exec-27] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.244 [http-nio-8080-exec-21] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.244 [http-nio-8080-exec-7] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.244 [http-nio-8080-exec-39] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.246 [http-nio-8080-exec-45] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.248 [http-nio-8080-exec-4] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.248 [http-nio-8080-exec-38] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.248 [http-nio-8080-exec-35] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.252 [http-nio-8080-exec-40] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:49.253 [http-nio-8080-exec-49] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/totalAnalysisData4?start=2025-06-01&end=2025-07-31
+2026-10-28 16:37:59.186 [http-nio-8080-exec-23] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: GET /api/campaign/cacheRate
+2026-10-28 16:37:59.189 [http-nio-8080-exec-16] INFO  g.s.s.g.fillter.RequestLoggingFilter - Request Received: POST /api/campaign/cacheReset

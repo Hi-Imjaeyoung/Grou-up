@@ -57,6 +57,7 @@
 - [x] 06/07 고정 범위 nocache vs lazycache: 105ms vs 133ms(고정 범위는 캐시가 불리)
 - [x] 08 `drilldown-nocache` vs 09 `drilldown-lazycache`: 첫 요청 지연, Cache Hit율, DB 접근 횟수. Cold Start 동일 수준, 2~4단계 미스 0
 - [x] 09에서 HikariCP pool 10/20/30/40, Connection Acquire/Usage/Pending 수집(편차 범위 안이라 최적 크기 결론 없음)
+- [x] Phase 4 풀 크기 튜닝: HikariCP = ioExecutor = 10/20/30/40/50, 각 3회(`pool-sweep.sh`). 30이 첫 조회 P95 1.29s로 가장 낮은 구간, 50은 Acquire 128ms까지 줄지만 Usage가 늘어 응답은 같음 → 30 유지
 - [x] 단순 비동기(지연·풀 분리 없음) 구성으로 09를 돌려 Connection Usage 최대값을 캡처한다(이전 판 "Usage 4s" 재현): Phase 0/2/3/4 각 3회, Usage 4s는 재현 안 됨(최대 1.37s)
 - [x] ② 결과 표를 새 수치로 바꾸고 "재측정 예정" 주의 메모를 갱신한다. 루트 README 요약 문구도 맞춘다.
 

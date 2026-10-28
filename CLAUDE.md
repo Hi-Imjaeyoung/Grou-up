@@ -36,6 +36,8 @@ GrouUp 포트폴리오 모노레포에서 작업할 때 필요한 맥락입니�
 
 ## 주의할 점
 
+- **응답 언어:** 사용자에게 하는 답변·진행 상황 보고는 항상 한국어로 쓴다.
+
 - **api-server 테스트:** 기존에 113/321개가 실패한다(T1). 새로 만드는 테스트는 `@ActiveProfiles("test")`(H2)로 독립 실행되게 하고, `./gradlew test --tests <클래스>`로 대상만 돌린다. 기본 프로필 `bottleNeckTest`는 실제 MariaDB가 필요하다.
 - **`AllCampaignTypeData.add()`:** `this`를 수정하고 반환한다. `sum()`은 새 객체를 만들지만 얕은 복사다. `CampaignAnalysisDto.add(double, double)`은 새 객체를 반환한다(불변처럼 동작).
 - **캐시:** 트리 키는 `(start << 9) | end`이고 날짜는 연초부터의 일수(1~366)다. 캐시는 Caffeine `email → year → node map` 구조다.

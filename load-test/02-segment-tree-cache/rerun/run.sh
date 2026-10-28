@@ -66,6 +66,13 @@ queries = {
     "usage_window_avg": "rate(hikaricp_connections_usage_seconds_sum[15s]) / rate(hikaricp_connections_usage_seconds_count[15s])",
     "process_cpu": "process_cpu_usage",
     "system_cpu": "system_cpu_usage",
+    # 풀 크기 튜닝(pool-sweep.sh)용. 히스토그램은 percentiles-histogram 인자를 줬을 때만 값이 있다.
+    "acquire_p95": "histogram_quantile(0.95, sum by (le) (rate(hikaricp_connections_acquire_seconds_bucket[15s])))",
+    "usage_p95": "histogram_quantile(0.95, sum by (le) (rate(hikaricp_connections_usage_seconds_bucket[15s])))",
+    "cp_max": "hikaricp_connections_max",
+    "io_pool_max": 'executor_pool_max_threads{name="ioExecutor"}',
+    "io_active": 'executor_active_threads{name="ioExecutor"}',
+    "io_queued": 'executor_queued_tasks{name="ioExecutor"}',
 }
 result = {"start": int(start), "end": int(end), "series": {}}
 for name, q in queries.items():

@@ -28,7 +28,7 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 - Grafana에는 Prometheus 데이터 소스와 대시보드 두 개가 자동으로 등록됩니다(`infra/grafana`).
   - **Spring Boot 3.x Statistics**(Grafana.com ID 19004): 예전 캡처와 같은 대시보드입니다. HikariCP Acquire·Usage 패널은 기동 후 누적 평균(`sum / count`)입니다.
   - **GrouUp ② 세그먼트 트리 캐시 재측정**: 같은 지표의 최대값과 15초 구간 평균입니다.
-- ② 재측정은 [`02-segment-tree-cache/rerun/run.sh`](02-segment-tree-cache/rerun/run.sh)로 돌립니다. 회차마다 서버를 새로 띄우고, 결과를 `results/2026-10-rerun/<이름>/`에 저장합니다. 요약 표는 `summarize.py`(회차별)와 `aggregate.py`(반복 회차 중앙값)로 만듭니다.
+- ② 재측정은 [`02-segment-tree-cache/rerun/run.sh`](02-segment-tree-cache/rerun/run.sh)로 돌립니다. 회차마다 서버를 새로 띄우고, 결과를 `results/2026-10-rerun/<이름>/`에 저장합니다. 요약 표는 `summarize.py`(회차별)와 `aggregate.py`(반복 회차 중앙값)로 만듭니다. Phase 4 풀 크기 튜닝(HikariCP = ioExecutor = N)은 [`pool-sweep.sh`](02-segment-tree-cache/rerun/pool-sweep.sh)로 돌리고 `python aggregate.py "" phase4-cp`로 요약합니다.
 
 ### 테스트 환경 (2026-10-27 재측정 환경)
 
@@ -82,9 +82,9 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 | [results/drilldown](02-segment-tree-cache/results/drilldown) | 드릴다운 nocache vs lazycache. 2026-02-02 스레드 분리·DB pool 조정, 2026-03-02 GC·메모리·DB pool 비교, 스레드 상태 |
 | [results/phase-0](02-segment-tree-cache/results/phase-0) ~ [phase-4](02-segment-tree-cache/results/phase-4) | 비동기 빌드·자원 분리 단계별 k6 결과와 DB pool 패널. phase-4는 pool 20/30/40 비교. phase-1 캡처는 없음 |
 | [results/thread-pool](02-segment-tree-cache/results/thread-pool) | Tomcat 스레드와 IO 스레드의 커넥션 경합 증거, 분리 전/후, 분리 후 pool 축소 |
-| [results/2026-10-rerun](02-segment-tree-cache/results/2026-10-rerun) | 정합성 수정 후 로컬 재측정. 회차별 k6 요약·로그, Prometheus 지표, keyword 인덱스 상태. 해석은 [② 재측정](../docs/portfolio/02-segment-tree-cache.md#재측정-2026-10-27) |
+| [results/2026-10-rerun](02-segment-tree-cache/results/2026-10-rerun) | 정합성 수정 후 로컬 재측정. 회차별 k6 요약·로그, Prometheus 지표, keyword 인덱스 상태. 해석은 [② 재측정](../docs/portfolio/02-segment-tree-cache.md#측정-환경과-원칙) |
 
-> 캡처별 수치(P95, Acquire, Usage, Pending)는 [② 측정 기록](../docs/portfolio/02-segment-tree-cache.md#측정-기록)에 정리했습니다.
+> 캡처별 수치(P95, Acquire, Usage, Pending)는 [② 부록: 예전 측정 기록](../docs/portfolio/02-segment-tree-cache.md#부록-예전-측정-기록)에 정리했습니다.
 
 ## 삭제 API — `03-delete-api/`
 

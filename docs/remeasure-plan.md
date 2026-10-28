@@ -63,14 +63,15 @@
 
 ## 4단계: ① 엑셀 업로드 수정 후 측정
 
-- [ ] S3: `getRandomCampaign()` 제거, 엑셀에 없는 옵션 삭제 로직 복원 여부 결정
-- [ ] S4: IOException 시 null 반환, 빈 행 NPE, `CAMPAIGN_NOT_FOUND`가 나지 않는 문제, 중복 상품명 중복 INSERT
-- [ ] S5: 업로드 실패 시 4xx/5xx를 반환
-- [ ] 단계별 커밋 찾기: 개선 전 / Bulk Insert 적용 후 / 트랜잭션 분리 후
-- [ ] 각 단계에서 50 PCU·500행 업로드(`poc/global-cache-msa/k6Test/excel-upload.js`)를 측정 → "(기입 필요)" 채우기
-- [ ] JDBC `rewriteBatchedStatements=true`(MySQL) / `useBulkStmts`(MariaDB)를 추가하고 한 단계 더 측정한다(목표 1초까지 0.02초 부족한 부분)
-- [ ] 확인 메모 처리: 0.27ms가 행당인지 요청 전체인지 표기, "PK 직접 생성" 문구를 코드(`mfc_id` AUTO_INCREMENT)와 맞추기
-- [ ] GC 오버헤드 주장 근거: `DataFormatter` 재사용 전/후 JFR 또는 GC 로그 캡처
+- [x] S3: `getRandomCampaign()` 제거, 엑셀에 없는 옵션 삭제 로직 복원(개선 전 코드의 원래 설계) #21
+- [x] S4: IOException 시 null 반환, 빈 행 NPE, `CAMPAIGN_NOT_FOUND`가 나지 않는 문제, 중복 상품명 중복 INSERT #21
+- [x] S7(새로 발견): 되살린 삭제 로직이 동시 업로드에서 gap lock 데드락(요청 51% 실패) → PK 기준 삭제 #21
+- [x] S5: 업로드 실패 시 4xx/5xx를 반환 #21
+- [x] 단계별 커밋 찾기: 세 개선이 한 커밋(`52ed226`)에 있어, 현재 코드에서 되돌린 구성(v0/v1/v2a)으로 재현
+- [x] 각 단계에서 50 PCU·500행 업로드를 측정 → "(기입 필요)" 채우기: 7.76s → 4.45s → 2.84s (새 스크립트 `load-test/01-excel/scripts/excel-upload.js`)
+- [x] JDBC `rewriteBatchedStatements=true`(MySQL) / `useBulkStmts`(MariaDB)를 추가하고 한 단계 더 측정한다: Connector/J 3.3.3은 `useBulkStmts`가 기본으로 켜져 있음. 끈 경우와 비교했지만 범위가 겹쳐 결론 없음
+- [x] 확인 메모 처리: "DB IO 0.27ms → 0.06ms"를 당시 StopWatch 기록대로 삽입 280ms → 10.5ms로 정정, "PK 직접 생성"은 코드와 다르다고 표기
+- [x] GC 오버헤드 주장 근거: `DataFormatter` 재사용 전/후 요청당 힙 할당 34.2MB → 18.4MB, GC 52 → 40회(Micrometer 지표)
 
 ## 5단계: ③ TIMED_WAITING 재검증
 

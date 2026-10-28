@@ -1,0 +1,35 @@
+# S7 수정 전 데드락 재현 (2026-10-27, 50명 동시 업로드, 예열 없는 이전 스크립트)
+# 서버 로그 5.3MB 중 발췌. 'Deadlock found' 출현 1165회(스택 중복 포함), 실패 요청 233/456
+
+2026-10-27 16:12:38.997 [http-nio-8080-exec-25] WARN  o.m.jdbc.message.server.ErrorPacket - Error: 1213-40001: Deadlock found when trying to get lock; try restarting transaction
+2026-10-27 16:12:39.195 [http-nio-8080-exec-19] ERROR g.s.s.m.c.ExcelDownUpLoadController - ���� ���ε� �� �� �� ���� ���� �߻�
+org.springframework.dao.CannotAcquireLockException: PreparedStatementCallback; SQL [INSERT INTO margin_for_campaign (campaign_id, mfc_product_name, mfc_sale_price, mfc_cost_price, mfc_total_price, mfc_return_price, mfc_type) VALUES (?, ?, ?, ?, ?, ?, ?)]; (conn=657) Deadlock found when trying to get lock; try restarting transaction
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:128)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:116)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:677)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:701)
+	at org.springframework.jdbc.core.JdbcTemplate.batchUpdate(JdbcTemplate.java:1101)
+	at growup.spring.springserver.marginforcampaign.service.ExcelService.saveMfcInExcel(ExcelService.java:52)
+	at growup.spring.springserver.marginforcampaign.service.ExcelService.processUploadedExcel(ExcelService.java:27)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:355)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:379)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+	at growup.spring.springserver.marginforcampaign.service.ExcelService$$SpringCGLIB$$0.processUploadedExcel(<generated>)
+	at growup.spring.springserver.marginforcampaign.controller.ExcelDownUpLoadController.uploadUsersExcel(ExcelDownUpLoadController.java:78)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+
+# 당시 SHOW ENGINE INNODB STATUS 의 LATEST DETECTED DEADLOCK (요약)
+두 트랜잭션 모두 margin_for_campaign 의 FK 인덱스(campaign_id)에 'lock_mode X locks gap before rec' 를 잡은 상태에서
+같은 gap 에 'insert intention' 을 기다리다 데드락. 대기 쿼리: INSERT INTO margin_for_campaign (...) VALUES (...)

@@ -15,7 +15,8 @@
 | ③ | TIMED_WAITING 스레드 200개 | 가설 세 개를 검증해 원인 확인: 스캐너 버스트로 Tomcat 워커 풀이 기본 최대치 200까지 늘었다가 60초 유휴 대기한 것(대조군 `max-threads=50`으로 입증). WAF·Rate Limiter로 버스트를 앞단에서 차단, 월 약 2만 건 | [03-timed-waiting-threads](docs/portfolio/03-timed-waiting-threads.md) |
 | ④ | MSA/CQRS 글로벌 캐시 PoC | L1 트리 + L2 Redis + 이벤트 동기화로 Query 서버 3대가 DB 재조회 0회로 같은 값 유지 | [04-global-cache-msa](docs/portfolio/04-global-cache-msa.md) |
 
-> 2026-10-26 코드 분석에서 캐시 정합성 버그를 발견해 수치를 재측정할 예정입니다. 목록: [docs/known-issues.md](docs/known-issues.md)
+> 2026-10-26 코드 분석에서 찾은 결함(캐시 정합성, 엑셀 업로드 등)을 고친 뒤 ①~③을 로컬에서 다시 측정했습니다. 표의 "재측정" 수치가 그 결과입니다. ④ PoC 재측정은 남아 있습니다.
+> 결함 목록: [docs/known-issues.md](docs/known-issues.md), 재측정 진행: [docs/remeasure-plan.md](docs/remeasure-plan.md)
 
 ## 팀과 역할
 

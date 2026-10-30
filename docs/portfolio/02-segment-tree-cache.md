@@ -61,7 +61,7 @@
 | 누적합 | O(1) | 불가 | O(N) | N |
 | **세그먼트 트리** | O(log N) | O(log N) | O(log N) | ~2N(반복형) / 4N(재귀형) |
 
-- **Lazy Loading의 한계:** 상위 구간을 조회한 뒤 하위 구간을 조회하면 리프 노드가 비어 있어 DB를 다시 조회했습니다. 그래서 1년치를 한 번에 채우는 **Range-based Eager Loading**으로 바꿨습니다.
+- **Lazy Loading의 한계:** 상위 구간을 조회한 뒤 하위 구간을 조회하면 리프 노드가 비어 있어 DB를 다시 조회했습니다. 그래서 트리 탐색 중 비어 있는 구간을 만나면 그 구간의 일별 데이터를 한 번에 가져와 리프 노드를 모두 채우는 **Range-based Eager Loading**으로 바꿨습니다.
 - **트리가 대신하는 범위:** 이 API 응답은 **캠페인별 합계**와 **광고 유형별 합계** 두 부분입니다. 세그먼트 트리는 광고 유형별 합계만 대신하고, 캠페인별 합계는 매번 DB로 조회합니다([`CampaignTotalDataFacade`](../../apps/api-server/src/main/java/growup/spring/springserver/campaign/facade/CampaignTotalDataFacade.java)).
 
 ### 6개월 조회: 캐시 유무 (03·05·06·07, 커버링 인덱스, 1회씩)
@@ -108,7 +108,7 @@
 ## 병목 3: 트리 생성 비용
 
 1. **빌드 비동기화 (Phase 1).** 트리 생성이 끝날 때까지 Tomcat 스레드가 기다려 응답이 늦었습니다. 흐름을 DB 조회 → 트리 빌드 → 응답에서 DB 조회 → 응답 + 비동기 빌드로 바꿨습니다. `CompletableFuture`로 트리 생성을 백그라운드에서 실행합니다. Kafka/MQ는 단일 서버에서 과하다고 판단했습니다.
-2. **On-Demand에서 Eager Loading으로 (Phase 2).** 요청 구간만 나눠 조회하던 방식(트리 하나에 최대 12회)을 1년치를 한 번에 조회해 전체 트리를 만드는 방식으로 바꿨습니다. 초기 비용은 커지지만 비동기라 사용자가 기다리지 않고, 이후 요청의 캐시 적중률이 올라갑니다. 재빌드 범위가 1년으로 넓어져 부분 업데이트 임계값도 다시 정했습니다([무효화와 정합성](#무효화와-정합성)).
+2. **Range-based Eager Loading에서 Whole Build로 (Phase 2).** 기존 방식은 트리를 탐색하다 비어 있는 구간을 만나면 그때 그 구간을 DB에서 조회해, 조회 구간이 바뀔 때마다 DB 조회가 여러 번으로 나뉘었습니다. 이를 1년치를 한 번에 조회해 전체 트리를 만드는 방식으로 바꿨습니다. 초기 비용은 커지지만 비동기라 사용자가 기다리지 않고, DB 조회 횟수가 줄고 이후 요청의 캐시 적중률이 올라갑니다. 재빌드 범위가 1년으로 넓어져 부분 업데이트 임계값도 다시 정했습니다([무효화와 정합성](#무효화와-정합성)).
 3. **실행 시점 지연 (Phase 3).** 비동기로 바꿔도 첫 조회가 빨라지지 않았습니다. 요청 스레드가 일하는 동안 비동기 빌드가 같은 커넥션 풀을 먼저 가져가 HikariCP Pending이 쌓였기 때문입니다. 이벤트를 `@TransactionalEventListener(AFTER_COMMIT)`로 받아 요청 트랜잭션이 끝난 뒤 시작하고, `delayedExecutor`로 500ms 더 늦춰 두 작업의 실행 시간을 떼어 놓았습니다.
 4. **격벽(Bulkhead)과 스레드 풀 분리 (Phase 4).** `CompletableFuture` 기본 풀(`ForkJoinPool.commonPool`)은 스레드가 적어 I/O가 길어지면 다른 작업까지 밀릴 수 있었습니다. DB 조회는 `ioExecutor`, 트리 빌드는 `cpuExecutor`(코어 수 + 1)로 나누고, `ioExecutor` 크기에 맞춰 HikariCP pool을 10 → 30으로 늘렸습니다.
 

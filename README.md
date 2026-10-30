@@ -10,7 +10,7 @@
 
 | # | 주제 | 한 줄 성과 | 문서 |
 |---|---|---|---|
-| ① | 크롤링 → 엑셀 업로드 전환 | 요구사항을 다시 정의해 피벗을 제안했고, Bulk Insert와 트랜잭션 분리로 50 PCU·500행 P95 1.5s → 1.08s(당시 측정). 수정 후 로컬 재측정: 단계별 P95 7.76s → 2.84s(63% 감소), 동시 업로드 데드락(S7) 발견·수정 | [01-excel-upload](docs/portfolio/01-excel-upload.md) |
+| ① | 크롤링 → 엑셀 업로드 전환 | 요구사항을 다시 정의해 피벗을 제안했고, Bulk Insert와 트랜잭션 분리로 50 PCU·500행 P95 1.5s → 1.08s(당시 측정). 수정 후 로컬 재측정(50명·100행): 단계별 P95 1.92s → 1.05s(약 45% 감소, 대부분 Bulk Insert 효과), 동시 업로드 데드락(S7) 발견·수정 | [01-excel-upload](docs/portfolio/01-excel-upload.md) |
 | ② | 6개월 조회와 세그먼트 트리 캐시 | 정합성 수정 후 로컬 재측정: 커버링 인덱스로 P95 463ms → 273ms, 비동기 빌드·자원 분리로 Cold Start P95 2.24s → 1.48s(3회 중앙값). 커넥션 풀 = IO 스레드 풀 10~50 튜닝에서 30이 적정 | [02-segment-tree-cache](docs/portfolio/02-segment-tree-cache.md) |
 | ③ | TIMED_WAITING 스레드 200개 | 가설 세 개를 검증해 원인 확인: 스캐너 버스트로 Tomcat 워커 풀이 기본 최대치 200까지 늘었다가 60초 유휴 대기한 것(대조군 `max-threads=50`으로 입증). WAF·Rate Limiter로 버스트를 앞단에서 차단, 월 약 2만 건 | [03-timed-waiting-threads](docs/portfolio/03-timed-waiting-threads.md) |
 | ④ | MSA/CQRS 글로벌 캐시 PoC | L1 트리 + L2 Redis + 이벤트 동기화로 Query 서버 3대가 DB 재조회 0회로 같은 값 유지 | [04-global-cache-msa](docs/portfolio/04-global-cache-msa.md) |

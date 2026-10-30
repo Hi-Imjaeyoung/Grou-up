@@ -1,0 +1,54 @@
+diff --git a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
+index b713f69..5286992 100644
+--- a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
++++ b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelParsingService.java
+@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
+ import org.apache.poi.UnsupportedFileFormatException;
+ import org.apache.poi.ss.usermodel.*;
+ import org.springframework.stereotype.Service;
++import org.springframework.util.StopWatch;
+ import org.springframework.web.multipart.MultipartFile;
+ 
+ import java.io.IOException;
+@@ -30,10 +31,19 @@ public class ExcelParsingService {
+ 
+     public ExcelUploadContext parsingExcelData(MultipartFile file, String email) {
+ 
++        StopWatch stopWatch = new StopWatch("Excel Upload Process");
++        stopWatch.start("1");
+         try (Workbook workbook = openWorkbook(file)) {
+             Sheet sheet = workbook.getSheetAt(0);
++            stopWatch.stop();
++            stopWatch.start("2");
+             ExcelUploadContext excelUploadContext = new ExcelUploadContext(email,loadMyCampaignCache(email),loadMyMFCCache(email));
++            stopWatch.stop();
++            stopWatch.start("3");
+             readAllExcelRows(sheet, excelUploadContext);
++            stopWatch.stop();
++            log.info("EXCEL_STAGE parse email={} {}", email, java.util.Arrays.stream(stopWatch.getTaskInfo())
++                    .map(t -> t.getTaskName() + "=" + t.getTimeNanos()).collect(Collectors.joining(" ")));
+             return excelUploadContext;
+         } catch (IOException e){
+             throw new GrouException(ErrorCode.FILE_READ_ERROR);
+diff --git a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelService.java b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelService.java
+index 9c323f3..8321e46 100644
+--- a/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelService.java
++++ b/apps/api-server/src/main/java/growup/spring/springserver/marginforcampaign/service/ExcelService.java
+@@ -23,9 +23,17 @@ public class ExcelService {
+ 
+     @Transactional
+     public Map<String,Integer> processUploadedExcel(ExcelUploadContext excelUploadContext) throws IOException {
++        StopWatch stopWatch = new StopWatch("Excel Upload Process");
++        stopWatch.start("4");
+         deleteOldMfcNotExistExcel(excelUploadContext);
++        stopWatch.stop();
++        stopWatch.start("5");
+         saveMfcInExcel(excelUploadContext.getEntitiesToInsert());
+         bulkUpdateMfc(excelUploadContext.getEntitiesToUpdate());
++        marginForCampaignRepository.flush();
++        stopWatch.stop();
++        log.info("EXCEL_STAGE write email={} {}", excelUploadContext.getEmail(), Arrays.stream(stopWatch.getTaskInfo())
++                .map(t -> t.getTaskName() + "=" + t.getTimeNanos()).collect(java.util.stream.Collectors.joining(" ")));
+         return excelUploadContext.getResult();
+         }
+ 

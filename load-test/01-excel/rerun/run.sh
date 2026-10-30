@@ -10,6 +10,7 @@
 #   DB_URL_PARAMS  JDBC URL 뒤에 붙일 옵션 (예: ?useBulkStmts=false)
 #   PROM_URL  Prometheus 주소 (기본 http://localhost:9090)
 #   RESULT_SET  결과 상위 폴더 (기본 2026-10-28-100rows, 500행 측정은 2026-10-rerun)
+#   K6_SCRIPT   k6 시나리오 파일 이름 (기본 excel-upload.js, 단계별 시간 측정은 excel-upload-single.js)
 set -euo pipefail
 
 NAME=$1; shift
@@ -46,10 +47,12 @@ done
 sleep 10  # Prometheus 가 기동 직후 값을 한 번 수집하도록 기다린다
 
 START=$(date +%s)
-k6 run --summary-export "$OUT/k6-summary.json" "$ROOT/load-test/01-excel/scripts/excel-upload.js" > "$OUT/k6.log" 2>&1 || true
+k6 run --summary-export "$OUT/k6-summary.json" "$ROOT/load-test/01-excel/scripts/${K6_SCRIPT:-excel-upload.js}" > "$OUT/k6.log" 2>&1 || true
 sleep 10  # 마지막 구간 지표 수집
 END=$(date +%s)
 $DB -e "SELECT COUNT(*) AS mfc_rows FROM margin_for_campaign" > "$OUT/mfc-rows.txt"
+# StopWatch 를 넣은 측정용 jar(stage-timing.py build)는 단계별 시간을 서버 로그에 남긴다. 서버 로그는 커밋하지 않으므로 따로 뽑는다
+grep "EXCEL_STAGE" "$OUT/app.log" > "$OUT/stage-timing.txt" || rm -f "$OUT/stage-timing.txt"
 
 python - "$PROM_URL" "$START" "$END" "$OUT/prometheus.json" <<'EOF'
 import json, sys, urllib.parse, urllib.request

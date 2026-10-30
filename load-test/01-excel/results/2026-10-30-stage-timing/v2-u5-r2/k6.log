@@ -1,0 +1,75 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: C:/Users/imjy2/AppData/Local/Temp/gw100/load-test/01-excel/scripts/excel-upload-stage.js
+        output: -
+
+     scenarios: (100.00%) 6 scenarios, 6 max VUs, 10m30s max duration (incl. graceful stop):
+              * warm_up: 10 iterations for each of 1 VUs (maxDuration: 10m0s, exec: warmUp, gracefulStop: 30s)
+              * main_0: 6 iterations for each of 1 VUs (maxDuration: 5m0s, exec: measure, startTime: 20s, gracefulStop: 30s)
+              * main_1: 6 iterations for each of 1 VUs (maxDuration: 5m0s, exec: measure, startTime: 20s, gracefulStop: 30s)
+              * main_2: 6 iterations for each of 1 VUs (maxDuration: 5m0s, exec: measure, startTime: 20s, gracefulStop: 30s)
+              * main_3: 6 iterations for each of 1 VUs (maxDuration: 5m0s, exec: measure, startTime: 20s, gracefulStop: 30s)
+              * main_4: 6 iterations for each of 1 VUs (maxDuration: 5m0s, exec: measure, startTime: 20s, gracefulStop: 30s)
+
+
+running (00m01.0s), 1/6 VUs, 0 complete and 0 interrupted iterations
+warm_up   [   0% ] 1 VUs    00m01.0s/10m0s  00/10 iters, 10 per VU
+main_0  • [   0% ] waiting  19.0s          
+main_1  • [   0% ] waiting  19.0s          
+main_2  • [   0% ] waiting  19.0s          
+main_3  • [   0% ] waiting  19.0s          
+main_4  • [   0% ] waiting  19.0s          
+
+running (00m02.0s), 1/6 VUs, 1 complete and 0 interrupted iterations
+warm_up   [  10% ] 1 VUs    00m02.0s/10m0s  01/10 iters, 10 per VU
+main_0  • [   0% ] waiting  18.0s          
+main_1  • [   0% ] waiting  18.0s          
+main_2  • [   0% ] waiting  18.0s          
+main_3  • [   0% ] waiting  18.0s          
+main_4  • [   0% ] waiting  18.0s          
+
+running (00m03.0s), 1/6 VUs, 3 complete and 0 interrupted iterations
+warm_up   [  30% ] 1 VUs    00m03.0s/10m0s  03/10 iters, 10 per VU
+main_0  • [   0% ] waiting  17.0s          
+main_1  • [   0% ] waiting  17.0s          
+main_2  • [   0% ] waiting  17.0s          
+main_3  • [   0% ] waiting  17.0s          
+main_4  • [   0% ] waiting  17.0s          
+
+running (00m04.0s), 1/6 VUs, 5 complete and 0 interrupted iterations
+warm_up   [  50% ] 1 VUs    00m04.0s/10m0s  05/10 iters, 10 per VU
+main_0  • [   0% ] waiting  16.0s          
+main_1  • [   0% ] waiting  16.0s          
+main_2  • [   0% ] waiting  16.0s          
+main_3  • [   0% ] waiting  16.0s          
+main_4  • [   0% ] waiting  16.0s          
+
+running (00m05.0s), 1/6 VUs, 6 complete and 0 interrupted iterations
+warm_up   [  60% ] 1 VUs    00m05.0s/10m0s  06/10 iters, 10 per VU
+main_0  • [   0% ] waiting  15.0s          
+main_1  • [   0% ] waiting  15.0s          
+main_2  • [   0% ] waiting  15.0s          
+main_3  • [   0% ] waiting  15.0s          
+main_4  • [   0% ] waiting  15.0s          
+
+running (00m06.0s), 1/6 VUs, 8 complete and 0 interrupted iterations
+warm_up   [  80% ] 1 VUs    00m06.0s/10m0s  08/10 iters, 10 per VU
+main_0  • [   0% ] waiting  14.0s          
+main_1  • [   0% ] waiting  14.0s          
+main_2  • [   0% ] waiting  14.0s          
+main_3  • [   0% ] waiting  14.0s          
+main_4  • [   0% ] waiting  14.0s          
+
+running (00m07.0s), 1/6 VUs, 9 complete and 0 interrupted iterations
+warm_up   [  90% ] 1 VUs    00m07.0s/10m0s  09/10 iters, 10 per VU
+main_0  • [   0% ] waiting  13.0s          
+main_1  • [   0% ] waiting  13.0s          
+main_2  • [   0% ] waiting  13.0s          
+main_3  • [   0% ] waiting  13.0s          
+main_4  • [   0% ] waiting  13.0s          

@@ -4,7 +4,8 @@
 // 파일 생성: python load-test/01-excel/data/generate.py
 //
 // 구간: 예열(5명, 10초) → 본 측정(50명, 30초). 결과는 본 측정 구간(phase:main)만 본다.
-// 첫 업로드는 500행 INSERT, 같은 사용자의 다음 업로드부터는 500행 UPDATE 다.
+// 동시 사용자 50명은 목표 PCU, 파일당 100행은 하루 등록 데이터(100건 이하)에 맞춘 값이다(2026-10-28 변경, 이전 500행).
+// 첫 업로드는 100행 INSERT, 같은 사용자의 다음 업로드부터는 100행 UPDATE 다.
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
@@ -21,7 +22,7 @@ export const options = {
     },
     thresholds: {
         'http_req_failed{phase:main}': ['rate<0.01'],
-        'http_req_duration{phase:main}': ['p(95)<1000'], // 목표: 50명·500행에서 1초 이내
+        'http_req_duration{phase:main}': ['p(95)<1000'], // 목표: 50명·100행에서 1초 이내
     },
 };
 

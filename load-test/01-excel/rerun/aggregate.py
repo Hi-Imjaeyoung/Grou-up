@@ -1,7 +1,7 @@
 """
 ① 엑셀 업로드 재측정 결과(<구성>-r1, -r2, …)를 구성별 중앙값과 범위로 묶어 출력한다.
 본 측정 구간(phase:main, 50명 30초)만 집계한다.
-사용: python aggregate.py [결과 폴더]
+사용: python aggregate.py [결과 폴더, 기본 results/2026-10-28-100rows]
 """
 import json
 import pathlib
@@ -11,7 +11,7 @@ import sys
 from collections import defaultdict
 
 ROOT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else \
-    pathlib.Path(__file__).resolve().parent.parent / "results" / "2026-10-rerun"
+    pathlib.Path(__file__).resolve().parent.parent / "results" / "2026-10-28-100rows"
 VUS = 50
 
 groups = defaultdict(list)

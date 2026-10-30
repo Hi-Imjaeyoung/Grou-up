@@ -9,11 +9,12 @@
 #   DB_PORT   MariaDB 호스트 포트 (기본 3306), DB_PASSWORD (기본 change-me)
 #   DB_URL_PARAMS  JDBC URL 뒤에 붙일 옵션 (예: ?useBulkStmts=false)
 #   PROM_URL  Prometheus 주소 (기본 http://localhost:9090)
+#   RESULT_SET  결과 상위 폴더 (기본 2026-10-28-100rows, 500행 측정은 2026-10-rerun)
 set -euo pipefail
 
 NAME=$1; shift
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
-OUT="$ROOT/load-test/01-excel/results/2026-10-rerun/$NAME"
+OUT="$ROOT/load-test/01-excel/results/${RESULT_SET:-2026-10-28-100rows}/$NAME"
 APP_JAR=${APP_JAR:-$(ls "$ROOT"/apps/api-server/build/libs/*-SNAPSHOT.jar | grep -v plain | head -1)}
 PROM_URL=${PROM_URL:-http://localhost:9090}
 DB="docker exec -i grouup-mariadb mariadb -uroot -p${DB_PASSWORD:-change-me} grouup"

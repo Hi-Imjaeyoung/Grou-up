@@ -47,6 +47,21 @@
   | 전체 | 436ms | 96ms |
 
   삽입이 280ms → 10.5ms로 줄면서 병목이 파싱으로 옮겨갔습니다.
+- **재측정 (2026-10-30, 100행, 사용자 1명, `StopWatch`):** 요청 한 건 안에서 어느 단계가 오래 걸리는지 보려고 동시 요청 없이 쟀습니다. 개선 전(v0)과 최종(v2) 구성마다 3회, 회차마다 사용자 10명이 A → B → A 순서로 올렸습니다. 첫 업로드는 INSERT, 이후는 가격만 바뀐 B·A 파일로 UPDATE입니다. 값은 중앙값입니다(INSERT 30건, UPDATE 60건).
+
+  | 단계 | 개선 전 INSERT | 최종 INSERT | 개선 전 UPDATE | 최종 UPDATE |
+  |---|---|---|---|---|
+  | ① MultipartFile → Sheet | 11.9ms (8%) | 11.0ms (37%) | 11.1ms (25%) | 10.7ms (19%) |
+  | ② Context 생성 (내 캠페인·옵션 조회) | 8.5ms (6%) | 11.8ms (40%) | 9.9ms (22%) | 13.9ms (25%) |
+  | ③ 파싱 | 5.9ms (4%) | 3.5ms (12%) | 5.9ms (13%) | 3.5ms (6%) |
+  | ④ 데이터 제거 | 0.0ms | 0.0ms | 0.1ms | 0.1ms |
+  | ⑤ 삽입·수정 | **123.3ms (82%)** | **3.3ms (11%)** | 17.1ms (39%) | 28.3ms (50%) |
+  | 합계 | 153.4ms | 30.2ms | 45.9ms | 56.3ms |
+
+  - INSERT는 100행에서도 개선 전에는 ⑤ 삽입이 82%였고, Bulk Insert로 123ms → 3.3ms가 됐습니다. 개선 후에는 ①·② 파일 변환과 DB 조회가 시간의 대부분입니다.
+  - UPDATE는 개선 효과가 없었습니다(⑤ 17.1ms → 28.3ms). 측정 프로필(`bottleNeckTest`)에 Hibernate `jdbc.batch_size: 5000`이 있어, 개선 전에도 변경 감지 UPDATE가 배치로 나갑니다. IDENTITY 전략은 INSERT 배치만 막습니다. 운영 프로필(`application-prod.yml`)에는 이 설정이 없어 당시 운영에서는 UPDATE도 한 건씩 나갔을 것입니다.
+  - 개선 전 구성의 UPDATE도 실행 시간에 포함되도록 ⑤ 끝에서 `flush()`했습니다. 같은 파일을 다시 올리면 개선 전 구성은 값이 같아 UPDATE를 보내지 않으므로, 가격만 다른 B 파일과 번갈아 올렸습니다.
+  - 방법과 원본: [`stage-timing.py`](../../load-test/01-excel/rerun/stage-timing.py)(측정용 jar 빌드·집계, 바꾼 내용은 [stopwatch.patch](../../load-test/01-excel/rerun/patches/stopwatch.patch)), [`excel-upload-stage.js`](../../load-test/01-excel/scripts/excel-upload-stage.js), [results/2026-10-30-stage-timing](../../load-test/01-excel/results/2026-10-30-stage-timing).
 - **동시 50명 부하 (k6):** P95 **1.5s**(평균 818ms, 최대 1.56s, 306건 실패 0). 목표 1초에 못 미쳐 병목 2로 이어졌습니다.
 
 > **확인한 것 (2026-10-27)**
@@ -88,6 +103,7 @@
   - 각자 자기 캠페인 10개 × 옵션 10개 = 100행 파일을 올립니다([`generate.py`](../../load-test/01-excel/data/generate.py)). 첫 업로드는 INSERT, 이후는 UPDATE입니다.
 - **결과 원본:** [results/2026-10-28-100rows](../../load-test/01-excel/results/2026-10-28-100rows). 표는 [`aggregate.py`](../../load-test/01-excel/rerun/aggregate.py)로 만들었습니다. 구성마다 3회이고 회차마다 구성을 돌아가며 쟀습니다. 값은 중앙값(범위)입니다. 15회 모두 실패 0건이었고, 저장 행은 5,000건으로 맞았습니다.
 - `v2-nobulk-r3`은 측정 중 PC가 절전에 들어가 k6가 5시간 넘게 이어져, 버리고 다시 쟀습니다.
+- 사용자마다 같은 파일을 반복해서 올렸습니다. 그래서 개선 전 구성(v0)의 재업로드는 값이 같아 UPDATE 쿼리가 나가지 않았고, v0의 P95는 주로 사용자별 첫 업로드(INSERT)가 결정합니다. 값이 바뀌는 UPDATE의 단계별 비용은 [병목 1](#병목-1-jpa-identity-전략-때문에-insert가-한-건씩-실행됨)의 1명 재측정에 있습니다.
 
 | 구성 | 트랜잭션 | 저장 | DataFormatter | P95 | 평균 | 요청당 힙 할당 | Acquire 최대 | Usage 최대 |
 |---|---|---|---|---|---|---|---|---|

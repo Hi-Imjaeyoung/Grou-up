@@ -63,6 +63,11 @@ k6 run load-test/02-segment-tree-cache/scripts/05-six-month-lazycache.js
 - 결과는 [results/2026-10-28-100rows](01-excel/results/2026-10-28-100rows)(100행)에 있습니다. 500행으로 잰 2026-10-27 결과는 [results/2026-10-rerun](01-excel/results/2026-10-rerun)에 남아 있습니다(`RESULT_SET=2026-10-rerun`).
 - `deadlock-before-s7`은 S7 수정 전 데드락 재현 결과입니다. 예열 구간을 넣기 전의 스크립트로 쟀습니다.
 
+단계별 소요 시간(Spring `StopWatch`)은 동시 요청 없이 1명으로 잽니다.
+- `python 01-excel/rerun/stage-timing.py build`로 개선 전(v0)·최종(v2) 구성에 StopWatch를 넣은 측정용 jar를 만듭니다(바꾼 내용은 `patches/stopwatch.patch`).
+- `RESULT_SET=2026-10-30-stage-timing K6_SCRIPT=excel-upload-stage.js APP_JAR=…/v0-sw.jar run.sh v0-u1-r1`처럼 돌립니다. [`excel-upload-stage.js`](01-excel/scripts/excel-upload-stage.js)는 사용자 10명이 A → B → A 순서로 올립니다(첫 업로드 INSERT, 이후 가격만 다른 파일로 UPDATE).
+- 단계별 시간은 서버 로그에서 뽑은 `stage-timing.txt`에 남고, `stage-timing.py summary`로 단계별 중앙값을 냅니다. 결과는 [results/2026-10-30-stage-timing](01-excel/results/2026-10-30-stage-timing)에 있습니다.
+
 ## ② 6개월 대시보드 조회 / 세그먼트 트리 캐시 — `02-segment-tree-cache/`
 
 ### 스크립트
